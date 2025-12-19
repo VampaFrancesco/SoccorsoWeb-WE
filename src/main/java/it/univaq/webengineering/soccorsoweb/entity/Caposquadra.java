@@ -1,9 +1,14 @@
 package it.univaq.webengineering.soccorsoweb.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "caposquadra")
+@Data
 public class Caposquadra {
 
     @Id
@@ -12,17 +17,14 @@ public class Caposquadra {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "utente_id", nullable = false, unique = true)
-    private Utente utente;
+    private Utenti utente;
 
-    public Caposquadra() {}
+    // Relazione One-to-Many con Squadra (un caposquadra può avere più squadre)
+    @OneToMany(mappedBy = "caposquadra", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Squadra> squadre = new HashSet<>();
 
-    public Caposquadra(Utente utente) {
-        this.utente = utente;
-    }
+    // Relazione One-to-Many con Missione (un caposquadra può avere più missioni assegnate)
+    @OneToMany(mappedBy = "caposquadra", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Missione> missioni = new HashSet<>();
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Utente getUtente() { return utente; }
-    public void setUtente(Utente utente) { this.utente = utente; }
 }

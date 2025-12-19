@@ -1,11 +1,14 @@
 package it.univaq.webengineering.soccorsoweb.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "richieste_soccorso")
+@Data
 public class RichiestaSoccorso {
 
     @Id
@@ -55,71 +58,20 @@ public class RichiestaSoccorso {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public RichiestaSoccorso() {}
+    // Relazione One-to-One con Missione (una richiesta può generare una missione)
+    @OneToOne(mappedBy = "richiestaSoccorso", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Missione missione;
 
-    public RichiestaSoccorso(String descrizione, String indirizzo, String nomeSegnalante,
-                             String emailSegnalante) {
-        this.descrizione = descrizione;
-        this.indirizzo = indirizzo;
-        this.nomeSegnalante = nomeSegnalante;
-        this.emailSegnalante = emailSegnalante;
-    }
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
-
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getDescrizione() { return descrizione; }
-    public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
-
-    public String getIndirizzo() { return indirizzo; }
-    public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
-
-    public BigDecimal getLatitudine() { return latitudine; }
-    public void setLatitudine(BigDecimal latitudine) { this.latitudine = latitudine; }
-
-    public BigDecimal getLongitudine() { return longitudine; }
-    public void setLongitudine(BigDecimal longitudine) { this.longitudine = longitudine; }
-
-    public String getNomeSegnalante() { return nomeSegnalante; }
-    public void setNomeSegnalante(String nomeSegnalante) { this.nomeSegnalante = nomeSegnalante; }
-
-    public String getEmailSegnalante() { return emailSegnalante; }
-    public void setEmailSegnalante(String emailSegnalante) { this.emailSegnalante = emailSegnalante; }
-
-    public String getTelefonoSegnalante() { return telefonoSegnalante; }
-    public void setTelefonoSegnalante(String telefonoSegnalante) { this.telefonoSegnalante = telefonoSegnalante; }
-
-    public String getFotoUrl() { return fotoUrl; }
-    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
-
-    public String getIpOrigine() { return ipOrigine; }
-    public void setIpOrigine(String ipOrigine) { this.ipOrigine = ipOrigine; }
-
-    public String getTokenConvalida() { return tokenConvalida; }
-    public void setTokenConvalida(String tokenConvalida) { this.tokenConvalida = tokenConvalida; }
-
-    public StatoRichiesta getStato() { return stato; }
-    public void setStato(StatoRichiesta stato) { this.stato = stato; }
-
-    public LocalDateTime getConvalidataAt() { return convalidataAt; }
-    public void setConvalidataAt(LocalDateTime convalidataAt) { this.convalidataAt = convalidataAt; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     public enum StatoRichiesta {
         INVIATA,

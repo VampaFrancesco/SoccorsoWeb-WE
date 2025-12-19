@@ -2,15 +2,23 @@ package it.univaq.webengineering.soccorsoweb.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Entity che rappresenta un Materiale di soccorso
+ */
 @Entity
-@Table(name = "squadre")
+@Table(name = "materiali", indexes = {
+        @Index(name = "idx_disponibile", columnList = "disponibile"),
+        @Index(name = "idx_tipo", columnList = "tipo")
+})
 @Data
-public class Squadra {
+public class Materiale {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,35 +30,34 @@ public class Squadra {
     @Column(columnDefinition = "TEXT")
     private String descrizione;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "caposquadra_id", nullable = false)
-    private Caposquadra caposquadra;
+    @Column(length = 50)
+    private String tipo;
 
     @Column(nullable = false)
-    private Boolean attiva = true;
+    private Integer quantita = 0;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(nullable = false)
+    private Boolean disponibile = true;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relazione One-to-Many con Missione (una squadra può avere più missioni)
-    @OneToMany(mappedBy = "squadra", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Missione> missioni = new HashSet<>();
-
-    // Relazione One-to-Many con SquadreOperatori (una squadra può avere più operatori)
-    @OneToMany(mappedBy = "squadra", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SquadreOperatori> squadreOperatori = new HashSet<>();
+    // Relazione Many-to-Many con Missione attraverso MissioneMateriale
+    @OneToMany(mappedBy = "materiale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MissioneMateriale> missioniMateriali = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
 }
+
