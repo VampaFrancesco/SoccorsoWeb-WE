@@ -1,0 +1,38 @@
+package it.univaq.webengineering.soccorsoweb.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.io.Serializable;
+
+@Entity
+@Table(name="utenti_ruoli")
+@Data
+public class UtentiRuoli {
+
+    @EmbeddedId
+    private UtentiRuoliPk id = new UtentiRuoliPk();
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @MapsId("utenteId")
+    @JoinColumn(referencedColumnName = "utente_id")
+    private Utenti utenti;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @MapsId("ruoloId")
+    @JoinColumn(referencedColumnName = "ruolo_id")
+    private Ruoli ruoli;
+
+    @Embeddable
+    @Data
+    public static class UtentiRuoliPk implements Serializable {
+
+        @Column
+        private Long utenteId;
+
+        @Column
+        private Long ruoloId;
+
+    }
+
+
+}
