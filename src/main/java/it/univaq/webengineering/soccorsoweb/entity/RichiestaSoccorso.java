@@ -120,4 +120,12 @@ public class RichiestaSoccorso {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public enum StatoRichiesta {
+        INVIATA,
+        ATTIVA,
+        IN_CORSO,
+        CHIUSA,
+        IGNORATA
+    }
 }
