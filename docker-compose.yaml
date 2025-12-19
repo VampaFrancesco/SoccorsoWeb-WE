@@ -17,19 +17,25 @@ services:
       - ./soccorso_mariadb.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - soccorso-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   app:
-    build: .
+    image: amazoncorretto:21
     container_name: soccorso-app
     restart: always
+    working_dir: /app
+    volumes:
+      - ./target:/app
+    command: ["java", "-jar", "/app/soccorso-web.jar"]
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     ports:
       - "8081:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/soccorsodb_we
-      SPRING_DATASOURCE_USERNAME: soccorso_user
-      SPRING_DATASOURCE_PASSWORD: soccorso_pass
     networks:
       - soccorso-network
 
