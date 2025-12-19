@@ -15,11 +15,11 @@ public class UtentiRuoli {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @MapsId("utenteId")
-    @JoinColumn(referencedColumnName = "utente_id")
+    @JoinColumn(name = "utente_id", referencedColumnName = "id")
     private Utenti utenti;
     @ManyToOne(fetch=FetchType.LAZY)
     @MapsId("ruoloId")
-    @JoinColumn(referencedColumnName = "ruolo_id")
+    @JoinColumn(name = "ruolo_id", referencedColumnName = "id")
     private Ruoli ruoli;
 
     @Embeddable

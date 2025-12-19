@@ -17,11 +17,11 @@ public class UtentiPatenti {
 
     @ManyToOne(fetch= FetchType.LAZY)
     @MapsId("utenteId")
-    @JoinColumn(referencedColumnName = "utente_id")
+    @JoinColumn(name = "utente_id", referencedColumnName = "id")
     private Utenti utenti;
     @ManyToOne(fetch=FetchType.LAZY)
     @MapsId("patenteId")
-    @JoinColumn(referencedColumnName = "patente_id")
+    @JoinColumn(name = "patente_id", referencedColumnName = "id")
     private Patenti patenti;
 
     @Column
