@@ -1,10 +1,9 @@
-package it.univaq.webengineering.soccorsoweb.entity;
+package it.univaq.webengineering.soccorsoweb.model.entity;
 
 
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.HashSet;

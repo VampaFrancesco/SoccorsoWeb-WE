@@ -38,4 +38,7 @@
 
 <script src="js/index.js"></script>
 </body>
+<footer>
+    <lable for="email_dev"></lable>
+</footer>
 </html>

@@ -1,4 +1,4 @@
-package it.univaq.webengineering.soccorsoweb.entity;
+package it.univaq.webengineering.soccorsoweb.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

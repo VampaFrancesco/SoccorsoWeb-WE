@@ -1,24 +1,22 @@
-package it.univaq.webengineering.soccorsoweb.entity;
+package it.univaq.webengineering.soccorsoweb.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Entity che rappresenta un Mezzo di soccorso
+ * Entity che rappresenta un Materiale di soccorso
  */
 @Entity
-@Table(name = "mezzi", indexes = {
+@Table(name = "materiali", indexes = {
         @Index(name = "idx_disponibile", columnList = "disponibile"),
         @Index(name = "idx_tipo", columnList = "tipo")
 })
 @Data
-public class Mezzo {
+public class Materiale {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +31,8 @@ public class Mezzo {
     @Column(length = 50)
     private String tipo;
 
-    @Column(length = 20)
-    private String targa;
+    @Column(nullable = false)
+    private Integer quantita = 0;
 
     @Column(nullable = false)
     private Boolean disponibile = true;
@@ -45,9 +43,9 @@ public class Mezzo {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relazione Many-to-Many con Missione attraverso MissioneMezzo
-    @OneToMany(mappedBy = "mezzo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<MissioneMezzo> missioniMezzi = new HashSet<>();
+    // Relazione Many-to-Many con Missione attraverso MissioneMateriale
+    @OneToMany(mappedBy = "materiale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MissioneMateriale> missioniMateriali = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {

@@ -1,4 +1,4 @@
-package it.univaq.webengineering.soccorsoweb.entity;
+package it.univaq.webengineering.soccorsoweb.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -10,17 +10,17 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Entity che rappresenta la relazione Many-to-Many tra Missione e Mezzo
+ * Entity che rappresenta la relazione Many-to-Many tra Missione e Operatore (Utente)
  */
 @Entity
-@Table(name = "missioni_mezzi", indexes = {
-        @Index(name = "idx_mezzo", columnList = "mezzo_id")
+@Table(name = "missioni_operatori", indexes = {
+        @Index(name = "idx_operatore", columnList = "operatore_id")
 })
 @Data
-public class MissioneMezzo {
+public class MissioneOperatore {
 
     @EmbeddedId
-    private MissioneMezzoId id = new MissioneMezzoId();
+    private MissioneOperatoreId id = new MissioneOperatoreId();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("missioneId")
@@ -28,19 +28,15 @@ public class MissioneMezzo {
     private Missione missione;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("mezzoId")
-    @JoinColumn(name = "mezzo_id")
-    private Mezzo mezzo;
+    @MapsId("operatoreId")
+    @JoinColumn(name = "operatore_id")
+    private Utenti operatore;
+
+    @Column(name = "notificato_at")
+    private LocalDateTime notificatoAt;
 
     @Column(name = "assegnato_at")
     private LocalDateTime assegnatoAt;
-
-    @PrePersist
-    protected void onCreate() {
-        if (assegnatoAt == null) {
-            assegnatoAt = LocalDateTime.now();
-        }
-    }
 
     /**
      * Classe embedded per la chiave composta
@@ -50,13 +46,13 @@ public class MissioneMezzo {
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
-    public static class MissioneMezzoId implements Serializable {
+    public static class MissioneOperatoreId implements Serializable {
 
         @Column(name = "missione_id")
         private Long missioneId;
 
-        @Column(name = "mezzo_id")
-        private Long mezzoId;
+        @Column(name = "operatore_id")
+        private Long operatoreId;
     }
 }
 
