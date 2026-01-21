@@ -38,4 +38,7 @@ mvnw.cmd
 mvnw
 
 .DS_Store
-.DS_Store
+
+# File SQL duplicati nella root (il file principale è in src/main/resources/)
+/*.sql
+

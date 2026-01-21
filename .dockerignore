@@ -1,0 +1,13 @@
+target/
+!target/soccorsoweb-*.jar
+.git
+.gitignore
+.idea
+*.iml
+.mvn/
+mvnw
+mvnw.cmd
+README.md
+HELP.md
+.DS_Store
+*.log
