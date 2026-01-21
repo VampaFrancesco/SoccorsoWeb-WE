@@ -48,7 +48,8 @@ public class AuthService {
             String token = jwtService.generateToken(authRequest.getEmail());
 
             // 3. Ritorna il token nella response
-            return new AuthResponse(token);
+            AuthResponse authResponse = new AuthResponse(token);
+            return ResponseEntity.ok(authResponse);
 
         } catch (BadCredentialsException e) {
             // 4. Se le credenziali sono sbagliate, lancia eccezione
