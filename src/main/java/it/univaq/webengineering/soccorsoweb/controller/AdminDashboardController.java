@@ -10,6 +10,6 @@ public class AdminDashboardController {
 
     @GetMapping("/dashboard")
     public String dashboard() {
-        return "dashboard";
+        return "dashboard.ftl";
     }
 }
