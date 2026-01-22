@@ -203,6 +203,7 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Custom JS -->
+<script src="/js/api.js"></script>
 <script src="/js/index.js"></script>
 
 </body>

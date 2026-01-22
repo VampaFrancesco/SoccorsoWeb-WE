@@ -44,7 +44,7 @@ function getLocation() {
         // Error
         (error) => {
             let errorMsg = '';
-            switch(error.code) {
+            switch (error.code) {
                 case error.PERMISSION_DENIED:
                     errorMsg = 'Permesso negato - Abilita la geolocalizzazione';
                     break;
@@ -77,7 +77,7 @@ function setupFileInput() {
     const fileInput = document.getElementById('foto');
     const fileName = document.getElementById('file-name');
 
-    fileInput.addEventListener('change', function() {
+    fileInput.addEventListener('change', function () {
         if (this.files && this.files[0]) {
             const file = this.files[0];
             const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
@@ -93,7 +93,7 @@ function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
 
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         // Validate CAPTCHA
@@ -133,53 +133,50 @@ function setupFormSubmit() {
             // Submit form
             const formData = new FormData(form);
 
-            const response = await fetch('/richiesta', {
-                method: 'POST',
-                body: formData
+            // Convert forcedly to JSON because backend requires application/json
+            // and does not support multipart/form-data (so no file upload for now)
+            const requestBody = {
+                nome_segnalante: formData.get('nome_segnalante'),
+                email_segnalante: formData.get('email_segnalante'),
+                descrizione: formData.get('descrizione'),
+                latitudine: parseFloat(formData.get('latitudine')),
+                longitudine: parseFloat(formData.get('longitudine')),
+                // Indirizzo è obbligatorio nel DTO ma non c'è nel form, usiamo le coordinate come placeholder
+                indirizzo: `Posizione: ${formData.get('latitudine')}, ${formData.get('longitudine')}`,
+                // Foto cannot be sent as backend expects JSON
+                // foto_url: null 
+            };
+
+            // Chiamata all'API tramite la funzione dedicata
+            await inserisciRichiestaSoccorso(requestBody);
+
+            // Success
+            await Swal.fire({
+                icon: 'success',
+                title: 'Richiesta Inviata!',
+                html: `
+                    <p>La tua richiesta di soccorso è stata ricevuta.</p>
+                    <p><strong>Controlla la tua email</strong> per confermare la richiesta.</p>
+                `,
+                background: '#1a1a2e',
+                color: '#fff',
+                confirmButtonColor: '#4CAF50'
             });
 
-            if (response.ok) {
-                // Success
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Richiesta Inviata!',
-                    html: `
-                        <p>La tua richiesta di soccorso è stata ricevuta.</p>
-                        <p><strong>Controlla la tua email</strong> per confermare la richiesta.</p>
-                    `,
-                    background: '#1a1a2e',
-                    color: '#fff',
-                    confirmButtonColor: '#4CAF50'
-                });
-
-                // Reset form
-                form.reset();
-                document.getElementById('file-name').textContent = "Seleziona un'immagine";
-                generateCaptcha();
-                locationObtained = false;
-                getLocation(); // Re-get location
-
-            } else {
-                // Error from server
-                const errorData = await response.json().catch(() => ({}));
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Errore Invio',
-                    text: errorData.message || 'Si è verificato un errore. Riprova più tardi.',
-                    background: '#1a1a2e',
-                    color: '#fff',
-                    confirmButtonColor: '#FF4B2B'
-                });
-            }
+            // Reset form
+            form.reset();
+            document.getElementById('file-name').textContent = "Seleziona un'immagine";
+            generateCaptcha();
+            locationObtained = false;
+            getLocation(); // Re-get location
 
         } catch (error) {
             console.error('Submit error:', error);
 
             Swal.fire({
                 icon: 'error',
-                title: 'Errore di Connessione',
-                text: 'Impossibile contattare il server. Verifica la connessione.',
+                title: 'Errore',
+                text: error.message || 'Si è verificato un errore durante l\'invio della richiesta.',
                 background: '#1a1a2e',
                 color: '#fff',
                 confirmButtonColor: '#FF4B2B'
@@ -193,7 +190,7 @@ function setupFormSubmit() {
 }
 
 // ===== INIT ON DOM READY =====
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize CAPTCHA
     generateCaptcha();
 
