@@ -16,7 +16,7 @@ public class Utenti {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(length=255)
     private String email;
