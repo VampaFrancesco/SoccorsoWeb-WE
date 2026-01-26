@@ -2,60 +2,163 @@
 let locationObtained = false;
 let isCaptchaVerified = false;
 
-// ===== GEOLOCATION =====
+// ===== GEOLOCATION LOGIC (With Address Conversion) =====
 function getLocation() {
     const locationStatus = document.getElementById('location-status');
+    const manualContainer = document.getElementById('manual-address-field');
     const latInput = document.getElementById('latitudine');
     const lngInput = document.getElementById('longitudine');
 
     if (!navigator.geolocation) {
-        locationStatus.className = 'location-status error';
-        locationStatus.innerHTML = '<i class="fas fa-circle-xmark"></i><span>Geolocalizzazione non supportata dal browser</span>';
+        showManualEntry('Geolocalizzazione non supportata');
         return;
     }
 
     locationStatus.className = 'location-status loading';
-    locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Rilevamento posizione...</span>';
+    locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Rilevamento GPS in corso...</span>';
 
     navigator.geolocation.getCurrentPosition(
-        // Success
-        (position) => {
-            latInput.value = position.coords.latitude;
-            lngInput.value = position.coords.longitude;
+        // 1. Successo GPS
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            // Salva coordinate (nascoste)
+            latInput.value = lat;
+            lngInput.value = lng;
+            locationObtained = true;
+
+            // 2. Converti in Indirizzo (Reverse Geocoding)
+            locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Recupero indirizzo...</span>';
+
+            try {
+                const address = await getAddressFromCoords(lat, lng);
+                locationStatus.className = 'location-status success';
+                locationStatus.innerHTML = `<i class="fas fa-map-location-dot"></i><span>${address}</span>`;
+
+                if (manualContainer) manualContainer.style.display = 'none';
+
+            } catch (error) {
+                // Fallback: mostra coordinate se reverse geocoding fallisce
+                console.warn("Reverse geocoding fallito:", error);
+                locationStatus.className = 'location-status success';
+                locationStatus.innerHTML = `<i class="fas fa-location-crosshairs"></i><span>Posizione rilevata (${lat.toFixed(4)}, ${lng.toFixed(4)})</span>`;
+            }
+        },
+        // Errore GPS
+        (error) => {
+            let errorMsg = 'Impossibile rilevare posizione';
+            if (error.code === error.PERMISSION_DENIED) errorMsg = 'Permesso GPS negato';
+            showManualEntry(errorMsg);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+
+    function showManualEntry(msg) {
+        console.warn('GPS Fallito:', msg);
+        locationStatus.className = 'location-status error';
+        locationStatus.innerHTML = `<i class="fas fa-circle-exclamation"></i><span>${msg}</span>`;
+        if (manualContainer) manualContainer.style.display = 'block';
+    }
+}
+
+// ===== NOMINATIM API (OpenStreetMap) =====
+
+// 1. Coordinate -> Indirizzo
+async function getAddressFromCoords(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+
+    // User-Agent obbligatorio per OSM
+    const response = await fetch(url, {
+        headers: { 'User-Agent': 'SoccorsoWeb-Client/1.0' }
+    });
+
+    if (!response.ok) throw new Error('Network response was not ok');
+
+    const data = await response.json();
+
+    // Formattazione Indirizzo
+    const addr = data.address;
+    const street = addr.road || addr.pedestrian || addr.street || '';
+    const number = addr.house_number ? `, ${addr.house_number}` : '';
+    const city = addr.city || addr.town || addr.village || addr.county || '';
+
+    if (street && city) return `${street}${number}, ${city}`;
+    if (data.display_name) return data.display_name.split(',').slice(0, 3).join(',');
+    return `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+}
+
+// 2. Indirizzo -> Coordinate (Per input manuale)
+async function getCoordsFromAddress(addressQuery) {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=1`;
+
+    const response = await fetch(url, {
+        headers: { 'User-Agent': 'SoccorsoWeb-Client/1.0' }
+    });
+
+    const data = await response.json();
+    if (data && data.length > 0) {
+        return {
+            lat: data[0].lat,
+            lon: data[0].lon,
+            displayName: data[0].display_name
+        };
+    }
+    throw new Error('Indirizzo non trovato');
+}
+
+// ===== MANUAL ADDRESS HANDLER =====
+function setupManualAddress() {
+    const btnVerify = document.getElementById('btn-verify-address');
+    const inputAddress = document.getElementById('manual-address');
+    const locationStatus = document.getElementById('location-status');
+    const latInput = document.getElementById('latitudine');
+    const lngInput = document.getElementById('longitudine');
+
+    if (!btnVerify) return;
+
+    btnVerify.addEventListener('click', async () => {
+        const query = inputAddress.value;
+        if (!query || query.length < 3) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Indirizzo troppo breve',
+                text: 'Inserisci almeno città e via.',
+                background: '#1a1a2e',
+                color: '#fff'
+            });
+            return;
+        }
+
+        const originalBtnText = btnVerify.innerHTML;
+        btnVerify.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btnVerify.disabled = true;
+
+        try {
+            const result = await getCoordsFromAddress(query);
+
+            // Successo: Aggiorna hidden inputs e UI
+            latInput.value = result.lat;
+            lngInput.value = result.lon;
             locationObtained = true;
 
             locationStatus.className = 'location-status success';
-            locationStatus.innerHTML = '<i class="fas fa-circle-check"></i><span>Posizione rilevata correttamente</span>';
-        },
-        // Error
-        (error) => {
-            let errorMsg = '';
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    errorMsg = 'Permesso negato - Abilita la geolocalizzazione';
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    errorMsg = 'Posizione non disponibile';
-                    break;
-                case error.TIMEOUT:
-                    errorMsg = 'Timeout - Riprova';
-                    break;
-                default:
-                    errorMsg = 'Errore sconosciuto';
-            }
+            locationStatus.innerHTML = `<i class="fas fa-check-circle"></i><span>Trovato: ${result.displayName.split(',').slice(0, 2).join(',')}</span>`;
 
-            locationStatus.className = 'location-status error';
-            locationStatus.innerHTML = `<i class="fas fa-triangle-exclamation"></i><span>${errorMsg}</span>`;
-
-            console.error('Geolocation error:', error);
-        },
-        // Options
-        {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Indirizzo non trovato',
+                text: 'Prova a specificare meglio Città e Via',
+                background: '#1a1a2e',
+                color: '#fff',
+                confirmButtonColor: '#FF4B2B'
+            });
+        } finally {
+            btnVerify.innerHTML = originalBtnText;
+            btnVerify.disabled = false;
         }
-    );
+    });
 }
 
 // ===== FILE INPUT FEEDBACK =====
@@ -87,25 +190,20 @@ function setupCustomCaptcha() {
     if (!checkbox) return;
 
     checkbox.addEventListener('click', function() {
-        if (isCaptchaVerified) return; // Già verificato
+        if (isCaptchaVerified) return;
 
-        // 1. Nascondi checkbox, mostra spinner
         checkbox.style.visibility = 'hidden';
         spinner.style.display = 'block';
-        errorMsg.style.display = 'none'; // Nascondi eventuali errori precedenti
+        errorMsg.style.display = 'none';
 
-        // 2. Simula attesa di rete (tra 800ms e 1.5s)
         const randomDelay = Math.floor(Math.random() * 700) + 800;
 
         setTimeout(() => {
-            // 3. Verifica completata
             spinner.style.display = 'none';
             checkbox.style.visibility = 'visible';
 
-            // Aggiungi classe 'verified' al contenitore (cambia stile checkbox in check verde)
             captchaContainer.classList.add('verified');
 
-            // Genera un token "finto" e salvalo
             const fakeToken = "verified_" + Date.now() + "_" + Math.random().toString(36).substr(2);
             tokenInput.value = fakeToken;
 
@@ -116,39 +214,32 @@ function setupCustomCaptcha() {
     });
 }
 
-// ===== FORM VALIDATION & SUBMIT =====
+// ===== FORM SUBMIT =====
 function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
     const errorMsg = document.getElementById('captcha-error-msg');
 
-    if (!form || !submitBtn) {
-        console.error('Form o submit button non trovato');
-        return;
-    }
+    if (!form || !submitBtn) return;
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Check Local Captcha
+        // 1. Check Captcha
         if (!isCaptchaVerified) {
-            // Mostra errore sotto il captcha
             if (errorMsg) errorMsg.style.display = 'block';
-
-            // Shake animation (opzionale)
             const captchaContainer = document.getElementById('custom-captcha');
             captchaContainer.style.borderColor = '#ff5252';
-            setTimeout(() => captchaContainer.style.borderColor = '', 500);
-
+            setTimeout(() => captchaContainer.style.borderColor = '#d0d0d0', 500);
             return;
         }
 
-        // Validate Location
+        // 2. Check Location
         if (!locationObtained) {
             Swal.fire({
                 icon: 'warning',
-                title: 'Posizione Richiesta',
-                text: 'Attendi il rilevamento della posizione o abilita la geolocalizzazione',
+                title: 'Posizione Mancante',
+                text: 'Attendi il GPS oppure cerca il tuo indirizzo manualmente',
                 background: '#1a1a2e',
                 color: '#fff',
                 confirmButtonColor: '#FF4B2B'
@@ -156,103 +247,64 @@ function setupFormSubmit() {
             return;
         }
 
-        // Disable button and show loading
+        // Disable button
         const originalBtnHTML = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio in corso...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
         submitBtn.disabled = true;
 
         try {
-            // Submit form
             const formData = new FormData(form);
-            // formData.append('captchaToken', ...); // Già nel form come hidden input
-
-            const response = await fetch('/richiesta', {
-                method: 'POST',
-                body: formData
-            });
+            const response = await fetch('/richiesta', { method: 'POST', body: formData });
 
             if (response.ok) {
-                // Success
-                await Swal.fire({
+                Swal.fire({
                     icon: 'success',
-                    title: 'Richiesta Inviata!',
-                    html: `
-                        <p>La tua richiesta di soccorso è stata ricevuta.</p>
-                        <p><strong>Controlla la tua mail</strong> per confermare la richiesta.</p>
-                    `,
-                    background: '#1a1a2e',
-                    color: '#fff',
-                    confirmButtonColor: '#4CAF50'
+                    title: 'Richiesta Inviata',
+                    html: '<p>Controlla la tua email per confermare.</p>',
+                    background: '#1a1a2e', color: '#fff'
                 });
 
-                // Reset form
+                // RESET Form & UI
                 form.reset();
-
-                // Reset File Input Text
-                const fileNameElement = document.getElementById('file-name');
-                if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
+                locationObtained = false;
 
                 // Reset Captcha
                 isCaptchaVerified = false;
                 document.getElementById('custom-captcha').classList.remove('verified');
                 document.getElementById('captcha-token').value = "";
+                document.getElementById('captcha-checkbox').style.visibility = 'visible';
 
-                // Reset Location
-                locationObtained = false;
+                // Reset File Input
+                const fileNameElement = document.getElementById('file-name');
+                if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
+
+                // Re-get Location
                 getLocation();
 
             } else {
-                // Error from server
-                let errorData = {};
-                try {
-                    errorData = await response.json();
-                } catch (e) {
-                    console.error('Errore parsing JSON:', e);
-                }
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Errore Invio',
-                    text: errorData.message || 'Si è verificato un errore. Riprova più tardi',
-                    background: '#1a1a2e',
-                    color: '#fff',
-                    confirmButtonColor: '#FF4B2B'
-                });
+                throw new Error('Errore server');
             }
-
         } catch (error) {
-            console.error('Submit error:', error);
-
             Swal.fire({
                 icon: 'error',
-                title: 'Errore di Connessione',
-                text: 'Impossibile contattare il server. Verifica la connessione',
+                title: 'Errore',
+                text: 'Si è verificato un errore durante l\'invio',
                 background: '#1a1a2e',
-                color: '#fff',
-                confirmButtonColor: '#FF4B2B'
+                color: '#fff'
             });
-
         } finally {
-            // Re-enable button
             submitBtn.innerHTML = originalBtnHTML;
             submitBtn.disabled = false;
         }
     });
 }
 
-// ===== INIT ON DOM READY =====
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 SoccorsoWeb Index inizializzato');
-
-    // Get user location
     getLocation();
-
-    // Setup file input
     setupFileInput();
-
-    // Setup Custom Captcha
     setupCustomCaptcha();
-
-    // Setup form submission
+    setupManualAddress();
     setupFormSubmit();
 });

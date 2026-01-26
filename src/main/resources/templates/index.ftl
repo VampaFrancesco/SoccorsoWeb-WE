@@ -44,7 +44,7 @@
                 <i class="fas fa-heart-pulse"></i>
                 ${descrizione_h2!"Soccorso Web"}
             </h1>
-            <p class="subtitle">${descrizione_paragrafo!"Il portale per la gestione delle missioni di soccorso"}</p>
+            <p class="subtitle">${descrizione_paragrafo!"Il portale per la gestione delle missioni di soccorso."}</p>
 
             <div class="features">
                 <div class="feature-item">
@@ -120,17 +120,39 @@
                     ></textarea>
                 </div>
 
-                <!-- Geolocation Status -->
-                <div class="location-status-container">
-                    <div id="location-status" class="location-status loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span>Rilevamento posizione in corso...</span>
-                    </div>
-                </div>
-
-                <!-- Hidden Location Fields -->
+                <!-- HIDDEN Coordinates (Filled via GPS or Manual Search) -->
                 <input type="hidden" id="latitudine" name="latitudine">
                 <input type="hidden" id="longitudine" name="longitudine">
+
+                <!-- Location Display & Manual Input -->
+                <div class="form-group location-display-group">
+                    <label><i class="fas fa-map-pin"></i> Posizione Rilevata</label>
+
+                    <!-- Status Bar: Shows GPS status or Found Address -->
+                    <div id="location-status" class="location-status loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Rilevamento GPS in corso...</span>
+                    </div>
+
+                    <!-- Manual Address Input (Hidden by default, shown on GPS error) -->
+                    <div id="manual-address-field" class="manual-input-container" style="display: none;">
+                        <label for="manual-address" class="sub-label">
+                            Non riusciamo a trovarti. Scrivi il tuo indirizzo:
+                        </label>
+                        <div class="input-with-btn">
+                            <input
+                                    type="text"
+                                    id="manual-address"
+                                    class="form-control"
+                                    placeholder="Es: Via Roma 10, Milano"
+                            >
+                            <button type="button" id="btn-verify-address" class="btn-verify">
+                                <i class="fas fa-magnifying-glass-location"></i> Cerca
+                            </button>
+                        </div>
+                        <p class="manual-note">Inserisci Via e Città per ottenere le coordinate</p>
+                    </div>
+                </div>
 
                 <!-- Photo Upload -->
                 <div class="form-group">
@@ -152,7 +174,7 @@
                     </div>
                 </div>
 
-                <!-- NUOVO CAPTCHA CUSTOM -->
+                <!-- CAPTCHA CUSTOM (Light Version) -->
                 <div class="form-group captcha-group">
                     <label>
                         <i class="fas fa-shield-halved"></i> Verifica di Sicurezza
@@ -199,6 +221,7 @@
 <footer class="footer">
     <p>
         2026 SoccorsoWeb | Sviluppato per emergenze
+        <span class="footer-separator">•</span>
     </p>
 </footer>
 
@@ -207,5 +230,6 @@
 <!-- Custom JS -->
 <script src="/js/index.js"></script>
 <script src="/js/api.js"></script>
+
 </body>
 </html>
