@@ -44,7 +44,7 @@
                 <i class="fas fa-heart-pulse"></i>
                 ${descrizione_h2!"Soccorso Web"}
             </h1>
-            <p class="subtitle">${descrizione_paragrafo!"Il portale per la gestione delle missioni di soccorso."}</p>
+            <p class="subtitle">${descrizione_paragrafo!"Il portale per la gestione delle missioni di soccorso"}</p>
 
             <div class="features">
                 <div class="feature-item">
@@ -152,27 +152,31 @@
                     </div>
                 </div>
 
-                <!-- CAPTCHA -->
+                <!-- NUOVO CAPTCHA CUSTOM -->
                 <div class="form-group captcha-group">
-                    <label for="captcha">
-                        <i class="fas fa-shield"></i> Verifica di Sicurezza
+                    <label>
+                        <i class="fas fa-shield-halved"></i> Verifica di Sicurezza
                     </label>
-                    <div class="captcha-container">
-                        <div class="captcha-question" id="captcha-question">
-                            Quanto fa <span id="num1">5</span> + <span id="num2">3</span>?
+
+                    <div class="custom-captcha-container" id="custom-captcha">
+                        <div class="captcha-checkbox" id="captcha-checkbox"></div>
+                        <span class="captcha-text">Non sono un robot</span>
+                        <div class="captcha-logo">
+                            <i class="fas fa-shield-cat"></i>
+                            <small>SafeCheck</small>
                         </div>
-                        <input
-                                type="number"
-                                id="captcha"
-                                name="captcha"
-                                class="form-control captcha-input"
-                                placeholder="Risultato"
-                                required
-                        >
-                        <button type="button" class="captcha-refresh" id="refresh-captcha">
-                            <i class="fas fa-rotate"></i>
-                        </button>
+
+                        <!-- Spinner nascosto -->
+                        <div class="captcha-spinner" id="captcha-spinner"></div>
                     </div>
+
+                    <!-- Messaggio di errore nascosto -->
+                    <div class="captcha-error" id="captcha-error-msg">
+                        Verifica obbligatoria
+                    </div>
+
+                    <!-- Input nascosto per il token -->
+                    <input type="hidden" id="captcha-token" name="captchaToken">
                 </div>
 
                 <!-- Submit Button -->
@@ -195,16 +199,13 @@
 <footer class="footer">
     <p>
         2026 SoccorsoWeb | Sviluppato per emergenze
-        <span class="footer-separator">•</span>
-        <a href="mailto:dev@soccorsoweb.it">dev@soccorsoweb.it</a>
     </p>
 </footer>
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Custom JS -->
-<script src="/js/api.js"></script>
 <script src="/js/index.js"></script>
-
+<script src="/js/api.js"></script>
 </body>
 </html>

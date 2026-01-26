@@ -1,20 +1,6 @@
 // ===== GLOBAL VARIABLES =====
-let captchaAnswer = 0;
 let locationObtained = false;
-
-// ===== CAPTCHA GENERATION =====
-function generateCaptcha() {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-
-    document.getElementById('num1').textContent = num1;
-    document.getElementById('num2').textContent = num2;
-
-    captchaAnswer = num1 + num2;
-
-    // Reset captcha input
-    document.getElementById('captcha').value = '';
-}
+let isCaptchaVerified = false;
 
 // ===== GEOLOCATION =====
 function getLocation() {
@@ -44,7 +30,7 @@ function getLocation() {
         // Error
         (error) => {
             let errorMsg = '';
-            switch (error.code) {
+            switch(error.code) {
                 case error.PERMISSION_DENIED:
                     errorMsg = 'Permesso negato - Abilita la geolocalizzazione';
                     break;
@@ -77,7 +63,9 @@ function setupFileInput() {
     const fileInput = document.getElementById('foto');
     const fileName = document.getElementById('file-name');
 
-    fileInput.addEventListener('change', function () {
+    if (!fileInput || !fileName) return;
+
+    fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
             const file = this.files[0];
             const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
@@ -88,26 +76,70 @@ function setupFileInput() {
     });
 }
 
+// ===== CUSTOM CAPTCHA LOGIC =====
+function setupCustomCaptcha() {
+    const captchaContainer = document.getElementById('custom-captcha');
+    const checkbox = document.getElementById('captcha-checkbox');
+    const spinner = document.getElementById('captcha-spinner');
+    const tokenInput = document.getElementById('captcha-token');
+    const errorMsg = document.getElementById('captcha-error-msg');
+
+    if (!checkbox) return;
+
+    checkbox.addEventListener('click', function() {
+        if (isCaptchaVerified) return; // Già verificato
+
+        // 1. Nascondi checkbox, mostra spinner
+        checkbox.style.visibility = 'hidden';
+        spinner.style.display = 'block';
+        errorMsg.style.display = 'none'; // Nascondi eventuali errori precedenti
+
+        // 2. Simula attesa di rete (tra 800ms e 1.5s)
+        const randomDelay = Math.floor(Math.random() * 700) + 800;
+
+        setTimeout(() => {
+            // 3. Verifica completata
+            spinner.style.display = 'none';
+            checkbox.style.visibility = 'visible';
+
+            // Aggiungi classe 'verified' al contenitore (cambia stile checkbox in check verde)
+            captchaContainer.classList.add('verified');
+
+            // Genera un token "finto" e salvalo
+            const fakeToken = "verified_" + Date.now() + "_" + Math.random().toString(36).substr(2);
+            tokenInput.value = fakeToken;
+
+            isCaptchaVerified = true;
+            console.log("Captcha verificato localmente. Token:", fakeToken);
+
+        }, randomDelay);
+    });
+}
+
 // ===== FORM VALIDATION & SUBMIT =====
 function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
+    const errorMsg = document.getElementById('captcha-error-msg');
 
-    form.addEventListener('submit', async function (e) {
+    if (!form || !submitBtn) {
+        console.error('Form o submit button non trovato');
+        return;
+    }
+
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Validate CAPTCHA
-        const captchaInput = parseInt(document.getElementById('captcha').value);
-        if (captchaInput !== captchaAnswer) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Verifica Fallita',
-                text: 'La risposta al captcha non è corretta',
-                background: '#1a1a2e',
-                color: '#fff',
-                confirmButtonColor: '#FF4B2B'
-            });
-            generateCaptcha(); // Reset captcha
+        // Check Local Captcha
+        if (!isCaptchaVerified) {
+            // Mostra errore sotto il captcha
+            if (errorMsg) errorMsg.style.display = 'block';
+
+            // Shake animation (opzionale)
+            const captchaContainer = document.getElementById('custom-captcha');
+            captchaContainer.style.borderColor = '#ff5252';
+            setTimeout(() => captchaContainer.style.borderColor = '', 500);
+
             return;
         }
 
@@ -132,55 +164,74 @@ function setupFormSubmit() {
         try {
             // Submit form
             const formData = new FormData(form);
+            // formData.append('captchaToken', ...); // Già nel form come hidden input
 
-            // Convert forcedly to JSON because backend requires application/json
-            // and does not support multipart/form-data (so no file upload for now)
-            const requestBody = {
-                nome_segnalante: formData.get('nome_segnalante'),
-                email_segnalante: formData.get('email_segnalante'),
-                descrizione: formData.get('descrizione'),
-                latitudine: parseFloat(formData.get('latitudine')),
-                longitudine: parseFloat(formData.get('longitudine')),
-                // Indirizzo è obbligatorio nel DTO ma non c'è nel form, usiamo le coordinate come placeholder
-                indirizzo: `Posizione: ${formData.get('latitudine')}, ${formData.get('longitudine')}`,
-                // Foto cannot be sent as backend expects JSON
-                // foto_url: null 
-            };
-
-            // Chiamata all'API tramite la funzione dedicata
-            await inserisciRichiestaSoccorso(requestBody);
-
-            // Success
-            await Swal.fire({
-                icon: 'success',
-                title: 'Richiesta Inviata!',
-                html: `
-                    <p>La tua richiesta di soccorso è stata ricevuta.</p>
-                    <p><strong>Controlla la tua email</strong> per confermare la richiesta.</p>
-                `,
-                background: '#1a1a2e',
-                color: '#fff',
-                confirmButtonColor: '#4CAF50'
+            const response = await fetch('/richiesta', {
+                method: 'POST',
+                body: formData
             });
 
-            // Reset form
-            form.reset();
-            document.getElementById('file-name').textContent = "Seleziona un'immagine";
-            generateCaptcha();
-            locationObtained = false;
-            getLocation(); // Re-get location
+            if (response.ok) {
+                // Success
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Richiesta Inviata!',
+                    html: `
+                        <p>La tua richiesta di soccorso è stata ricevuta.</p>
+                        <p><strong>Controlla la tua mail</strong> per confermare la richiesta.</p>
+                    `,
+                    background: '#1a1a2e',
+                    color: '#fff',
+                    confirmButtonColor: '#4CAF50'
+                });
+
+                // Reset form
+                form.reset();
+
+                // Reset File Input Text
+                const fileNameElement = document.getElementById('file-name');
+                if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
+
+                // Reset Captcha
+                isCaptchaVerified = false;
+                document.getElementById('custom-captcha').classList.remove('verified');
+                document.getElementById('captcha-token').value = "";
+
+                // Reset Location
+                locationObtained = false;
+                getLocation();
+
+            } else {
+                // Error from server
+                let errorData = {};
+                try {
+                    errorData = await response.json();
+                } catch (e) {
+                    console.error('Errore parsing JSON:', e);
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Errore Invio',
+                    text: errorData.message || 'Si è verificato un errore. Riprova più tardi',
+                    background: '#1a1a2e',
+                    color: '#fff',
+                    confirmButtonColor: '#FF4B2B'
+                });
+            }
 
         } catch (error) {
             console.error('Submit error:', error);
 
             Swal.fire({
                 icon: 'error',
-                title: 'Errore',
-                text: error.message || 'Si è verificato un errore durante l\'invio della richiesta.',
+                title: 'Errore di Connessione',
+                text: 'Impossibile contattare il server. Verifica la connessione',
                 background: '#1a1a2e',
                 color: '#fff',
                 confirmButtonColor: '#FF4B2B'
             });
+
         } finally {
             // Re-enable button
             submitBtn.innerHTML = originalBtnHTML;
@@ -190,18 +241,17 @@ function setupFormSubmit() {
 }
 
 // ===== INIT ON DOM READY =====
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize CAPTCHA
-    generateCaptcha();
-
-    // Refresh CAPTCHA button
-    document.getElementById('refresh-captcha').addEventListener('click', generateCaptcha);
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 SoccorsoWeb Index inizializzato');
 
     // Get user location
     getLocation();
 
     // Setup file input
     setupFileInput();
+
+    // Setup Custom Captcha
+    setupCustomCaptcha();
 
     // Setup form submission
     setupFormSubmit();
