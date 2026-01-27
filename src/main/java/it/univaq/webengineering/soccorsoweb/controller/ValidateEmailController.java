@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ValidateEmailController {
 
-    @GetMapping("/validate-email")
-    public String validateEmailPage(@RequestParam("token") String token, Model model) {
-        model.addAttribute("token", token);
+    @GetMapping("/convalida")
+    public String convalida() {
         return "validate-email";
     }
 }
