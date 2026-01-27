@@ -16,13 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/auth/v1/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
+                const response = await login(email, password); //200, 404, 500, 400, 402...
 
                 if (response.ok) {
                     // Success handling
@@ -47,9 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 } else {
                     // Error handling
-                    const errorText = await response.text(); 
+                    const errorText = await response.text();
                     // Try to parse JSON error if possible
-                    let errorMessage = 'Credenziali non valide';
+                    let errorMessage = response.json;
                     try {
                          const errJson = JSON.parse(errorText);
                          if (errJson.message) errorMessage = errJson.message;
