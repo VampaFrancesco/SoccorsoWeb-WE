@@ -58,6 +58,7 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Logic -->
+    <script src="/js/api.js"></script>
     <script src="/js/login.js"></script>
 
 </body>

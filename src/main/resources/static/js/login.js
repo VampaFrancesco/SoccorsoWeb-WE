@@ -6,75 +6,52 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Disable button and show loading state
             const originalBtnText = loginBtn.innerHTML;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Accesso in corso...';
             loginBtn.disabled = true;
 
-            // Get form data
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             try {
-                const response = await login(email, password); //200, 404, 500, 400, 402...
+                const data = await login({ email, password });
 
-                if (response.ok) {
-                    // Success handling
-                    const data = await response.json();
-                    
-                    // Store token (if backend returns it)
-                    if (data.accessToken) {
-                        localStorage.setItem('jwt_token', data.accessToken);
-                    }
+                //il login è andato bene (status 200)
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Benvenuto!',
-                        text: 'Accesso effettuato con successo.',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        background: '#1a1a2e',
-                        color: '#fff'
-                    }).then(() => {
-                        window.location.href = '/dashboard_operatore.ftl';
-                    });
-
-                } else {
-                    // Error handling
-                    const errorText = await response.text();
-                    // Try to parse JSON error if possible
-                    let errorMessage = response.json;
-                    try {
-                         const errJson = JSON.parse(errorText);
-                         if (errJson.message) errorMessage = errJson.message;
-                    } catch(e) {}
-
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Errore di Accesso',
-                        text: errorMessage,
-                        background: '#1a1a2e',
-                        color: '#fff',
-                        confirmButtonColor: '#FF4B2B'
-                    });
-                    
-                    // Reset button
-                    loginBtn.innerHTML = originalBtnText;
-                    loginBtn.disabled = false;
+                // Salva il token
+                if (data.accessToken) {
+                    localStorage.setItem('authToken', data.accessToken); // Importante: api.js usa 'authToken' per le chiamate future
+                } else if (data.token) {
+                    localStorage.setItem('authToken', data.token);
                 }
 
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Benvenuto!',
+                    text: 'Accesso effettuato con successo.',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: '#1a1a2e',
+                    color: '#fff'
+                }).then(() => {
+                    window.location.href = '/dashboard_operatore.ftl';
+                });
+
             } catch (error) {
+                // Se api.js riceve un errore (es. 401), lancia un throw
                 console.error('Login error:', error);
+
+                const msg = error.message || 'Credenziali non valide o errore server.';
+
                 Swal.fire({
                     icon: 'error',
-                    title: 'Errore di Sistema',
-                    text: 'Impossibile contattare il server. Riprova più tardi.',
+                    title: 'Errore di Accesso',
+                    text: msg,
                     background: '#1a1a2e',
                     color: '#fff',
                     confirmButtonColor: '#FF4B2B'
                 });
-                
-                // Reset button
+
                 loginBtn.innerHTML = originalBtnText;
                 loginBtn.disabled = false;
             }
