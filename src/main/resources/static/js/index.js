@@ -8,6 +8,7 @@ function getLocation() {
     const manualContainer = document.getElementById('manual-address-field');
     const latInput = document.getElementById('latitudine');
     const lngInput = document.getElementById('longitudine');
+    const indirizzoInput = document.getElementById('indirizzo'); // ✅ Aggiungi riferimento
 
     if (!navigator.geolocation) {
         showManualEntry('Geolocalizzazione non supportata');
@@ -33,6 +34,12 @@ function getLocation() {
 
             try {
                 const address = await getAddressFromCoords(lat, lng);
+
+                // ✅ Salva indirizzo nel campo hidden
+                if (indirizzoInput) {
+                    indirizzoInput.value = address;
+                }
+
                 locationStatus.className = 'location-status success';
                 locationStatus.innerHTML = `<i class="fas fa-map-location-dot"></i><span>${address}</span>`;
 
@@ -41,8 +48,16 @@ function getLocation() {
             } catch (error) {
                 // Fallback: mostra coordinate se reverse geocoding fallisce
                 console.warn("Reverse geocoding fallito:", error);
+
+                const fallbackAddress = `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
+
+                // ✅ Salva coordinate come indirizzo
+                if (indirizzoInput) {
+                    indirizzoInput.value = fallbackAddress;
+                }
+
                 locationStatus.className = 'location-status success';
-                locationStatus.innerHTML = `<i class="fas fa-location-crosshairs"></i><span>Posizione rilevata (${lat.toFixed(4)}, ${lng.toFixed(4)})</span>`;
+                locationStatus.innerHTML = `<i class="fas fa-location-crosshairs"></i><span>${fallbackAddress}</span>`;
             }
         },
         // Errore GPS
@@ -68,7 +83,6 @@ function getLocation() {
 async function getAddressFromCoords(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
 
-    // User-Agent obbligatorio per OSM
     const response = await fetch(url, {
         headers: { 'User-Agent': 'SoccorsoWeb-Client/1.0' }
     });
@@ -114,6 +128,7 @@ function setupManualAddress() {
     const locationStatus = document.getElementById('location-status');
     const latInput = document.getElementById('latitudine');
     const lngInput = document.getElementById('longitudine');
+    const indirizzoInput = document.getElementById('indirizzo'); // ✅ Aggiungi riferimento
 
     if (!btnVerify) return;
 
@@ -137,9 +152,15 @@ function setupManualAddress() {
         try {
             const result = await getCoordsFromAddress(query);
 
-            // Successo: Aggiorna hidden inputs e UI
+            // ✅ Aggiorna coordinate E indirizzo
             latInput.value = result.lat;
             lngInput.value = result.lon;
+
+            const shortAddress = result.displayName.split(',').slice(0, 3).join(',');
+            if (indirizzoInput) {
+                indirizzoInput.value = shortAddress;
+            }
+
             locationObtained = true;
 
             locationStatus.className = 'location-status success';
@@ -214,13 +235,16 @@ function setupCustomCaptcha() {
     });
 }
 
-// ===== FORM SUBMIT =====
+/// ===== FORM SUBMIT =====
 function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
     const errorMsg = document.getElementById('captcha-error-msg');
 
-    if (!form || !submitBtn) return;
+    if (!form || !submitBtn) {
+        console.error('Form o submit button non trovato');
+        return;
+    }
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -253,15 +277,49 @@ function setupFormSubmit() {
         submitBtn.disabled = true;
 
         try {
-            const formData = new FormData(form);
-            const response = await fetch('/richiesta', { method: 'POST', body: formData });
+            // ✅ Raccolta dati con snake_case (backend format)
+            const richiestaData = {
+                descrizione: document.getElementById('descrizione')?.value || '',
+                indirizzo: document.getElementById('indirizzo')?.value || '',
+                latitudine: parseFloat(document.getElementById('latitudine')?.value) || null,
+                longitudine: parseFloat(document.getElementById('longitudine')?.value) || null,
+                nome_segnalante: document.getElementById('nomesegnalante')?.value || '',
+                email_segnalante: document.getElementById('emailsegnalante')?.value || '',
+                telefono_segnalante: document.getElementById('telefonosegnalante')?.value || null,
+                foto_url: null
+            };
 
-            if (response.ok) {
-                Swal.fire({
+            console.log('📤 Invio richiesta:', richiestaData);
+
+            // Verifica campi obbligatori
+            if (!richiestaData.nome_segnalante) {
+                throw new Error('Nome segnalante mancante');
+            }
+            if (!richiestaData.email_segnalante) {
+                throw new Error('Email segnalante mancante');
+            }
+            if (!richiestaData.indirizzo) {
+                throw new Error('Indirizzo mancante');
+            }
+
+            // ✅ Chiama API Railway
+            const response = await inserisciRichiestaSoccorso(richiestaData);
+
+            console.log('📥 Risposta:', response);
+
+            // ✅ Verifica risposta
+            if (response && response.id) {
+                // Success
+                await Swal.fire({
                     icon: 'success',
-                    title: 'Richiesta Inviata',
-                    html: '<p>Controlla la tua email per confermare.</p>',
-                    background: '#1a1a2e', color: '#fff'
+                    title: 'Richiesta Inviata!',
+                    html: `
+                        <p>La tua richiesta di soccorso è stata ricevuta.</p>
+                        <p><strong>Controlla la tua email</strong> (${richiestaData.email_segnalante}) per confermare.</p>
+                    `,
+                    background: '#1a1a2e',
+                    color: '#fff',
+                    confirmButtonColor: '#4CAF50'
                 });
 
                 // RESET Form & UI
@@ -272,7 +330,8 @@ function setupFormSubmit() {
                 isCaptchaVerified = false;
                 document.getElementById('custom-captcha').classList.remove('verified');
                 document.getElementById('captcha-token').value = "";
-                document.getElementById('captcha-checkbox').style.visibility = 'visible';
+                const checkbox = document.getElementById('captcha-checkbox');
+                if (checkbox) checkbox.style.visibility = 'visible';
 
                 // Reset File Input
                 const fileNameElement = document.getElementById('file-name');
@@ -282,22 +341,29 @@ function setupFormSubmit() {
                 getLocation();
 
             } else {
-                throw new Error('Errore server');
+                throw new Error('Risposta non valida dal server');
             }
+
         } catch (error) {
+            console.error('Submit error:', error);
+
             Swal.fire({
                 icon: 'error',
-                title: 'Errore',
-                text: 'Si è verificato un errore durante l\'invio',
+                title: 'Errore Invio',
+                text: error.message || 'Impossibile completare l\'operazione',
                 background: '#1a1a2e',
-                color: '#fff'
+                color: '#fff',
+                confirmButtonColor: '#FF4B2B'
             });
+
         } finally {
+            // Re-enable button
             submitBtn.innerHTML = originalBtnHTML;
             submitBtn.disabled = false;
         }
     });
 }
+
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {

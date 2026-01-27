@@ -71,17 +71,17 @@
                 <p>Compila il modulo per inviare una richiesta</p>
             </div>
 
-            <form id="richiestaForm" action="/richiesta" method="post" enctype="multipart/form-data">
+            <form id="richiestaForm">
 
-                <!-- Nome Segnalante -->
+                <!-- ✅ Nome Segnalante (tutto attaccato, lowercase) -->
                 <div class="form-group">
-                    <label for="nome_segnalante">
+                    <label for="nomesegnalante">
                         <i class="fas fa-user"></i> Nome Completo
                     </label>
                     <input
                             type="text"
-                            id="nome_segnalante"
-                            name="nome_segnalante"
+                            id="nomesegnalante"
+                            name="nomesegnalante"
                             class="form-control"
                             placeholder="Mario Rossi"
                             required
@@ -89,22 +89,36 @@
                     >
                 </div>
 
-                <!-- Email Segnalante -->
+                <!-- ✅ Email Segnalante (tutto attaccato, lowercase) -->
                 <div class="form-group">
-                    <label for="email_segnalante">
+                    <label for="emailsegnalante">
                         <i class="fas fa-envelope"></i> Indirizzo Email
                     </label>
                     <input
                             type="email"
-                            id="email_segnalante"
-                            name="email_segnalante"
+                            id="emailsegnalante"
+                            name="emailsegnalante"
                             class="form-control"
                             placeholder="mario.rossi@email.com"
                             required
                     >
                 </div>
 
-                <!-- Descrizione -->
+                <!-- ✅ Telefono Segnalante (tutto attaccato, lowercase, opzionale) -->
+                <div class="form-group">
+                    <label for="telefonosegnalante">
+                        <i class="fas fa-phone"></i> Telefono (opzionale)
+                    </label>
+                    <input
+                            type="tel"
+                            id="telefonosegnalante"
+                            name="telefonosegnalante"
+                            class="form-control"
+                            placeholder="333 1234567"
+                    >
+                </div>
+
+                <!-- ✅ Descrizione -->
                 <div class="form-group">
                     <label for="descrizione">
                         <i class="fas fa-message"></i> Descrizione Emergenza
@@ -120,9 +134,10 @@
                     ></textarea>
                 </div>
 
-                <!-- HIDDEN Coordinates (Filled via GPS or Manual Search) -->
+                <!-- ✅ HIDDEN Coordinates + Indirizzo (popolati da JS) -->
                 <input type="hidden" id="latitudine" name="latitudine">
                 <input type="hidden" id="longitudine" name="longitudine">
+                <input type="hidden" id="indirizzo" name="indirizzo">
 
                 <!-- Location Display & Manual Input -->
                 <div class="form-group location-display-group">
@@ -154,7 +169,7 @@
                     </div>
                 </div>
 
-                <!-- Photo Upload -->
+                <!-- Photo Upload (opzionale - per ora lasciato ma non inviato) -->
                 <div class="form-group">
                     <label for="foto">
                         <i class="fas fa-camera"></i> Allega Foto (opzionale)
@@ -228,8 +243,8 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Custom JS -->
-<script src="/js/index.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/index.js"></script>
 
 </body>
 </html>
