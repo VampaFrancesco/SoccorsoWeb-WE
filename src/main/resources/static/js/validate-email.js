@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (isSuccess) {
             console.log('✅ Convalida riuscita!');
             document.getElementById('success').classList.remove('hidden');
+
         } else {
             console.log('❌ Convalida fallita, mostro errore');
             // Estrai il messaggio di errore dalla risposta

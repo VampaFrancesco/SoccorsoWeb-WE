@@ -47,7 +47,7 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
             let errorMsg = 'Errore nella richiesta';
             let errorDetails = null;
 
-            console.error('❌ HTTP Error:', response.status, errorText);
+            console.error('HTTP Error:', response.status, errorText);
 
             try {
                 const error = JSON.parse(errorText);
@@ -80,7 +80,7 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
 
         // Se la risposta è vuota, ritorna null
         if (!responseText || responseText.trim() === '') {
-            console.warn('⚠️ Risposta vuota dal server per:', endpoint);
+            console.warn('Risposta vuota dal server per:', endpoint);
             return null;
         }
 

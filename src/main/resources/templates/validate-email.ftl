@@ -35,7 +35,7 @@
         <p>✅ La tua richiesta di soccorso è stata attivata con successo.</p>
         <p>Le squadre di soccorso sono state allertate e interverranno il prima possibile.</p>
         <div class="error-actions">
-            <a href="/" class="btn-home">
+            <a href="/home" class="btn-home">
                 <i class="fas fa-home"></i> Torna alla Home
             </a>
         </div>
