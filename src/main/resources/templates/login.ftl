@@ -50,8 +50,6 @@
                     Accedi <i class="fas fa-arrow-right"></i>
                 </button>
             </form>
-
-            <a href="#" class="forgot-password">Password dimenticata?</a>
         </div>
     </div>
 

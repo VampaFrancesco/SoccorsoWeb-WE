@@ -44,14 +44,14 @@
                 <i class="fas fa-heart-pulse"></i>
                 ${descrizione_h2!"Soccorso Web"}
             </h1>
-            <p class="subtitle">Il portale per le richieste di aiuto in caso di pericolo!
+            <p class="subtitle">Il portale per le richieste di aiuto in caso di emergenza!
                                 Compilando il modulo verrà inviata una richiesta agli operatori che
                                 organizzeranno in breve tempo un intervento</p>
 
             <div class="features">
                 <div class="feature-item">
                     <i class="fas fa-clock"></i>
-                    <span>Risposta rapida 24/7</span>
+                    <span>Intervento rapido 24/7</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-shield-halved"></i>
@@ -61,6 +61,8 @@
                     <i class="fas fa-map-location-dot"></i>
                     <span>Geolocalizzazione automatica</span>
                 </div>
+                <p class="subtitle">ATTENZIONE: dopo l'invio della richiesta verrà inoltrata una mail di conferma
+                                                all'indirizzo di posta specificato</p>
             </div>
         </div>
     </div>
