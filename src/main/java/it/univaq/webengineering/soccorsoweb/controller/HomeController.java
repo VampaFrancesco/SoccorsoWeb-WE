@@ -11,10 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-@Controller
-public class IndexController {
+@Controller("/home")
+public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping("/index")
     public String index(Model model) {
         model.addAttribute("titolo", "Home Page");
         model.addAttribute("descrizione_h2", "Soccorso Web");
