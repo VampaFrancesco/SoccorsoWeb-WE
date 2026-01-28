@@ -9,6 +9,6 @@ public class AuthController {
     // 1. Mostra la pagina di login
     @GetMapping("/login")
     public String showLoginPage() {
-        return "login";
+        return "auth/login";
     }
 }

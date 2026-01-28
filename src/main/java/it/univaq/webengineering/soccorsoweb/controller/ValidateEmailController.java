@@ -11,6 +11,6 @@ public class ValidateEmailController {
     @GetMapping("/convalida")
     public String convalida(@RequestParam(name = "token_convalida", required = false) String tokenConvalida, Model model) {
         model.addAttribute("token_convalida", tokenConvalida);
-        return "validate-email";
+        return "email/validate-email";
     }
 }
