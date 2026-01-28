@@ -45,13 +45,34 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
         if (!response.ok) {
             const errorText = await response.text();
             let errorMsg = 'Errore nella richiesta';
+            let errorDetails = null;
+
+            console.error('❌ HTTP Error:', response.status, errorText);
+
             try {
                 const error = JSON.parse(errorText);
-                errorMsg = error.detail || errorMsg;
+                errorMsg = error.detail || error.message || error.messaggio || error.error || errorMsg;
+                errorDetails = error;
             } catch (e) {
-                errorMsg = errorText || errorMsg;
+                // Se non è JSON, usa il testo direttamente
+                if (errorText && errorText.trim() !== '') {
+                    errorMsg = errorText;
+                }
             }
-            throw new Error(errorMsg);
+
+            // Aggiungi informazioni specifiche in base allo status code
+            if (response.status === 500) {
+                errorMsg = `Errore del server: ${errorMsg}`;
+            } else if (response.status === 404) {
+                errorMsg = 'Risorsa non trovata';
+            } else if (response.status === 400) {
+                errorMsg = errorMsg || 'Richiesta non valida';
+            }
+
+            const error = new Error(errorMsg);
+            error.statusCode = response.status;
+            error.details = errorDetails;
+            throw error;
         }
 
         // Leggi il testo della risposta
@@ -89,7 +110,7 @@ async function inserisciRichiestaSoccorso(richiesta) {
 //API 3 - Conferma Convalida (SPOSTATA PRIMA per logica)
 async function convalidaRichiesta(token) {
     return await apiCall('/swa/open/richieste/conferma-convalida', 'POST',
-        { tokenconvalida: token },  // ✅ CORRETTO
+        { token_convalida: token },  // ✅ CORRETTO
         false
     );
 }
