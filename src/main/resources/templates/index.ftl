@@ -37,14 +37,16 @@
 <!-- Main Container -->
 <div class="main-container">
 
-    <!-- Left Section: Description -->
+    <!-- Description -->
     <div class="description-section">
         <div class="hero-content">
             <h1>
                 <i class="fas fa-heart-pulse"></i>
                 ${descrizione_h2!"Soccorso Web"}
             </h1>
-            <p class="subtitle">${descrizione_paragrafo!"Il portale per la gestione delle missioni di soccorso."}</p>
+            <p class="subtitle">Il portale per le richieste di aiuto in caso di pericolo!
+                                Compilando il modulo verrà inviata una richiesta agli operatori che
+                                organizzeranno in breve tempo un intervento</p>
 
             <div class="features">
                 <div class="feature-item">
@@ -63,7 +65,7 @@
         </div>
     </div>
 
-    <!-- Right Section: Request Form -->
+    <!-- Request Form -->
     <div class="form-section">
         <div class="form-card">
             <div class="form-header">
@@ -73,10 +75,10 @@
 
             <form id="richiestaForm">
 
-                <!-- ✅ Nome Segnalante (tutto attaccato, lowercase) -->
+                <!-- Nome -->
                 <div class="form-group">
                     <label for="nomesegnalante">
-                        <i class="fas fa-user"></i> Nome Completo
+                        <i class="fas fa-user"></i> Nome e Cognome
                     </label>
                     <input
                             type="text"
@@ -89,10 +91,10 @@
                     >
                 </div>
 
-                <!-- ✅ Email Segnalante (tutto attaccato, lowercase) -->
+                <!-- Email -->
                 <div class="form-group">
                     <label for="emailsegnalante">
-                        <i class="fas fa-envelope"></i> Indirizzo Email
+                        <i class="fas fa-envelope"></i> Email
                     </label>
                     <input
                             type="email"
@@ -104,7 +106,7 @@
                     >
                 </div>
 
-                <!-- ✅ Telefono Segnalante (tutto attaccato, lowercase, opzionale) -->
+                <!-- Telefono -->
                 <div class="form-group">
                     <label for="telefonosegnalante">
                         <i class="fas fa-phone"></i> Telefono (opzionale)
@@ -118,7 +120,7 @@
                     >
                 </div>
 
-                <!-- ✅ Descrizione -->
+                <!-- Descrizione -->
                 <div class="form-group">
                     <label for="descrizione">
                         <i class="fas fa-message"></i> Descrizione Emergenza
@@ -134,7 +136,7 @@
                     ></textarea>
                 </div>
 
-                <!-- ✅ HIDDEN Coordinates + Indirizzo (popolati da JS) -->
+                <!-- HIDDEN Coordinates + Indirizzo -->
                 <input type="hidden" id="latitudine" name="latitudine">
                 <input type="hidden" id="longitudine" name="longitudine">
                 <input type="hidden" id="indirizzo" name="indirizzo">
@@ -143,13 +145,13 @@
                 <div class="form-group location-display-group">
                     <label><i class="fas fa-map-pin"></i> Posizione Rilevata</label>
 
-                    <!-- Status Bar: Shows GPS status or Found Address -->
+                    <!-- Status Bar -->
                     <div id="location-status" class="location-status loading">
                         <i class="fas fa-spinner fa-spin"></i>
                         <span>Rilevamento GPS in corso...</span>
                     </div>
 
-                    <!-- Manual Address Input (Hidden by default, shown on GPS error) -->
+                    <!-- Manual Address Input-->
                     <div id="manual-address-field" class="manual-input-container" style="display: none;">
                         <label for="manual-address" class="sub-label">
                             Non riusciamo a trovarti. Scrivi il tuo indirizzo:
@@ -165,11 +167,11 @@
                                 <i class="fas fa-magnifying-glass-location"></i> Cerca
                             </button>
                         </div>
-                        <p class="manual-note">Inserisci Via e Città per ottenere le coordinate</p>
+                        <p class="manual-note">Inserisci Via e Città</p>
                     </div>
                 </div>
 
-                <!-- Photo Upload (opzionale - per ora lasciato ma non inviato) -->
+                <!-- Photo Upload -->
                 <div class="form-group">
                     <label for="foto">
                         <i class="fas fa-camera"></i> Allega Foto (opzionale)
@@ -189,7 +191,7 @@
                     </div>
                 </div>
 
-                <!-- CAPTCHA CUSTOM (Light Version) -->
+                <!-- CAPTCHA CUSTOM -->
                 <div class="form-group captcha-group">
                     <label>
                         <i class="fas fa-shield-halved"></i> Verifica di Sicurezza
@@ -236,7 +238,6 @@
 <footer class="footer">
     <p>
         2026 SoccorsoWeb | Sviluppato per emergenze
-        <span class="footer-separator">•</span>
     </p>
 </footer>
 

@@ -2,13 +2,13 @@
 let locationObtained = false;
 let isCaptchaVerified = false;
 
-// ===== GEOLOCATION LOGIC (With Address Conversion) =====
+// ===== GEOLOCATION LOGIC =====
 function getLocation() {
     const locationStatus = document.getElementById('location-status');
     const manualContainer = document.getElementById('manual-address-field');
     const latInput = document.getElementById('latitudine');
     const lngInput = document.getElementById('longitudine');
-    const indirizzoInput = document.getElementById('indirizzo'); // ✅ Aggiungi riferimento
+    const indirizzoInput = document.getElementById('indirizzo'); // Aggiungi riferimento
 
     if (!navigator.geolocation) {
         showManualEntry('Geolocalizzazione non supportata');
@@ -35,7 +35,7 @@ function getLocation() {
             try {
                 const address = await getAddressFromCoords(lat, lng);
 
-                // ✅ Salva indirizzo nel campo hidden
+                // Salva indirizzo nel campo hidden
                 if (indirizzoInput) {
                     indirizzoInput.value = address;
                 }
@@ -51,7 +51,7 @@ function getLocation() {
 
                 const fallbackAddress = `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
 
-                // ✅ Salva coordinate come indirizzo
+                // Salva coordinate come indirizzo
                 if (indirizzoInput) {
                     indirizzoInput.value = fallbackAddress;
                 }
@@ -152,7 +152,7 @@ function setupManualAddress() {
         try {
             const result = await getCoordsFromAddress(query);
 
-            // ✅ Aggiorna coordinate E indirizzo
+            // Aggiorna coordinate E indirizzo
             latInput.value = result.lat;
             lngInput.value = result.lon;
 
@@ -277,7 +277,7 @@ function setupFormSubmit() {
         submitBtn.disabled = true;
 
         try {
-            // ✅ Raccolta dati con snake_case (backend format)
+            // Raccolta dati con snake_case
             const richiestaData = {
                 descrizione: document.getElementById('descrizione')?.value || '',
                 indirizzo: document.getElementById('indirizzo')?.value || '',
@@ -302,12 +302,12 @@ function setupFormSubmit() {
                 throw new Error('Indirizzo mancante');
             }
 
-            // ✅ Chiama API Railway
+            // Chiama API Railway
             const response = await inserisciRichiestaSoccorso(richiestaData);
 
             console.log('📥 Risposta:', response);
 
-            // ✅ Verifica risposta
+            // Verifica risposta
             if (response && response.id) {
                 // Success
                 await Swal.fire({
@@ -336,8 +336,6 @@ function setupFormSubmit() {
                 // Reset File Input
                 const fileNameElement = document.getElementById('file-name');
                 if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
-
-                // Re-get Location
                 getLocation();
 
             } else {
@@ -373,4 +371,29 @@ document.addEventListener('DOMContentLoaded', function() {
     setupCustomCaptcha();
     setupManualAddress();
     setupFormSubmit();
+
+    // ===== SMART NAVIGATION BAR =====
+    let lastScrollTop = 0;
+    const topNav = document.querySelector('.top-nav');
+
+    window.addEventListener('scroll', function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Se siamo all'inizio della pagina, mostra sempre la nav
+        if (scrollTop <= 0) {
+            topNav.classList.remove('nav-hidden');
+            lastScrollTop = 0;
+            return;
+        }
+
+        if (scrollTop > lastScrollTop) {
+            // SCROLL VERSO IL BASSO -> Nascondi
+            topNav.classList.add('nav-hidden');
+        } else {
+            // SCROLL VERSO L'ALTO -> Mostra
+            topNav.classList.remove('nav-hidden');
+        }
+
+        lastScrollTop = scrollTop;
+    });
 });
