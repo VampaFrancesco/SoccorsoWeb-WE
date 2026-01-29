@@ -1,22 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Configurazione Polling
-    const POLLING_INTERVAL = 10000; // Controlla ogni 10 secondi
+    // ===== 1. USER INFO FALLBACK (Opzionale) =====
+    // Se Freemarker non ha caricato il nome (es. backend stateless), prova dal LocalStorage
+    const nameDisplay = document.getElementById('user-name-display');
+    const storedToken = localStorage.getItem('jwt_token'); // o authToken
+
+    // Se c'è un token ma il nome visualizzato è quello di default ("Amministratore")
+    if (storedToken && nameDisplay && nameDisplay.textContent.trim() === 'Amministratore') {
+        // Esempio: se hai salvato anche il nome nel localStorage
+        const storedName = localStorage.getItem('user_name');
+        if (storedName) {
+            nameDisplay.textContent = storedName;
+        }
+    }
+
+    // ===== 2. POLLING TICKER RICHIESTE =====
+    const POLLING_INTERVAL = 10000; // 10 secondi
     const tickerContent = document.getElementById('ticker-content');
     const reqBadge = document.getElementById('req-count');
 
-    // Funzione per aggiornare il Ticker
     async function updateTicker() {
         try {
-            // chiamata API, es: visualizzaRichiesteFiltrate('APERTA', 0, 5)
+            // Sostituisci con la chiamata reale quando il backend è pronto:
             // const response = await visualizzaRichiesteFiltrate('APERTA', 0, 5);
 
-            // SIMULAZIONE DATI (la chiamata sopra quando pronta)
+            // --- INIZIO SIMULAZIONE DATI ---
             const mockData = [
-                { id: 101, descrizione: "Incidente stradale Via Roma", data: "10:45" },
-                { id: 102, descrizione: "Malore in piazza", data: "10:50" }
+                { id: 204, descrizione: "Richiesta Soccorso Alpino", data: new Date().toLocaleTimeString().slice(0,5) },
+                { id: 205, descrizione: "Incidente A24 km 30", data: new Date().toLocaleTimeString().slice(0,5) }
             ];
-            const response = mockData; // Fine simulazione
+            const response = mockData; // Usa 'response = []' per testare nessun dato
+            // --- FINE SIMULAZIONE ---
 
             if (response && response.length > 0) {
                 let html = '';
@@ -24,31 +38,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     html += `
                         <span>
                             <span class="ticker-new">NUOVA [${req.data}]</span> 
-                            Richiesta #${req.id}: ${req.descrizione}
+                            #${req.id}: ${req.descrizione}
                         </span>
                     `;
                 });
 
-                // Aggiorna il testo scorrevole
                 tickerContent.innerHTML = html;
 
-                // Aggiorna il badge notifiche sulla card
+                // Aggiorna badge notifiche
                 if(reqBadge) {
                     reqBadge.textContent = response.length;
-                    reqBadge.style.opacity = '1'; // Rendilo visibile se ci sono richieste
+                    reqBadge.style.opacity = '1';
                 }
             } else {
-                tickerContent.innerHTML = '<span>Nessuna nuova richiesta al momento.</span>';
+                tickerContent.innerHTML = '<span class="placeholder-text"><i class="fas fa-check-circle"></i> Nessuna nuova richiesta da gestire.</span>';
                 if(reqBadge) reqBadge.style.opacity = '0';
             }
 
         } catch (error) {
             console.error('Errore aggiornamento ticker:', error);
-            tickerContent.innerHTML = '<span style="color:#ff6b6b">Errore connessione server...</span>';
+            // Non mostrare errore all'utente, lascia l'ultimo stato valido o placeholder
         }
     }
 
-    // Avvia il polling
-    updateTicker(); // Prima chiamata immediata
-    setInterval(updateTicker, POLLING_INTERVAL); // Ripeti
+    // Avvio immediato e poi ciclico
+    updateTicker();
+    setInterval(updateTicker, POLLING_INTERVAL);
 });

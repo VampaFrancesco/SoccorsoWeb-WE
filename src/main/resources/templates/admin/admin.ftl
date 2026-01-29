@@ -26,8 +26,15 @@
         <span>AdminPanel</span>
     </div>
     <div class="user-menu">
-        <span>Benvenuto, Amministratore</span>
-        <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Esci</a>
+        <!-- DINAMICO: Freemarker stampa il nome, JS può sovrascriverlo -->
+        <span class="welcome-text">
+                Benvenuto, <strong id="user-name-display">${nomeUtente!"Amministratore"}</strong>
+                <span class="user-role badge" id="user-role-display">${ruolo!"Staff"}</span>
+            </span>
+
+        <a href="/logout" class="btn-logout" title="Disconnetti">
+            <i class="fas fa-sign-out-alt"></i> <span>Esci</span>
+        </a>
     </div>
 </nav>
 
@@ -37,7 +44,7 @@
     <div class="ticker">
         <!-- Il JS riempirà questo div dinamicamente -->
         <div class="ticker-item" id="ticker-content">
-            <span class="placeholder-text">In attesa di aggiornamenti...</span>
+            <span class="placeholder-text"><i class="fas fa-satellite-dish"></i> In attesa di segnale...</span>
         </div>
     </div>
 </div>
@@ -47,7 +54,7 @@
 
     <header class="page-header">
         <h1>Panoramica Gestionale</h1>
-        <p>Seleziona un modulo per iniziare a lavorare</p>
+        <p>Pannello di controllo operativo unificato</p>
     </header>
 
     <div class="cards-grid">

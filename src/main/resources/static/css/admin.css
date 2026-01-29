@@ -21,7 +21,10 @@ body {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: var(--light);
     min-height: 100vh;
-    overflow-x: hidden;
+    /* --- FIX SCROLL --- */
+    overflow-y: auto;    /* Abilita scroll verticale */
+    overflow-x: hidden;  /* Disabilita solo orizzontale */
+    position: relative;  /* Necessario per z-index */
 }
 
 /* ===== BACKGROUND ===== */
@@ -29,8 +32,9 @@ body {
     position: fixed;
     border-radius: 50%;
     filter: blur(80px);
-    z-index: -1;
+    z-index: -1; /* Manda sullo sfondo */
     opacity: 0.4;
+    pointer-events: none; /* Il mouse passa attraverso */
 }
 .circle-1 { width: 400px; height: 400px; background: #7f00ff; top: -100px; left: -100px; }
 .circle-2 { width: 500px; height: 500px; background: #e100ff; bottom: -100px; right: -100px; }
@@ -40,7 +44,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px;
+    padding: 15px 40px;
     background: rgba(26, 26, 46, 0.9);
     border-bottom: 1px solid var(--glass-border);
     backdrop-filter: blur(10px);
@@ -52,16 +56,39 @@ body {
 .logo { font-size: 1.4rem; font-weight: 700; color: #fff; display: flex; gap: 10px; align-items: center; }
 .logo i { color: #e100ff; }
 
-.user-menu { display: flex; gap: 20px; align-items: center; font-size: 0.9rem; }
+.user-menu { display: flex; gap: 20px; align-items: center; }
+
+.welcome-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.user-role.badge {
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
 .btn-logout {
     color: #ff4b2b;
     text-decoration: none;
     border: 1px solid rgba(255, 75, 43, 0.3);
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 8px 15px;
+    border-radius: 8px;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
 }
-.btn-logout:hover { background: rgba(255, 75, 43, 0.1); }
+.btn-logout:hover { background: rgba(255, 75, 43, 0.1); border-color: #ff4b2b; }
 
 /* ===== TICKER BANNER ===== */
 .ticker-wrap {
@@ -72,6 +99,8 @@ body {
     height: 40px;
     align-items: center;
     overflow: hidden;
+    position: relative; /* Per sicurezza */
+    z-index: 10;
 }
 
 .ticker-heading {
@@ -102,6 +131,7 @@ body {
 
 .ticker-item span { margin-right: 40px; }
 .ticker-new { color: #84fab0; font-weight: 600; margin-right: 5px; }
+.placeholder-text { opacity: 0.5; font-style: italic; }
 
 @keyframes ticker {
     0% { transform: translate3d(0, 0, 0); }
@@ -112,11 +142,11 @@ body {
 .dashboard-container {
     max-width: 1200px;
     margin: 40px auto;
-    padding: 0 20px;
+    padding: 0 20px 80px 20px; /* Padding inferiore aumentato per evitare tagli */
 }
 
 .page-header { margin-bottom: 40px; }
-.page-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+.page-header h1 { font-size: 2.5rem; margin-bottom: 10px; background: linear-gradient(to right, #fff, #bbb); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
 .page-header p { color: rgba(255,255,255,0.6); }
 
 /* ===== CARDS GRID ===== */
@@ -139,6 +169,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    z-index: 1; /* Assicura che le card siano sopra lo sfondo */
 }
 
 .card:hover {
@@ -146,6 +177,7 @@ body {
     background: var(--card-hover);
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     border-color: rgba(255,255,255,0.3);
+    z-index: 2; /* Porta in primo piano su hover */
 }
 
 .card-icon {
@@ -163,15 +195,15 @@ body {
 .card p { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
 
 /* Icon Colors */
-.color-1 { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); } /* Profilo */
-.color-2 { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #1a1a2e; } /* Registrazione */
-.color-3 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #1a1a2e;} /* Richieste */
-.color-4 { background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%); } /* Missioni */
-.color-5 { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); color: #1a1a2e;} /* Mezzi */
-.color-6 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); } /* Materiali */
-.color-7 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #1a1a2e; } /* Operatori */
+.color-1 { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+.color-2 { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #1a1a2e; }
+.color-3 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #1a1a2e;}
+.color-4 { background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%); }
+.color-5 { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); color: #1a1a2e;}
+.color-6 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.color-7 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #1a1a2e; }
 
-/* Notification Badge for Richieste */
+/* Notification Badge */
 .notification-badge {
     position: absolute;
     top: 20px;
@@ -186,11 +218,11 @@ body {
     opacity: 0;
     transition: opacity 0.3s;
 }
-
 .card:hover .notification-badge { opacity: 1; }
 
 /* Responsive */
 @media (max-width: 768px) {
     .top-nav { padding: 15px 20px; }
     .page-header h1 { font-size: 2rem; }
+    .welcome-text strong { display: none; }
 }
