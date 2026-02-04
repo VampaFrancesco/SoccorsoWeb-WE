@@ -184,3 +184,42 @@ async function aggiornaMissione(id, data) {
 async function valutaRichiesta(id, valutazione) {
     return await apiCall(`/swa/api/richieste/${id}/valutazione?valutazione=${valutazione}`, 'PATCH', null, true);
 }
+
+// PROFILO
+// API 18 - Info Utente Corrente
+async function getMyProfile() {
+    return await apiCall('/swa/api/operatori/me', 'GET', null, true);
+}
+// API 19 - Aggiorna Profilo
+async function updateMyProfile(datiAggiornati) {
+    return await apiCall('/swa/api/operatori/me', 'PATCH', datiAggiornati, true);
+}
+
+// ADMIN
+// API 20 - Mezzi
+async function getTuttiMezzi() {
+    return await apiCall('/swa/api/mezzi', 'GET', null, true);
+}
+
+async function creaMezzo(mezzo) {
+    return await apiCall('/swa/api/mezzi', 'POST', mezzo, true);
+}
+
+async function eliminaMezzo(id) {
+    return await apiCall(`/swa/api/mezzi/${id}`, 'DELETE', null, true);
+}
+
+// API 21 - Materiali
+async function getTuttiMateriali() {
+    return await apiCall('/swa/api/materiali', 'GET', null, true);
+}
+
+// API 22 - Gestione Utenti
+async function registraNuovoUtente(datiUtente) {
+    return await apiCall('/swa/open/auth/registrazione', 'POST', datiUtente, true);
+}
+
+async function eliminaUtente(id) {
+    return await apiCall(`/swa/api/operatori/${id}`, 'DELETE', null, true);
+}
+
