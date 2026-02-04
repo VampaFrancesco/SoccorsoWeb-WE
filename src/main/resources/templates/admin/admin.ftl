@@ -3,131 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - SoccorsoWeb</title>
+    <title>Control Room - SoccorsoWeb</title>
 
-    <!-- Fonts & Icons -->
+    <!-- Fonts: Inter per leggibilità tecnica -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
 
-<!-- Background -->
-<div class="bg-circle circle-1"></div>
-<div class="bg-circle circle-2"></div>
-
-<!-- Top Bar with User Info -->
-<nav class="top-nav">
-    <div class="logo">
-        <i class="fas fa-shield-halved"></i>
-        <span>AdminPanel</span>
+<!-- SIDEBAR DI NAVIGAZIONE -->
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-icon"><i class="fas fa-star-of-life"></i></div>
+        <span class="logo-text">SoccorsoWeb</span>
     </div>
-    <div class="user-menu">
-        <!-- DINAMICO: Freemarker stampa il nome, JS può sovrascriverlo -->
-        <span class="welcome-text">
-                Benvenuto, <strong id="user-name-display">${nomeUtente!"Amministratore"}</strong>
-                <span class="user-role badge" id="user-role-display">${ruolo!"Staff"}</span>
-            </span>
 
-        <a href="/logout" class="btn-logout" title="Disconnetti">
-            <i class="fas fa-sign-out-alt"></i> <span>Esci</span>
-        </a>
-    </div>
-</nav>
+    <ul class="nav-links">
+        <li class="active"><a href="/admin"><i class="fas fa-grid-2"></i> Dashboard</a></li>
+        <li><a href="/richieste"><i class="fas fa-bell"></i> Richieste <span class="badge-mini" id="sidebar-badge">0</span></a></li>
+        <li><a href="/missioni"><i class="fas fa-map-location-dot"></i> Missioni</a></li>
+        <li><a href="/operatori"><i class="fas fa-users"></i> Operatori</a></li>
+        <li><a href="/mezzi"><i class="fas fa-ambulance"></i> Mezzi</a></li>
+        <li><a href="/materiali"><i class="fas fa-box-open"></i> Materiali</a></li>
+        <li class="spacer"></li>
+        <li><a href="/registrazione"><i class="fas fa-user-plus"></i> Nuovi Utenti</a></li>
+        <li><a href="/profilo"><i class="fas fa-cog"></i> Impostazioni</a></li>
+    </ul>
 
-<!-- Real-time Ticker Banner -->
-<div class="ticker-wrap">
-    <div class="ticker-heading">Nuove Richieste:</div>
-    <div class="ticker">
-        <!-- Il JS riempirà questo div dinamicamente -->
-        <div class="ticker-item" id="ticker-content">
-            <span class="placeholder-text"><i class="fas fa-satellite-dish"></i> In attesa di segnale...</span>
+    <div class="user-profile">
+        <div class="user-avatar">${nomeUtente?substring(0,1)!"A"}</div>
+        <div class="user-details">
+            <span class="name">${nomeUtente!"Admin"}</span>
+            <span class="role">Amministratore</span>
         </div>
+        <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
     </div>
-</div>
+</aside>
 
-<!-- Main Content -->
-<div class="dashboard-container">
+<!-- CONTENUTO PRINCIPALE -->
+<main class="main-content">
 
-    <header class="page-header">
-        <h1>Panoramica Gestionale</h1>
-        <p>Pannello di controllo operativo unificato</p>
+    <header class="top-header">
+        <div class="header-title">
+            <h1>Panoramica Operativa</h1>
+            <p id="current-date">Caricamento data...</p>
+        </div>
+        <div class="header-status">
+            <span class="status-indicator online"><i class="fas fa-circle"></i> Sistema Operativo</span>
+        </div>
     </header>
 
-    <div class="cards-grid">
+    <!-- GRIGLIA DASHBOARD -->
+    <div class="dashboard-grid">
 
-        <!-- Card 1: Profilo -->
-        <a href="/profilo" class="card">
-            <div class="card-icon color-1"><i class="fas fa-user-gear"></i></div>
-            <div class="card-content">
-                <h3>Profilo</h3>
-                <p>Gestisci i tuoi dati personali e credenziali.</p>
+        <!-- WIDGET 1: STATO RICHIESTE -->
+        <div class="widget widget-requests">
+            <div class="widget-header">
+                <h3><i class="fas fa-exclamation-circle text-danger"></i> Richieste in arrivo</h3>
+                <a href="/richieste" class="btn-text">Vedi tutte</a>
             </div>
-        </a>
+            <div class="requests-feed" id="requests-feed">
+                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+            </div>
+        </div>
 
-        <!-- Card 2: Registrazione -->
-        <a href="/registrazione" class="card">
-            <div class="card-icon color-2"><i class="fas fa-user-plus"></i></div>
-            <div class="card-content">
-                <h3>Registrazione</h3>
-                <p>Crea nuovi account per operatori e staff.</p>
+        <!-- WIDGET 2: MISSIONI ATTIVE -->
+        <div class="widget widget-stat">
+            <div class="stat-icon bg-blue"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">3</span>
+                <span class="stat-label">Missioni in corso</span>
             </div>
-        </a>
+            <a href="/missioni" class="overlay-link"></a>
+        </div>
 
-        <!-- Card 3: Richieste -->
-        <a href="/richieste" class="card">
-            <div class="card-icon color-3"><i class="fas fa-bell"></i></div>
-            <div class="card-content">
-                <h3>Richieste</h3>
-                <p>Visualizza e smista le richieste di soccorso.</p>
+        <!-- WIDGET 3: OPERATORI DISPONIBILI -->
+        <div class="widget widget-stat">
+            <div class="stat-icon bg-green"><i class="fas fa-user-clock"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">12</span>
+                <span class="stat-label">Operatori Pronti</span>
             </div>
-            <span class="notification-badge" id="req-count">0</span>
-        </a>
+            <a href="/operatori" class="overlay-link"></a>
+        </div>
 
-        <!-- Card 4: Missioni -->
-        <a href="/missioni" class="card">
-            <div class="card-icon color-4"><i class="fas fa-map-location-dot"></i></div>
-            <div class="card-content">
-                <h3>Missioni</h3>
-                <p>Monitora lo stato delle missioni attive.</p>
+        <!-- WIDGET 5: PROFILO -->
+        <div class="widget widget-stat">
+            <div class="stat-icon bg-orange"><i class="fas fa-user"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">Profilo</span>
             </div>
-        </a>
+            <a href="/mezzi" class="overlay-link"></a>
+        </div>
 
-        <!-- Card 5: Mezzi -->
-        <a href="/mezzi" class="card">
-            <div class="card-icon color-5"><i class="fas fa-ambulance"></i></div>
-            <div class="card-content">
-                <h3>Mezzi</h3>
-                <p>Gestione flotta e manutenzione veicoli.</p>
+        <!-- WIDGET 5: AZIONI RAPIDE -->
+        <div class="widget widget-actions">
+            <h3>Azioni Rapide</h3>
+            <div class="action-buttons">
+                <a href="/registrazione" class="btn-quick"><i class="fas fa-user-plus"></i> Registra Operatore</a>
+                <a href="/materiali" class="btn-quick"><i class="fas fa-notes-medical"></i> Check Materiali</a>
             </div>
-        </a>
+        </div>
 
-        <!-- Card 6: Materiali -->
-        <a href="/materiali" class="card">
-            <div class="card-icon color-6"><i class="fas fa-kit-medical"></i></div>
-            <div class="card-content">
-                <h3>Materiali</h3>
-                <p>Inventario scorte e attrezzature mediche.</p>
+        <!-- WIDGET 5: MEZZI -->
+        <div class="widget widget-stat">
+            <div class="stat-icon bg-orange"><i class="fas fa-ambulance"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">8/10</span>
+                <span class="stat-label">Mezzi</span>
             </div>
-        </a>
-
-        <!-- Card 7: Operatori -->
-        <a href="/operatori" class="card">
-            <div class="card-icon color-7"><i class="fas fa-users-viewfinder"></i></div>
-            <div class="card-content">
-                <h3>Operatori</h3>
-                <p>Turni, disponibilità e anagrafica staff.</p>
-            </div>
-        </a>
+            <a href="/mezzi" class="overlay-link"></a>
+        </div>
 
     </div>
-</div>
+</main>
 
-<!-- Scripts -->
-<script src="/js/api.js"></script>
-<script src="/js/admin.js"></script>
-</body>
-</html>
+<script src="/js/api.js
