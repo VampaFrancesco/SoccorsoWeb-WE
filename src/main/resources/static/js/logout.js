@@ -1,24 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const statusMsg = document.getElementById('status-msg');
+    const progressBar = document.getElementById('progress-bar');
+    const statusText = document.getElementById('status-text');
+    let width = 0;
 
-    // 1. Piccola pausa per dare feedback visivo all'utente
-    setTimeout(() => {
-        statusMsg.innerText = "Rimozione token di sicurezza...";
+    // 1. Pulizia immediata dei dati sensibili
+    // Rimuove token e dati salvati durante il login
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userRoles');
+    localStorage.removeItem('user');
+    sessionStorage.clear();
 
-        // 2. Pulizia totale delle memorie del browser
-        // Questo rimuove 'authToken' e 'user' impostati nel tuo login.js
-        localStorage.clear();
-        sessionStorage.clear();
+    // 2. Animazione della barra di progresso
+    const interval = setInterval(() => {
+        if (width >= 100) {
+            clearInterval(interval);
+            statusText.innerText = "Sessione chiusa. A presto!";
 
-        statusMsg.innerText = "Reindirizzamento...";
+            // Reindirizzamento finale
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 500);
+        } else {
+            width += 2;
+            progressBar.style.width = width + '%';
 
-        // 3. Opzionale: Chiamata al backend se hai una sessione server-side da invalidare
-        // fetch('/logout-server-endpoint', { method: 'POST' });
-
-        // 4. Torna alla login dopo che la barra di progresso è terminata (circa 2s)
-        setTimeout(() => {
-            window.location.href = '/login';
-        }, 1200);
-
-    }, 500);
+            if(width === 40) statusText.innerText = "Pulizia cache locale...";
+            if(width === 80) statusText.innerText = "Finalizzazione...";
+        }
+    }, 30);
 });

@@ -4,25 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logout - SoccorsoWeb</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/logout.css">
 </head>
 <body>
-<div class="logout-container">
-    <div class="logout-box">
-        <div class="icon-wrapper">
-            <i class="fas fa-sign-out-alt fa-fade"></i>
-        </div>
-        <h1>Disconnessione...</h1>
-        <p>Stiamo chiudendo la tua sessione in sicurezza.</p>
+<div class="bg-circle circle-1"></div>
+<div class="bg-circle circle-2"></div>
 
-        <div class="loader-bar">
-            <div class="progress"></div>
+<div class="login-container">
+    <div class="login-card logout-card">
+        <div class="login-header">
+            <div class="logout-icon-wrapper">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2>Disconnessione</h2>
+            <p id="status-text">Chiusura sessione in corso...</p>
         </div>
 
-        <div class="status-text" id="status-msg">Pulizia dati locali...</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="logout-footer">
+            <p>Sicurezza dei dati garantita</p>
+        </div>
     </div>
 </div>
 
