@@ -11,4 +11,10 @@ public class AuthController {
     public String showLoginPage() {
         return "auth/login";
     }
+
+    @GetMapping("/logout")
+    public String showLogoutPage() {
+
+        return "auth/logout";
+    }
 }
