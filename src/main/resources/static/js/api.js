@@ -38,7 +38,7 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
         if (response.status === 401) {
             // token_autenticazione scaduto o non valido
             localStorage.clear();
-            window.location.href = 'login.html';
+            window.location.href = '/login';
             return null;
         }
 
@@ -94,9 +94,35 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
 
 //API 1a
 async function login(credenziali) {
-    return await apiCall('/swa/open/auth/login', 'POST', credenziali, false);
-}
+    try {
+        const response = await fetch(`${API_BASE_URL}/swa/open/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(credenziali)
+        });
 
+        // Leggi il body della risposta
+        let data = null;
+        const contentType = response.headers.get('content-type');
+
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        }
+
+        // Ritorna un oggetto che include lo status code
+        return {
+            status: response.status,
+            ok: response.ok,
+            ...data
+        };
+
+    } catch (error) {
+        console.error('Errore nella chiamata login:', error);
+        throw error;
+    }
+}
 //API 2a
 async function logout() {
     return await apiCall('/swa/open/auth/logout', 'POST', null, false);
@@ -216,9 +242,10 @@ async function getTuttiMateriali() {
 
 // API 22 - Gestione Utenti
 async function registraNuovoUtente(datiUtente) {
-    return await apiCall('/swa/open/auth/registrazione', 'POST', datiUtente, true);
+    return await apiCall('/swa/api/auth/registrazione', 'POST', datiUtente, true);
 }
 
+// API 23
 async function eliminaUtente(id) {
     return await apiCall(`/swa/api/operatori/${id}`, 'DELETE', null, true);
 }

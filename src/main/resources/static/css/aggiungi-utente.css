@@ -1,0 +1,101 @@
+/* Importa le variabili dal file di riferimento */
+@import url('admin.css');
+
+.form-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.tech-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.input-group input,
+.input-group select {
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    color: var(--text-primary);
+    font-family: var(--font-stack);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input-with-action {
+    display: flex;
+    gap: 10px;
+}
+
+.input-with-action input {
+    flex-grow: 1;
+}
+
+.btn-action-small {
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    color: var(--accent-primary);
+    padding: 0 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-action-small:hover {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .form-grid-layout { grid-template-columns: 1fr; }
+}
