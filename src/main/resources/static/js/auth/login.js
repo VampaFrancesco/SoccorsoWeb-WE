@@ -3,6 +3,12 @@ function determineRedirectUrl(data) {
     console.log('🔍 DEBUG REDIRECT:');
     console.log('data completo:', data);
     console.log('data.roles:', data.roles);
+    console.log('data.first_attempt:', data.first_attempt);
+
+    if (data.first_attempt) {
+        console.log('✅ Primo accesso rilevato. Redirect a: /auth/cambia-password');
+        return '/auth/cambia-password';
+    }
 
     if (data.roles) {
         data.roles.forEach((role, index) => {
@@ -115,16 +121,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     nome: data.nome,
                     cognome: data.cognome,
                     telefono: data.telefono,
-                    disponibile: data.disponibile
+                    disponibile: data.disponibile,
+                    roles: data.roles,
+                    first_attempt: data.first_attempt // 🆕 Salva lo stato del primo accesso
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
 
+                // Messaggio personalizzato per il primo accesso
+                const welcomeMessage = data.first_attempt
+                    ? `Benvenuto ${data.nome || ''}! Ti chiediamo di cambiare la password.`
+                    : `Accesso effettuato con successo. Benvenuto ${data.nome || ''}!`;
+
                 // Mostra messaggio di successo
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Benvenuto!',
-                    text: `Accesso effettuato con successo. Benvenuto ${data.nome || ''}!`,
-                    timer: 1500,
+                    icon: data.first_attempt ? 'info' : 'success',
+                    title: data.first_attempt ? 'Primo Accesso' : 'Benvenuto!',
+                    text: welcomeMessage,
+                    timer: data.first_attempt ? 2500 : 1500,
                     showConfirmButton: false,
                     background: '#1a1a2e',
                     color: '#fff'

@@ -3,15 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('status-text');
     let width = 0;
 
-    // 1. Pulizia immediata dei dati sensibili
-    // Rimuove token e dati salvati durante il login
+    // Pulizia immediata dei dati sensibili
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userRoles');
     localStorage.removeItem('user');
     sessionStorage.clear();
 
-    // 2. Animazione della barra di progresso
+    // Animazione della barra di progresso
     const interval = setInterval(() => {
         if (width >= 100) {
             clearInterval(interval);

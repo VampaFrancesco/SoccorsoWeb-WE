@@ -56,6 +56,7 @@
         <#nested>
     </main>
 
+    <script src="/js/auth-guard.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/admin/admin.js"></script>
     </body>

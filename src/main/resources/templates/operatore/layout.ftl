@@ -29,6 +29,7 @@
         </div>
     </div>
 
+    <script src="/js/auth-guard.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/operatore_comune.js"></script>
     </body>

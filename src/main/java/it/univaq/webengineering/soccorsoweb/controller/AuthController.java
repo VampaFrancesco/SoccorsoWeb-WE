@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AuthController {
 
-    // 1. Mostra la pagina di login
     @GetMapping("/login")
     public String showLoginPage() {
         return "auth/login";
@@ -14,7 +13,12 @@ public class AuthController {
 
     @GetMapping("/logout")
     public String showLogoutPage() {
-
         return "auth/logout";
     }
+
+    @GetMapping("/auth/cambia-password")
+    public String showChangePasswordPage() {
+        return "auth/cambia_password";
+    }
 }
+

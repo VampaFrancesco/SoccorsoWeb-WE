@@ -55,6 +55,23 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Check per errori di sessione -->
+    <script>
+        // Controlla se l'utente è stato reindirizzato per problemi di sessione
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === 'session') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Accesso Richiesto',
+                text: 'Devi effettuare il login per accedere a questa sezione.',
+                background: '#1a1a2e',
+                color: '#fff',
+                confirmButtonColor: '#FF4B2B'
+            });
+        }
+    </script>
+
     <!-- Logic -->
     <script src="/js/api.js"></script>
     <script src="/js/auth/login.js"></script>
