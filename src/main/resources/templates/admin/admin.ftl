@@ -28,7 +28,7 @@
         <li><a href="/materiali"><i class="fas fa-box-open"></i> Materiali</a></li>
         <li class="spacer"></li>
         <li><a href="/registrazione"><i class="fas fa-user-plus"></i> Nuovi Utenti</a></li>
-        <li><a href="/admin/profilo"><i class="fas fa-cog"></i> Impostazioni</a></li>
+        <li><a href="/admin/profilo"><i class="fas fa-cog"></i> Profilo</a></li>
     </ul>
 
     <div class="user-profile">
@@ -92,7 +92,7 @@
             <div class="stat-icon bg-purple"><i class="fas fa-user"></i></div>
             <div class="stat-info">
                 <span class="stat-value">Tu</span>
-                <span class="stat-label">Profilo & Impostazioni</span>
+                <span class="stat-label">Profilo</span>
             </div>
             <a href="/admin/profilo" class="overlay-link"></a>
         </div>
@@ -113,7 +113,7 @@
                 <span class="stat-value" id="stat-mezzi">--</span>
                 <span class="stat-label">Mezzi Disponibili</span>
             </div>
-            <a href="/mezzi" class="overlay-link"></a>
+            <a href="/admin/mezzi" class="overlay-link"></a>
         </div>
 
     </div>

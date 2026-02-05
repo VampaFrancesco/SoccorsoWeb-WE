@@ -250,3 +250,8 @@ async function eliminaUtente(id) {
     return await apiCall(`/swa/api/operatori/${id}`, 'DELETE', null, true);
 }
 
+// API 24 - Storico Missioni di un Mezzo
+async function getMissioniMezzo(id) {
+    return await apiCall(`/swa/api/mezzi/${id}/missioni`, 'GET', null, true);
+}
+
