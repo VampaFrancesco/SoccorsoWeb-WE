@@ -275,3 +275,7 @@ async function changeUserPassword(userId, newPassword) {
         new_password: newPassword
     }, true);
 }
+
+async function changeDisponibilitaMezzo(id){
+    return await apiCall('/swa/api/mezzi/{id}/disponibilita', 'PATCH', null, true);
+}

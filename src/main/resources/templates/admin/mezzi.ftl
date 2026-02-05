@@ -46,8 +46,10 @@
             <h1>Gestione Mezzi</h1>
             <p>Monitoraggio dei mezzi di soccorso</p>
         </div>
-        <button class="btn-primary" onclick="openModal('modal-add')">
-            <i class="fas fa-plus"></i> Nuovo Mezzo
+        <!-- PULSANTE MODERNO AGGIORNATO -->
+        <button class="btn-modern-add" onclick="openModal('modal-add')">
+            <i class="fas fa-plus-circle fa-lg"></i>
+            <span>Nuovo Mezzo</span>
         </button>
     </header>
 

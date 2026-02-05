@@ -57,12 +57,19 @@ function createCardHTML(mezzo) {
     // Classe CSS dinamica in base alla disponibilità
     div.className = `vehicle-card ${mezzo.disponibile ? 'available' : 'unavailable'}`;
 
+    // Tooltip dinamico
+    const swapTitle = mezzo.disponibile ? "Sposta in Manutenzione" : "Rendi Disponibile";
+
     div.innerHTML = `
         <div class="vehicle-info">
             <h4>${mezzo.nome} <span class="targa-badge">${mezzo.targa || 'N/D'}</span></h4>
             <p>${mezzo.tipo} &bull; ${mezzo.descrizione || 'Nessuna nota'}</p>
         </div>
         <div class="vehicle-actions">
+            <!-- PULSANTE SWAP AGGIUNTO QUI -->
+            <button class="btn-action swap" onclick="toggleStato(${mezzo.id}, ${mezzo.disponibile})" title="${swapTitle}">
+                <i class="fas fa-exchange-alt"></i>
+            </button>
             <button class="btn-action details" onclick="showHistory(${mezzo.id}, '${mezzo.nome}')" title="Storico Missioni">
                 <i class="fas fa-list-ul"></i>
             </button>
@@ -73,6 +80,44 @@ function createCardHTML(mezzo) {
     `;
     return div;
 }
+
+// CAMBIO STATO
+async function toggleStato(id, isDisponibile) {
+    const nuovoStatoAtteso = !isDisponibile;
+    const azione = nuovoStatoAtteso ? "rendere DISPONIBILE" : "spostare in MANUTENZIONE";
+    const coloreBtn = nuovoStatoAtteso ? "#2ecc71" : "#f59e0b"; // Verde o Arancio
+
+    const result = await Swal.fire({
+        title: 'Cambio Stato',
+        text: `Vuoi davvero ${azione} questo mezzo?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: coloreBtn,
+        cancelButtonColor: '#aaa',
+        confirmButtonText: 'Sì, procedi'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            Swal.showLoading();
+
+            await apiCall(`/swa/api/mezzi/${id}/disponibilita`, 'PATCH', null, true);
+
+            // Feedback
+            const toast = Swal.mixin({
+                toast: true, position: 'top-end', showConfirmButton: false, timer: 2000
+            });
+            toast.fire({ icon: 'success', title: 'Stato aggiornato' });
+
+            await loadMezzi(); // Ricarica la griglia per vedere il cambiamento
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Errore', 'Impossibile aggiornare lo stato.', 'error');
+        }
+    }
+}
+
 
 // Aggiungi Mezzo
 async function handleAddMezzo(e) {

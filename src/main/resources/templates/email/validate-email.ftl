@@ -61,7 +61,7 @@
 
 <!-- Scripts -->
 <script src="/js/api.js"></script>
-<script src="/js/validate-email.js"></script>
+<script src="/js/richiestasoccorso/validate-email.js"></script>
 
 </body>
 </html>
