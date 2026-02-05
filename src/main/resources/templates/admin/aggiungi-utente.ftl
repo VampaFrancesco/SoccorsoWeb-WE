@@ -96,6 +96,6 @@
 </main>
 
 <script src="/js/api.js"></script>
-<script src="/js/aggiungi-utente.js"></script>
+<script src="/js/admin/aggiungi-utente.js"></script>
 </body>
 </html>

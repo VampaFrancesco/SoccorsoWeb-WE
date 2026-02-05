@@ -24,18 +24,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Gestisci la risposta in base al formato dell'API
         // Controlla vari formati possibili di successo
-        const isSuccess = result && (
-            result.esito === 'successo' ||
+        const isSuccess = result && (result.esito === 'successo' ||
             result.status === 'success' ||
             result.success === true ||
             result.messaggio?.toLowerCase().includes('successo') ||
             result.message?.toLowerCase().includes('success') ||
             result.message?.toLowerCase().includes('convalidata') ||
             // Se non ci sono errori espliciti e la risposta esiste, considera successo
-            (result.error === undefined && result.errore === undefined && Object.keys(result).length > 0) ||
-            // Se la risposta è null o vuota dopo una 200, è successo
-            result === null
-        );
+            (result.error === undefined && result.errore === undefined && Object.keys(result).length > 0) || false);
 
         if (isSuccess) {
             console.log('✅ Convalida riuscita!');

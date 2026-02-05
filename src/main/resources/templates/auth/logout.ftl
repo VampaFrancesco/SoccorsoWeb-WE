@@ -33,6 +33,6 @@
     </div>
 </div>
 
-<script src="/js/logout.js"></script>
+<script src="/js/auth/logout.js"></script>
 </body>
 </html>

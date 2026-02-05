@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Room - SoccorsoWeb</title>
+<#import "layout.ftl" as layout>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -56,35 +51,32 @@
     <!-- DASHBOARD GRID -->
     <div class="dashboard-grid">
 
-        <!-- WIDGET 1: RICHIESTE RECENTI -->
         <div class="widget widget-requests">
             <div class="widget-header">
                 <h3><i class="fas fa-exclamation-circle text-danger"></i> Richieste in arrivo</h3>
-                <a href="/richieste" class="btn-text">Vedi tutte</a>
+                <a href="/admin/richieste" class="btn-text">Vedi tutte</a>
             </div>
             <div class="requests-feed" id="requests-feed">
                 <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
             </div>
         </div>
 
-        <!-- WIDGET 2: MISSIONI ATTIVE -->
         <div class="widget widget-stat">
             <div class="stat-icon bg-blue"><i class="fas fa-map-marker-alt"></i></div>
             <div class="stat-info">
                 <span class="stat-value" id="stat-missioni">--</span>
                 <span class="stat-label">Missioni in corso</span>
             </div>
-            <a href="/missioni" class="overlay-link"></a>
+            <a href="/admin/missioni" class="overlay-link"></a>
         </div>
 
-        <!-- WIDGET 3: OPERATORI LIBERI -->
         <div class="widget widget-stat">
             <div class="stat-icon bg-green"><i class="fas fa-user-clock"></i></div>
             <div class="stat-info">
                 <span class="stat-value" id="stat-operatori">--</span>
                 <span class="stat-label">Operatori Pronti</span>
             </div>
-            <a href="/operatori" class="overlay-link"></a>
+            <a href="/admin/operatori" class="overlay-link"></a>
         </div>
 
         <!-- WIDGET 4: PROFILO -->
@@ -117,9 +109,4 @@
         </div>
 
     </div>
-</main>
-
-<script src="/js/api.js"></script>
-<script src="/js/admin.js"></script>
-</body>
-</html>
+</@layout.pagina_admin>
