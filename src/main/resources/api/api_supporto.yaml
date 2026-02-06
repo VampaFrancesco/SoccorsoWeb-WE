@@ -1,0 +1,660 @@
+openapi: 3.0.1
+
+info:
+  title: SoccorsoWeb API - API di Supporto
+  version: v1.0
+  description: >
+    Endpoint aggiuntivi di supporto (non richiesti dalla specifica base),
+    separati dalle 14 API core obbligatorie del progetto.
+    
+    Queste API forniscono funzionalità CRUD complete e operazioni avanzate
+    per la gestione del sistema SoccorsoWeb.
+
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+
+paths:
+  # ============================================================================
+  # GESTIONE UTENTI - Registrazione
+  # ============================================================================
+
+  /swa/open/auth/sign-up:
+    post:
+      tags: [api-di-supporto]
+      summary: Registra un nuovo utente
+      description: >
+        Permette la registrazione di un nuovo utente nel sistema.
+        Non richiede autenticazione. L'utente creato avrà ruolo OPERATORE di default.
+      operationId: signUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Utente registrato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400': { description: Bad Request - Dati non validi }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found }
+        '422': { description: Unprocessable Entity - Email già esistente }
+        '500': { description: Internal Server Error }
+      security: []  # Endpoint pubblico
+
+  # ============================================================================
+  # GESTIONE RICHIESTE DI SOCCORSO - Operazioni Avanzate
+  # ============================================================================
+
+  /swa/open/richieste/conferma-convalida:
+    post:
+      tags: [api-di-supporto]
+      summary: Conferma convalida richiesta via email
+      description: >
+        Conferma definitivamente la convalida di una richiesta di soccorso tramite
+        il token ricevuto via email. Endpoint chiamato dal frontend dopo il redirect.
+        
+        Cambia lo stato della richiesta da INVIATA a CONVALIDATA.
+      operationId: confermaConvalida
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConvalidaRequest'
+      responses:
+        '200':
+          description: Richiesta convalidata con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: { type: object }
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found - Token non valido o già utilizzato }
+        '422': { description: Unprocessable Entity }
+        '500': { description: Internal Server Error }
+      security: []  # Endpoint pubblico
+
+  /swa/api/richieste/{id}:
+    patch:
+      tags: [api-di-supporto]
+      summary: Modifica parzialmente una richiesta di soccorso
+      description: >
+        Aggiorna parzialmente i dati di una richiesta di soccorso esistente.
+        Solo i campi forniti nel body verranno modificati.
+        
+        Utile per correggere errori o aggiornare informazioni senza modificare
+        l'intera risorsa.
+      operationId: aggiornaRichiesta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RichiestaSoccorsoUpdateRequest'
+      responses:
+        '200':
+          description: Richiesta aggiornata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found - Richiesta non esistente }
+        '422': { description: Unprocessable Entity }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags: [api-di-supporto]
+      summary: Elimina una richiesta di soccorso
+      description: >
+        Elimina definitivamente una richiesta di soccorso dal sistema.
+        
+        ⚠️ ATTENZIONE: Questa operazione è irreversibile.
+        
+        Vincoli:
+        - La richiesta non deve essere associata a una missione attiva
+        - Solo gli amministratori possono eliminare richieste CONVALIDATE
+      operationId: eliminaRichiesta
+      parameters:
+        - name: id
+          in: path
+          description: ID univoco della richiesta da eliminare
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Richiesta eliminata con successo
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden - Permessi insufficienti }
+        '404': { description: Not Found - Richiesta non esistente }
+        '422': { description: Unprocessable Entity - Richiesta associata a missione }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/richieste/{id}/stato:
+    patch:
+      tags: [api-di-supporto]
+      summary: Modifica lo stato di una richiesta
+      description: >
+        Cambia lo stato di una richiesta di soccorso tramite query parameter.
+        
+        Stati validi: INVIATA, CONVALIDATA, PRESA_IN_CARICO, IN_CORSO, CHIUSA, ANNULLATA, IGNORATA
+      operationId: modificaStatoRichiesta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: stato
+          in: query
+          description: Nuovo stato da assegnare
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stato modificato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        '400': { description: Bad Request - Stato non valido }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found }
+        '422': { description: Unprocessable Entity }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/richieste/{id}/valutazione:
+    patch:
+      tags: [api-di-supporto]
+      summary: Assegna valutazione a una richiesta
+      description: >
+        Valuta una richiesta di soccorso su scala 1-10.
+        
+        Nel frontend viene utilizzato per permettere agli operatori di valutare
+        la gravità/priorità della richiesta.
+      operationId: valutaRichiesta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: valutazione
+          in: query
+          description: Valutazione su scala 1-10
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 10
+      responses:
+        '200':
+          description: Valutazione assegnata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        '400': { description: Bad Request - Valutazione fuori range }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found }
+        '422': { description: Unprocessable Entity }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  # ============================================================================
+  # GESTIONE MISSIONI - Operazioni Avanzate
+  # ============================================================================
+
+  /swa/api/missioni:
+    get:
+      tags: [api-di-supporto]
+      summary: Lista completa di tutte le missioni
+      description: >
+        Restituisce tutte le missioni presenti nel database senza filtri.
+        
+        Utilizzato dal frontend per il filtro "TUTTE" nella dashboard missioni.
+      operationId: tutteLeMissioni
+      responses:
+        '200':
+          description: Lista completa missioni
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MissioneResponse'
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found }
+        '422': { description: Unprocessable Entity }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/missioni/{id}:
+    patch:
+      tags: [api-di-supporto]
+      summary: Modifica parzialmente una missione
+      description: >
+        Aggiorna parzialmente i dati di una missione esistente.
+        Solo i campi forniti nel body verranno modificati.
+        
+        Campi modificabili:
+        - obiettivo: Descrizione dell'obiettivo
+        - posizione: Posizione attuale della squadra
+        - latitudine/longitudine: Coordinate GPS
+        - caposquadraid: Cambio caposquadra
+        - operatoriids: Modifica squadra
+        - stato: Cambio stato manuale
+        - livellosuccesso: Valutazione (1-10)
+        - commentifinali: Note conclusive
+      operationId: aggiornaMissione
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissioneUpdateRequest'
+      responses:
+        '200':
+          description: Missione aggiornata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissioneResponse'
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found - Missione non esistente }
+        '422': { description: Unprocessable Entity }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags: [api-di-supporto]
+      summary: Elimina una missione
+      description: >
+        Elimina definitivamente una missione dal sistema.
+        
+        ⚠️ ATTENZIONE: Questa operazione è irreversibile.
+        
+        Vincoli:
+        - La missione deve essere in stato CHIUSA o FALLITA
+        - Gli operatori vengono liberati automaticamente
+      operationId: eliminaMissione
+      parameters:
+        - name: id
+          in: path
+          description: ID univoco della missione da eliminare
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Missione eliminata con successo
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden - Permessi insufficienti }
+        '404': { description: Not Found - Missione non esistente }
+        '422': { description: Unprocessable Entity - Missione ancora attiva }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/missioni/{id}/modifica-stato:
+    patch:
+      tags: [api-di-supporto]
+      summary: Modifica lo stato di una missione
+      description: >
+        Cambia lo stato di una missione tramite query parameter.
+        
+        Stati validi: IN_CORSO, CHIUSA, FALLITA, ANNULLATA
+      operationId: modificaStatoMissione
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: nuovoStato
+          in: query
+          description: Nuovo stato da assegnare alla missione
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stato modificato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissioneResponse'
+        '400': { description: Bad Request - Stato non valido }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Not Found }
+        '422': { description: Unprocessable Entity }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+# ==============================================================================
+# COMPONENTS - Schemas, Security Schemes
+# ==============================================================================
+
+components:
+  schemas:
+    # DTO Request - Convalida
+    ConvalidaRequest:
+      type: object
+      required: [token_convalida]
+      properties:
+        token_convalida:
+          type: string
+          description: Token univoco ricevuto via email
+
+    # DTO Request - Utente
+    UserRequest:
+      type: object
+      required: [email, password, nome, cognome]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+          maxLength: 2147483647
+        nome:
+          type: string
+          minLength: 0
+          maxLength: 100
+        cognome:
+          type: string
+          minLength: 0
+          maxLength: 100
+        datanascita:
+          type: string
+          format: date
+        telefono:
+          type: string
+          minLength: 0
+          maxLength: 20
+        indirizzo:
+          type: string
+
+    # DTO Request - Update Richiesta (PATCH)
+    RichiestaSoccorsoUpdateRequest:
+      type: object
+      description: DTO per update parziale richiesta. Tutti i campi sono opzionali.
+      properties:
+        descrizione:
+          type: string
+        indirizzo:
+          type: string
+        latitudine:
+          type: number
+          minimum: -90.0
+          maximum: 90.0
+          exclusiveMinimum: false
+          exclusiveMaximum: false
+        longitudine:
+          type: number
+          minimum: -180.0
+          maximum: 180.0
+          exclusiveMinimum: false
+          exclusiveMaximum: false
+        nomesegnalante:
+          type: string
+        emailsegnalante:
+          type: string
+          format: email
+        fotourl:
+          type: string
+        telefonosegnalante:
+          type: string
+        stato:
+          type: string
+        livellosuccesso:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+
+    # DTO Request - Update Missione (PATCH)
+    MissioneUpdateRequest:
+      type: object
+      description: DTO per update parziale missione. Tutti i campi sono opzionali.
+      properties:
+        obiettivo:
+          type: string
+        caposquadraid:
+          type: integer
+          format: int64
+        posizione:
+          type: string
+        latitudine:
+          type: number
+        longitudine:
+          type: number
+        stato:
+          type: string
+        livellosuccesso:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+        commentifinali:
+          type: string
+        operatoriids:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    # DTO Response - Utente
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+        nome:
+          type: string
+        cognome:
+          type: string
+        datanascita:
+          type: string
+          format: date
+        telefono:
+          type: string
+        indirizzo:
+          type: string
+        attivo:
+          type: boolean
+        disponibile:
+          type: boolean
+        createdat:
+          type: string
+          format: date-time
+        updatedat:
+          type: string
+          format: date-time
+        roles:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleResponse'
+        token:
+          type: string
+
+    # DTO Response - Ruolo
+    RoleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    # DTO Response - Richiesta Soccorso
+    RichiestaSoccorsoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        descrizione:
+          type: string
+        indirizzo:
+          type: string
+        latitudine:
+          type: number
+        longitudine:
+          type: number
+        nomesegnalante:
+          type: string
+        emailsegnalante:
+          type: string
+        telefonosegnalante:
+          type: string
+        fotourl:
+          type: string
+        stato:
+          type: string
+        convalidataat:
+          type: string
+          format: date-time
+        createdat:
+          type: string
+          format: date-time
+        updatedat:
+          type: string
+          format: date-time
+        missioneid:
+          type: integer
+          format: int64
+        iporigine:
+          type: string
+        tokenconvalida:
+          type: string
+
+    # DTO Response - Missione
+    MissioneResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        richiestaid:
+          type: integer
+          format: int64
+        obiettivo:
+          type: string
+        posizione:
+          type: string
+        latitudine:
+          type: number
+        longitudine:
+          type: number
+        caposquadra:
+          $ref: '#/components/schemas/UserResponse'
+        inizioat:
+          type: string
+          format: date-time
+        fineat:
+          type: string
+          format: date-time
+        livellosuccesso:
+          type: integer
+          format: int32
+        commentifinali:
+          type: string
+        stato:
+          type: string
+        createdat:
+          type: string
+          format: date-time
+        updatedat:
+          type: string
+          format: date-time
+        operatori:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        numerooperatori:
+          type: integer
+          format: int32
+        richiesta:
+          $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+
+  # Security Schemes
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Token JWT ottenuto tramite /swa/open/auth/login'
+
+# ==============================================================================
+# TAGS
+# ==============================================================================
+
+tags:
+  - name: api-di-supporto
+    description: >
+      API DI SUPPORTO - Operazioni aggiuntive non richieste dalla specifica base del progetto.
+      
+      Forniscono funzionalità CRUD complete, gestione stati avanzata e operazioni
+      amministrative per il sistema SoccorsoWeb.

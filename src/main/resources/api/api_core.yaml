@@ -1,0 +1,835 @@
+openapi: 3.0.1
+
+info:
+  title: SoccorsoWeb API - Core Endpoints
+  version: v1.0
+  description: |
+    API RESTful per il sistema di gestione richieste di soccorso SoccorsoWeb.
+
+    Questa specifica contiene i **14 endpoint obbligatori** richiesti dalla 
+    specifica del progetto (13 operazioni + 2 endpoint per auth = 14 totali).
+
+    **Architettura:**
+    - Endpoint pubblici: `/swa/open/*` (no autenticazione)
+    - Endpoint protetti: `/swa/api/*` (autenticazione JWT richiesta)
+
+    **Sicurezza:**
+    - Autenticazione basata su token JWT (JSON Web Token)
+    - Token ottenuto tramite POST /swa/open/auth/login
+    - Token da includere nell'header: `Authorization: Bearer <token>`
+
+servers:
+  - url: http://localhost:8080
+    description: Server di sviluppo locale
+
+# ==============================================================================
+# PATHS - Endpoint API
+# ==============================================================================
+
+paths:
+  # ============================================================================
+  # AUTENTICAZIONE - Endpoint pubblici (no JWT richiesto)
+  # ============================================================================
+
+  /swa/open/auth/login:
+    post:
+      tags:
+        - auth-controller
+      summary: Login utente
+      description: |
+        Autentica un utente nel sistema e restituisce un token JWT per le 
+        successive richieste autenticate.
+
+        **Processo:**
+        1. Valida credenziali (email + password)
+        2. Genera token JWT con scadenza 24h
+        3. Restituisce user info + token
+
+        **Note:**
+        - Password hashata con BCrypt lato server
+        - Token va salvato nel localStorage del browser
+        - Include ruoli utente (OPERATORE, ADMIN)
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: "operatore@soccorso.it"
+              password: "password123"
+      responses:
+        '200':
+          description: Login effettuato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400': { description: Bad Request - Credenziali mancanti }
+        '401': { description: Unauthorized - Credenziali errate }
+        '403': { description: Forbidden }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+
+  /swa/open/auth/logout:
+    post:
+      tags:
+        - auth-controller
+      summary: Logout utente
+      description: |
+        Termina la sessione corrente dell'utente autenticato.
+
+        **Implementazione:**
+        - Architettura stateless: il server non mantiene sessioni
+        - Il logout è gestito lato client eliminando il token dal localStorage
+        - Questo endpoint serve principalmente per logging e statistiche
+      operationId: logout
+      responses:
+        '200':
+          description: Logout effettuato con successo
+          content:
+            application/json:
+              schema:
+                type: string
+              example: "Logout effettuato con successo"
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+
+  # ============================================================================
+  # RICHIESTE DI SOCCORSO - Endpoint pubblici
+  # ============================================================================
+
+  /swa/open/richieste:
+    post:
+      tags:
+        - richiesta-open-controller
+      summary: Crea una nuova richiesta di soccorso
+      description: |
+        Permette l'inserimento di una nuova richiesta di soccorso da parte di 
+        un cittadino **NON autenticato** (endpoint pubblico).
+
+        **Processo:**
+        1. Valida i dati ricevuti (campi obbligatori)
+        2. Genera un `tokenconvalida` univoco (UUID)
+        3. Salva la richiesta nel DB con stato INVIATA
+        4. Invia email al segnalante con link di convalida
+      operationId: nuovaRichiesta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RichiestaSoccorsoRequest'
+      responses:
+        '200':
+          description: Richiesta creata con successo. Email di convalida inviata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        '400': { description: Bad Request - Dati non validi }
+        '422': { description: Unprocessable Entity - Email non valida }
+        '500': { description: Internal Server Error }
+
+  /swa/open/richieste/convalida:
+    get:
+      tags:
+        - richiesta-open-controller
+      summary: Convalida richiesta di soccorso tramite token
+      description: |
+        Endpoint pubblico che riceve le richieste provenienti dai **click sui link** 
+        di convalida inviati via email.
+
+        **Flusso operativo:**
+        1. Utente clicca sul link nell'email
+        2. Questo endpoint valida il token
+        3. Reindirizza il browser al frontend
+        4. Il frontend chiama automaticamente `/conferma-convalida`
+      operationId: redirectConvalida
+      parameters:
+        - name: tokenconvalida
+          in: query
+          description: Token univoco ricevuto via email
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Redirect al frontend per conferma
+        '404': { description: Not Found - Token non valido o scaduto }
+        '500': { description: Internal Server Error }
+
+  # ============================================================================
+  # RICHIESTE DI SOCCORSO - Endpoint protetti (JWT richiesto)
+  # ============================================================================
+
+  /swa/api/richieste:
+    get:
+      tags:
+        - richiesta-api-controller
+      summary: Lista paginata richieste di soccorso filtrate per stato
+      description: |
+        Restituisce una lista **paginata** delle richieste di soccorso filtrata 
+        in base allo stato. Richiede autenticazione JWT.
+
+        **Paginazione:**
+        - Utilizza Spring Data JPA `Pageable`
+        - Parametro `page`: numero pagina (0-based, default 0)
+        - Parametro `size`: elementi per pagina (default 20, max 100)
+
+        **Stati disponibili:**
+        INVIATA, CONVALIDATA, PRESA_IN_CARICO, IN_CORSO, CHIUSA, IGNORATA, ANNULLATA
+      operationId: richiesteFiltrate
+      parameters:
+        - name: stato
+          in: query
+          description: Stato della richiesta da filtrare
+          required: true
+          schema:
+            type: string
+            enum: [INVIATA, CONVALIDATA, PRESA_IN_CARICO, IN_CORSO, CHIUSA, IGNORATA, ANNULLATA]
+          example: "CONVALIDATA"
+
+        - name: page
+          in: query
+          description: Numero pagina (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+          example: 0
+
+        - name: size
+          in: query
+          description: Numero elementi per pagina (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+          example: 20
+
+      responses:
+        '200':
+          description: Lista paginata richieste filtrate con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageRichiestaSoccorsoResponse'
+        '400': { description: Bad Request - Stato non valido }
+        '401': { description: Unauthorized - Token mancante }
+        '403': { description: Forbidden }
+        '500': { description: Internal Server Error }
+
+      security:
+        - bearerAuth: []
+
+  /swa/api/richieste/{id}:
+    get:
+      tags:
+        - richiesta-api-controller
+      summary: Dettagli di una richiesta di soccorso
+      description: |
+        Restituisce i dettagli completi di una specifica richiesta di soccorso.
+      operationId: dettagliRichiesta
+      parameters:
+        - name: id
+          in: path
+          description: ID univoco della richiesta
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Dettagli richiesta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        '401': { description: Unauthorized }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/richieste/{id}/annullamento:
+    patch:
+      tags:
+        - richiesta-api-controller
+      summary: Annulla una richiesta di soccorso
+      description: |
+        Permette a un **amministratore** di annullare/ignorare una richiesta.
+        Solo utenti con ruolo ADMIN possono chiamare questo endpoint.
+      operationId: annullaRichiestaSoccorso
+      parameters:
+        - name: id
+          in: path
+          description: ID della richiesta da annullare
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Richiesta annullata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden - Solo amministratori }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/richieste/non-positive:
+    get:
+      tags:
+        - richiesta-api-controller
+      summary: Richieste con valutazione negativa
+      description: |
+        Restituisce la lista delle richieste chiuse con livello di successo < 5.
+      operationId: richiesteNonPositive
+      responses:
+        '200':
+          description: Lista richieste con valutazione negativa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        '401': { description: Unauthorized }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  # ============================================================================
+  # MISSIONI - Endpoint protetti (JWT richiesto)
+  # ============================================================================
+
+  /swa/api/missioni:
+    post:
+      tags:
+        - missione-controller
+      summary: Crea una nuova missione di soccorso
+      description: |
+        Crea una nuova missione di soccorso associata a una richiesta convalidata.
+      operationId: inserisciMissione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissioneRequest'
+      responses:
+        '200':
+          description: Missione creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissioneResponse'
+        '400': { description: Bad Request }
+        '401': { description: Unauthorized }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/missioni/{id}:
+    get:
+      tags:
+        - missione-controller
+      summary: Dettagli di una missione specifica
+      description: |
+        Restituisce i dettagli completi di una specifica missione.
+      operationId: dettagliMissione
+      parameters:
+        - name: id
+          in: path
+          description: ID univoco della missione
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Dettagli missione completi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissioneResponse'
+        '401': { description: Unauthorized }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/missioni/{id}/chiusura:
+    patch:
+      tags:
+        - missione-controller
+      summary: Chiude una missione in corso
+      description: |
+        Chiude una missione impostando lo stato a CHIUSA.
+      operationId: chiudiMissione
+      parameters:
+        - name: id
+          in: path
+          description: ID della missione da chiudere
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Missione chiusa con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissioneResponse'
+        '401': { description: Unauthorized }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  # ============================================================================
+  # OPERATORI - Endpoint protetti (JWT richiesto)
+  # ============================================================================
+
+  /swa/api/operatori:
+    get:
+      tags:
+        - operatore-controller
+      summary: Lista operatori disponibili
+      description: |
+        Restituisce la lista degli operatori disponibili.
+      operationId: operatori
+      parameters:
+        - name: disponibile
+          in: query
+          description: Filtra per disponibilità
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Lista operatori
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '401': { description: Unauthorized }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/operatori/{id}:
+    get:
+      tags:
+        - operatore-controller
+      summary: Dettagli di un operatore
+      description: |
+        Restituisce le informazioni complete di un operatore specifico.
+      operationId: dettagliOperatore
+      parameters:
+        - name: id
+          in: path
+          description: ID univoco dell'operatore
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Dettagli operatore
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401': { description: Unauthorized }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+  /swa/api/operatori/{id}/missioni:
+    get:
+      tags:
+        - operatore-controller
+      summary: Lista missioni di un operatore
+      description: |
+        Restituisce lo storico completo delle missioni di un operatore.
+      operationId: missioniOperatore
+      parameters:
+        - name: id
+          in: path
+          description: ID dell'operatore
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Storico missioni operatore
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MissioneResponse'
+        '401': { description: Unauthorized }
+        '404': { description: Not Found }
+        '500': { description: Internal Server Error }
+      security:
+        - bearerAuth: []
+
+# ==============================================================================
+# COMPONENTS - Schemas, Security Schemes
+# ==============================================================================
+
+components:
+  schemas:
+    # ==========================================================================
+    # DTO REQUEST - Input API
+    # ==========================================================================
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      description: Credenziali di accesso per autenticazione JWT
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email dell'utente
+          example: "operatore@soccorso.it"
+        password:
+          type: string
+          format: password
+          minLength: 6
+          description: Password in chiaro
+          example: "password123"
+
+    RichiestaSoccorsoRequest:
+      type: object
+      required: [descrizione, indirizzo, nomesegnalante, emailsegnalante]
+      description: Dati per creare una nuova richiesta di soccorso
+      properties:
+        descrizione:
+          type: string
+          description: Descrizione dettagliata dell'emergenza
+          minLength: 10
+          maxLength: 1000
+        indirizzo:
+          type: string
+          description: Indirizzo testuale del luogo
+        latitudine:
+          type: number
+          format: double
+          minimum: -90.0
+          maximum: 90.0
+        longitudine:
+          type: number
+          format: double
+          minimum: -180.0
+          maximum: 180.0
+        nomesegnalante:
+          type: string
+          minLength: 2
+          maxLength: 100
+        emailsegnalante:
+          type: string
+          format: email
+        telefonosegnalante:
+          type: string
+        fotourl:
+          type: string
+          format: uri
+
+    MissioneRequest:
+      type: object
+      required: [richiestaid, obiettivo, caposquadraid]
+      description: Dati per creare una nuova missione
+      properties:
+        richiestaid:
+          type: integer
+          format: int64
+          description: ID della richiesta da associare
+        obiettivo:
+          type: string
+          description: Obiettivo della missione
+          minLength: 10
+          maxLength: 500
+        caposquadraid:
+          type: integer
+          format: int64
+          description: ID del caposquadra
+        posizione:
+          type: string
+          description: Posizione iniziale
+        latitudine:
+          type: number
+          format: double
+        longitudine:
+          type: number
+          format: double
+        operatoriids:
+          type: array
+          uniqueItems: true
+          description: Lista ID operatori da assegnare
+          items:
+            type: integer
+            format: int64
+
+    # ==========================================================================
+    # DTO RESPONSE - Output API
+    # ==========================================================================
+
+    RoleResponse:
+      type: object
+      description: Ruolo utente
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID univoco ruolo
+        name:
+          type: string
+          description: Nome ruolo
+          enum: [ROLE_OPERATORE, ROLE_ADMIN]
+          example: "ROLE_OPERATORE"
+
+    UserResponse:
+      type: object
+      description: Dati completi di un utente
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+          format: email
+        nome:
+          type: string
+        cognome:
+          type: string
+        datanascita:
+          type: string
+          format: date
+        telefono:
+          type: string
+        indirizzo:
+          type: string
+        attivo:
+          type: boolean
+        disponibile:
+          type: boolean
+        createdat:
+          type: string
+          format: date-time
+        updatedat:
+          type: string
+          format: date-time
+        roles:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/RoleResponse'
+        token:
+          type: string
+          description: Token JWT (solo al login)
+
+    RichiestaSoccorsoResponse:
+      type: object
+      description: Dati completi di una richiesta di soccorso
+      properties:
+        id:
+          type: integer
+          format: int64
+        descrizione:
+          type: string
+        indirizzo:
+          type: string
+        latitudine:
+          type: number
+          format: double
+        longitudine:
+          type: number
+          format: double
+        nomesegnalante:
+          type: string
+        emailsegnalante:
+          type: string
+          format: email
+        telefonosegnalante:
+          type: string
+        fotourl:
+          type: string
+          format: uri
+        stato:
+          type: string
+          enum: [INVIATA, CONVALIDATA, PRESA_IN_CARICO, IN_CORSO, CHIUSA, IGNORATA, ANNULLATA]
+        convalidataat:
+          type: string
+          format: date-time
+        createdat:
+          type: string
+          format: date-time
+        updatedat:
+          type: string
+          format: date-time
+        missioneid:
+          type: integer
+          format: int64
+        iporigine:
+          type: string
+        tokenconvalida:
+          type: string
+          format: uuid
+        livellosuccesso:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+
+    PageRichiestaSoccorsoResponse:
+      type: object
+      description: |
+        Risposta paginata contenente lista richieste.
+        Oggetto standard Page<T> di Spring Data.
+      properties:
+        content:
+          type: array
+          description: Array richieste della pagina corrente
+          items:
+            $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+        totalPages:
+          type: integer
+          format: int32
+          description: Numero totale di pagine
+        totalElements:
+          type: integer
+          format: int64
+          description: Numero totale di richieste
+        number:
+          type: integer
+          format: int32
+          description: Pagina corrente (0-based)
+        size:
+          type: integer
+          format: int32
+          description: Dimensione pagina
+        first:
+          type: boolean
+          description: Prima pagina?
+        last:
+          type: boolean
+          description: Ultima pagina?
+        numberOfElements:
+          type: integer
+          format: int32
+          description: Elementi in questa pagina
+        empty:
+          type: boolean
+          description: Pagina vuota?
+
+    MissioneResponse:
+      type: object
+      description: Dati completi di una missione
+      properties:
+        id:
+          type: integer
+          format: int64
+        richiestaid:
+          type: integer
+          format: int64
+        obiettivo:
+          type: string
+        posizione:
+          type: string
+        latitudine:
+          type: number
+          format: double
+        longitudine:
+          type: number
+          format: double
+        caposquadra:
+          $ref: '#/components/schemas/UserResponse'
+        inizioat:
+          type: string
+          format: date-time
+        fineat:
+          type: string
+          format: date-time
+        livellosuccesso:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+        commentifinali:
+          type: string
+        stato:
+          type: string
+          enum: [IN_CORSO, CHIUSA, FALLITA, ANNULLATA]
+        createdat:
+          type: string
+          format: date-time
+        updatedat:
+          type: string
+          format: date-time
+        operatori:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        numerooperatori:
+          type: integer
+          format: int32
+        richiesta:
+          $ref: '#/components/schemas/RichiestaSoccorsoResponse'
+
+  # ============================================================================
+  # SECURITY SCHEMES
+  # ============================================================================
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Token JWT ottenuto tramite POST /swa/open/auth/login
+
+        Da includere nell'header: Authorization: Bearer <token>
+
+# ==============================================================================
+# TAGS
+# ==============================================================================
+
+tags:
+  - name: auth-controller
+    description: Autenticazione - Login/Logout
+
+  - name: richiesta-open-controller
+    description: Richieste di Soccorso - Operazioni pubbliche
+
+  - name: richiesta-api-controller
+    description: Richieste di Soccorso - Operazioni protette
+
+  - name: missione-controller
+    description: Missioni - Operazioni protette
+
+  - name: operatore-controller
+    description: Operatori - Operazioni protette
