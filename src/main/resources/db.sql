@@ -133,7 +133,7 @@ CREATE TABLE `richiesta_soccorso` (
                                       `foto` LONGBLOB NULL,
                                       `ip_origine` VARCHAR(45) NULL,
                                       `token_convalida` VARCHAR(255) NULL UNIQUE,
-                                      `stato` ENUM('ATTIVA', 'IN_CORSO', 'CHIUSA', 'IGNORATA') NOT NULL DEFAULT 'ATTIVA',
+                                      `stato` ENUM('ATTIVA', 'IN_CORSO', 'CHIUSA', 'IGNORATA'),
                                       `convalidata_at` TIMESTAMP NULL,
                                       `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                       `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

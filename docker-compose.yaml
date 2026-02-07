@@ -2,7 +2,23 @@ services:
   mailhog:
     image: mailhog/mailhog:latest
     container_name: soccorso-mailhog
-    restart: always
     ports:
-      - "1025:1025"  # SMTP server
-      - "8025:8025"  # Web UI
+      - "1025:1025"
+      - "8025:8025"
+
+  mysql:
+    image: mariadb:11
+    container_name: soccorso-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: soccorsodb_we
+      MYSQL_USER: soccorso_user
+      MYSQL_PASSWORD: soccorso_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - soccorso-data:/var/lib/mysql
+      - ./src/main/resources/db.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  soccorso-data:
