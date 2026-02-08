@@ -1,7 +1,7 @@
 <#import "layout.ftl" as layout>
 
 <@layout.pagina_admin 
-    titolo="Gestione Flotta" 
+    titolo="Gestione Mezzi"
     nomeUtente=nomeUtente!"Admin"
     extraHead='<link rel="stylesheet" href="/css/mezzi.css">'
     headerContent='<button class="btn-modern-add" onclick="openModal(\'modal-add\')">

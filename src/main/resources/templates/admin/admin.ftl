@@ -52,7 +52,7 @@
         <!-- WIDGET 6: MEZZI -->
         <div class="widget widget-stat">
             <div class="stat-icon bg-orange"><i class="fas fa-ambulance"></i></div>
-            <div class="stat-info">dash
+            <div class="stat-info">Mezzi
                 <span class="stat-value" id="stat-mezzi">--</span>
                 <span class="stat-label">Mezzi Disponibili</span>
             </div>

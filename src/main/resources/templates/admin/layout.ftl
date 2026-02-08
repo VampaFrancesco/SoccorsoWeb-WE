@@ -32,7 +32,7 @@
             <li><a href="/admin/materiali"><i class="fas fa-box-open"></i> Materiali</a></li>
             <li class="spacer"></li>
             <li><a href="/admin/aggiungi-utente"><i class="fas fa-user-plus"></i> Nuovi Utenti</a></li>
-            <li><a href="/admin/profilo"><i class="fas fa-cog"></i> Profilo</a></li>
+            <li><a href="/admin/profilo"><i class="fas fa-user"></i> Profilo</a></li>
         </ul>
 
         <div class="user-profile">

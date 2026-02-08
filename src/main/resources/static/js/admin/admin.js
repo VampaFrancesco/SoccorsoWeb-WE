@@ -40,7 +40,7 @@ async function updateGlobalBadges() {
 
 async function refreshDashboard() {
     try {
-        // Chiamate API in parallelo definite in api.js
+        // Chiamate API in parallelo
         const [missioni, operatori, mezzi, richieste] = await Promise.all([
             visualizzaTutteLeMissioni(),
             operatoriDisponibili('true'),
@@ -55,12 +55,22 @@ async function refreshDashboard() {
         if (document.getElementById('stat-operatori'))
             document.getElementById('stat-operatori').innerText = operatori ? operatori.length : 0;
 
+        // --- FIX QUI SOTTO ---
         if (document.getElementById('stat-mezzi')) {
-            const mezziDisp = mezzi ? mezzi.filter(m => m.stato === 'DISPONIBILE').length : 0;
+            // Controlla se la proprietà è 'disponibile' (boolean) o 'stato' (stringa)
+            // Usa un check robusto: true, 'true', 1 o 'DISPONIBILE'
+            const mezziDisp = mezzi ? mezzi.filter(m =>
+                m.disponibile === true ||
+                m.disponibile === 'true' ||
+                m.disponibile === 1 ||
+                m.stato === 'DISPONIBILE'
+            ).length : 0;
+
             document.getElementById('stat-mezzi').innerText = `${mezziDisp}/${mezzi ? mezzi.length : 0}`;
         }
+        // ---------------------
 
-        // Renderizza feed richieste (massimo 3)
+        // Renderizza feed richieste
         renderRichiesteFeed(richieste ? richieste.content : []);
 
         // Aggiorna badge sidebar
@@ -70,6 +80,7 @@ async function refreshDashboard() {
         console.error("Errore nel caricamento dati dashboard:", error);
     }
 }
+
 
 function updateSidebarBadge(count) {
     const badge = document.getElementById('sidebar-badge');
