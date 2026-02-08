@@ -30,5 +30,8 @@ public class UserUpdateRequest {
 
     private String indirizzo;
 
+    // Elenco di abilità separate da virgola
+    private String abilita;
+
     private Boolean disponibile;
 }

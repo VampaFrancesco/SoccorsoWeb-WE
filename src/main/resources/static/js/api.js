@@ -32,7 +32,7 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
         if (response.status === 401) {
             // token_autenticazione scaduto o non valido
             localStorage.clear();
-            window.location.href = '/login';
+            window.location.href = '/auth/login';
             return null;
         }
 

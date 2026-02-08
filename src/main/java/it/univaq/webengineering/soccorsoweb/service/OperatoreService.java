@@ -19,10 +19,13 @@ public class OperatoreService {
 
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final it.univaq.webengineering.soccorsoweb.repository.AbilitaRepository abilitaRepository;
 
-    public OperatoreService(UserMapper userMapper, UserRepository userRepository) {
+    public OperatoreService(UserMapper userMapper, UserRepository userRepository,
+            it.univaq.webengineering.soccorsoweb.repository.AbilitaRepository abilitaRepository) {
         this.userMapper = userMapper;
         this.userRepository = userRepository;
+        this.abilitaRepository = abilitaRepository;
     }
 
     /**
@@ -83,6 +86,41 @@ public class OperatoreService {
                 .orElseThrow(() -> new EntityNotFoundException("Utente corrente non trovato"));
 
         userMapper.updateEntityFromDto(request, user);
+
+        // Gestione Abilità (Stringa separata da virgola)
+        if (request.getAbilita() != null) {
+            // 1. Pulisci le abilità esistenti (per semplificare, rimpiazziamo tutto)
+            user.getAbilita().clear();
+
+            String[] skills = request.getAbilita().split(",");
+            for (String skillName : skills) {
+                skillName = skillName.trim();
+                if (!skillName.isEmpty()) {
+                    // 2. Trova o crea l'Abilita
+                    String finalSkillName = skillName; // per lambda
+                    it.univaq.webengineering.soccorsoweb.model.entity.Abilita abilita = abilitaRepository
+                            .findByNome(skillName)
+                            .orElseGet(() -> abilitaRepository.save(
+                                    it.univaq.webengineering.soccorsoweb.model.entity.Abilita.builder()
+                                            .nome(finalSkillName)
+                                            .build()));
+
+                    // 3. Crea la relazione UtenteAbilita
+                    it.univaq.webengineering.soccorsoweb.model.entity.UtenteAbilita relazione = new it.univaq.webengineering.soccorsoweb.model.entity.UtenteAbilita();
+                    relazione.setUtente(user);
+                    relazione.setAbilita(abilita);
+                    relazione.setLivello("Base"); // Default
+
+                    // Imposta l'ID composto
+                    it.univaq.webengineering.soccorsoweb.model.entity.UtenteAbilita.UtenteAbilitaId id = new it.univaq.webengineering.soccorsoweb.model.entity.UtenteAbilita.UtenteAbilitaId(
+                            user.getId(), abilita.getId());
+                    relazione.setId(id);
+
+                    // Aggiungi alla collezione dell'utente
+                    user.getAbilita().add(relazione);
+                }
+            }
+        }
 
         return userMapper.toResponse(userRepository.save(user));
     }

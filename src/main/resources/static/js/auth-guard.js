@@ -3,13 +3,36 @@
  * Verifica che l'utente sia autenticato e abbia i permessi corretti
  */
 
-(function() {
+(function () {
     'use strict';
 
-    // Funzione per verificare se l'utente è autenticato
+    // Funzione per verificare se l'utente è autenticato e il token è valido
     function isAuthenticated() {
         const token = localStorage.getItem('authToken');
-        return token !== null && token !== undefined && token !== '';
+
+        if (!token) return false;
+
+        try {
+            // Decodifica il payload del JWT (la seconda parte)
+            const payloadBase64 = token.split('.')[1];
+            if (!payloadBase64) return false;
+
+            const payloadJson = atob(payloadBase64);
+            const payload = JSON.parse(payloadJson);
+
+            // Controlla la scadenza (exp è in secondi, Date.now() in millisecondi)
+            if (payload.exp && (payload.exp * 1000 < Date.now())) {
+                console.warn('⚠️ Token scaduto.');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userRole'); // Pulisce anche il ruolo
+                return false;
+            }
+
+            return true;
+        } catch (e) {
+            console.error('Errore durante la verifica del token:', e);
+            return false;
+        }
     }
 
     // Funzione per ottenere il ruolo dell'utente
@@ -48,8 +71,8 @@
 
         // Verifica autenticazione
         if (!isAuthenticated()) {
-            console.warn('⚠️ Utente non autenticato. Reindirizzamento al login...');
-            window.location.href = '/login?error=session';
+            console.warn('⚠️ Utente non autenticato o token scaduto. Reindirizzamento al login...');
+            window.location.href = '/auth/login?error=session';
             return false;
         }
 
@@ -65,7 +88,7 @@
     }
 
     // Esegui il controllo al caricamento della pagina
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         checkAuthorization();
     });
 

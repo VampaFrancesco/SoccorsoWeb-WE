@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     console.log("Profilo JS inizializzato");
 
     // Carica dati
@@ -33,16 +33,18 @@ async function loadUserProfile() {
         // --- Aggiorna UI (Campi Form) ---
         setValue('nome', user.nome);
         setValue('cognome', user.cognome);
-        setValue('indirizzo', user.indirizzo);
+        setValue('indirizzo', user.indirizzo || "");
+        setValue('telefono', user.telefono || "");
 
         // Gestione Data: spesso arriva come 2023-10-05T00:00:00. Prendiamo solo la prima parte
         if (user.dataNascita) {
             setValue('data_nascita', user.dataNascita.split('T')[0]);
         }
 
-        // Campi modificabili (adattali ai nomi del tuo DTO backend)
-        setValue('info_extra', user.note || "");
-        setValue('abilita', user.competenze || "");
+        if (user.abilita && Array.isArray(user.abilita)) {
+            const abilitaNames = user.abilita.map(a => a.nome).join(', ');
+            setValue('abilita', abilitaNames);
+        }
 
     } catch (error) {
         console.error("Errore loadUserProfile:", error);
@@ -62,9 +64,9 @@ async function handleProfileUpdate(event) {
 
     // Oggetto con i campi da inviare (solo quelli modificabili)
     const updatePayload = {
-        note: document.getElementById('info_extra').value,
-        competenze: document.getElementById('abilita').value
-        // Aggiungi qui altri campi se il backend permette di modificare telefono, indirizzo, ecc.
+        indirizzo: document.getElementById('indirizzo').value,
+        telefono: document.getElementById('telefono').value,
+        abilita: document.getElementById('abilita').value
     };
 
     try {

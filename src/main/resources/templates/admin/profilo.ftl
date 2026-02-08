@@ -4,7 +4,7 @@
 titolo="Il Mio Profilo"
 nomeUtente=nomeUtente!"Admin"
 extraHead='<link rel="stylesheet" href="/css/profilo.css">'
-extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><script src="/js/profilo/profilo.js"></script>'>
+extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><script src="/js/profilo/profilo.js?v=2"></script>'>
 
     <div class="profile-grid">
 
@@ -100,7 +100,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                              <#assign abilitaStr = abilitaStr + ab.nome + ", ">
                          </#list>
                     </#if>
-                    <input type="text" id="abilita" class="form-control" placeholder="Abilità..." value="${abilitaStr}" readonly>
+                    <input type="text" id="abilita" class="form-control" placeholder="Abilità..." value="${abilitaStr}">
                 </div>
 
                 <!-- Pulsante Salva -->

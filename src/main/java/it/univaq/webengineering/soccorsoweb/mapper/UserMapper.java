@@ -24,6 +24,7 @@ public interface UserMapper {
     User toEntity(UserRequest request);
 
     // ========== UpdateRequest → Entity (Aggiornamento) ==========
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
