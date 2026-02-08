@@ -3,6 +3,7 @@ package it.univaq.webengineering.soccorsoweb.security.userdetails;
 import it.univaq.webengineering.soccorsoweb.model.entity.User;
 import it.univaq.webengineering.soccorsoweb.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +27,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    @Transactional(readOnly = true) // ✅ IMPORTANTE: garantisce accesso a user.getRoles()
+    @Transactional(readOnly = true)//IMPORTANTE: garantisce accesso a user.getRoles()
+    @NullMarked
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("Loading user by email: {}", email);
 

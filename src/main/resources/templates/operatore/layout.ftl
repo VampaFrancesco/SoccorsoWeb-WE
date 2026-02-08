@@ -1,4 +1,4 @@
-<#macro pagina_operatore titolo="Pannello Operatore">
+<#macro pagina_operatore titolo="Pannello Operatore" nomeUtente="Operatore" extraHead="" extraScripts="">
     <!DOCTYPE html>
     <html lang="it">
     <head>
@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="/css/global.css">
         <link rel="stylesheet" href="/css/operatore.css">
+        ${extraHead}
     </head>
     <body>
 
@@ -32,6 +33,7 @@
     <script src="/js/auth-guard.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/operatore_comune.js"></script>
+    ${extraScripts}
     </body>
     </html>
 </#macro>

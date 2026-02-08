@@ -1,5 +1,8 @@
 package it.univaq.webengineering.soccorsoweb.controller;
 
+import it.univaq.webengineering.soccorsoweb.service.OperatoreService;
+import it.univaq.webengineering.soccorsoweb.model.dto.response.UserResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,5 +44,23 @@ public class AdminController {
     @GetMapping("/admin/operatori")
     public String operatori(Model model) {
         return "admin/operatori";
+    }
+
+    @Autowired
+    private OperatoreService operatoreService;
+
+    @GetMapping("/admin/profilo")
+    public String adminProfilo(Model model, Principal principal) {
+        String username = "Ospite";
+        if (principal != null) {
+            username = principal.getName();
+            UserResponse user = operatoreService.getProfile();
+            model.addAttribute("user", user);
+        }
+        model.addAttribute("nomeUtente", username);
+        model.addAttribute("basePath", "/admin");
+        model.addAttribute("ruolo", "ADMIN");
+
+        return "admin/profilo";
     }
 }

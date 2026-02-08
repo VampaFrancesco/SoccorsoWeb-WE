@@ -85,12 +85,6 @@
                     <span>Geolocalizzazione automatica</span>
                 </div>
             </div>
-
-            <div class="emergency-note">
-                <i class="fas fa-info-circle"></i>
-                <strong>ATTENZIONE:</strong> dopo l'invio della richiesta verrà inoltrata
-                una mail di conferma all'indirizzo di posta specificato.
-            </div>
         </div>
     </div>
 
@@ -256,8 +250,7 @@
                     <input type="hidden" id="captcha-token" name="captchaToken" value="">
 
                     <div class="captcha-error" id="captcha-error-msg">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Verifica obbligatoria
+                        <i class="fas fa-exclamation-circle"></i>Verifica obbligatoria
                     </div>
                 </div>
 

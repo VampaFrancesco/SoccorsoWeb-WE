@@ -31,13 +31,25 @@
             <li><a href="/admin/materiali"><i class="fas fa-box-open"></i> Materiali</a></li>
             <li class="spacer"></li>
             <li><a href="/admin/aggiungi-utente"><i class="fas fa-user-plus"></i> Nuovi Utenti</a></li>
-            <li><a href="/admin/profilo"><i class="fas fa-cog"></i> Impostazioni</a></li>
+            <li><a href="/admin/profilo"><i class="fas fa-cog"></i> Profilo</a></li>
         </ul>
 
         <div class="user-profile">
-            <div class="user-avatar">${(nomeUtente!"Admin")?substring(0,1)}</div>
+            <div class="user-avatar">
+                <#if loggedUser??>
+                    ${(loggedUser.nome!"A")?substring(0,1)}${(loggedUser.cognome!"")?substring(0,1)}
+                <#else>
+                    ${(nomeUtente!"Admin")?substring(0,1)}
+                </#if>
+            </div>
             <div class="user-details">
-                <span class="name">${nomeUtente!"Admin"}</span>
+                <span class="name">
+                    <#if loggedUser??>
+                        ${loggedUser.nome!} ${loggedUser.cognome!}
+                    <#else>
+                        ${nomeUtente!"Admin"}
+                    </#if>
+                </span>
                 <span class="role">Amministratore</span>
             </div>
             <a href="/auth/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
@@ -63,6 +75,7 @@
     <script src="/js/auth-guard.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/admin/admin.js"></script>
+    <script src="/js/profilo/profilo.js"></script>
     ${extraScripts}
     </body>
     </html>
