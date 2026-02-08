@@ -28,6 +28,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
+async function updateGlobalBadges() {
+    try {
+        // Aggiorna il badge delle richieste nella sidebar
+        const richieste = await visualizzaRichiesteFiltrate('ATTIVA', 0, 1);
+        updateSidebarBadge(richieste ? richieste.totalElements : 0);
+    } catch (error) {
+        console.error("Errore nell'aggiornamento badge globali:", error);
+    }
+}
+
 async function refreshDashboard() {
     try {
         // Chiamate API in parallelo definite in api.js

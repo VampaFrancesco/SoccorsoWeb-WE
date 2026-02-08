@@ -43,4 +43,27 @@ public class MaterialeService {
         }
         materialeRepository.deleteById(id);
     }
+
+    @Transactional
+    public MaterialeResponse updateQuantita(Long id, Integer nuovaQuantita) {
+        Materiale materiale = materialeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Materiale non trovato: " + id));
+
+        materiale.setQuantita(nuovaQuantita);
+        // Aggiorna disponibilità in base alla quantità
+        materiale.setDisponibile(nuovaQuantita > 0);
+
+        materiale = materialeRepository.save(materiale);
+        return materialeMapper.toResponse(materiale);
+    }
+
+    @Transactional
+    public MaterialeResponse toggleDisponibilita(Long id) {
+        Materiale materiale = materialeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Materiale non trovato: " + id));
+
+        materiale.setDisponibile(!materiale.getDisponibile());
+        materiale = materialeRepository.save(materiale);
+        return materialeMapper.toResponse(materiale);
+    }
 }

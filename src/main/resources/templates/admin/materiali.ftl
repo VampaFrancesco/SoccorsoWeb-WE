@@ -84,4 +84,28 @@
             </div>
         </div>
     </div>
+
+    <div id="modal-edit-quantity" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header-fancy">
+                <h2><i class="fas fa-edit"></i> Modifica Quantità</h2>
+                <i class="fas fa-times close-modal-white" onclick="closeMaterialModal('modal-edit-quantity')"></i>
+            </div>
+            <div class="modal-body">
+                <form id="formEditQuantity">
+                    <input type="hidden" id="edit-qty-material-id">
+                    <div class="form-group">
+                        <label class="form-label">Nuova Quantità</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-layer-group"></i>
+                            <input type="number" id="edit-qty-input" class="form-control-icon" min="0" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-submit-fancy" onclick="updateQuantity(document.getElementById('edit-qty-material-id').value, document.getElementById('edit-qty-input').value)">
+                        <i class="fas fa-save"></i> Aggiorna
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </@layout.pagina_admin>

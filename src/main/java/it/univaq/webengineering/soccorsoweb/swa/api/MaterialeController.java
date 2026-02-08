@@ -1,6 +1,7 @@
 package it.univaq.webengineering.soccorsoweb.swa.api;
 
 import it.univaq.webengineering.soccorsoweb.model.dto.request.MaterialeRequest;
+import it.univaq.webengineering.soccorsoweb.model.dto.request.ModificaQuantitaRequest;
 import it.univaq.webengineering.soccorsoweb.model.dto.response.MaterialeResponse;
 import it.univaq.webengineering.soccorsoweb.service.MaterialeService;
 import jakarta.validation.Valid;
@@ -43,5 +44,21 @@ public class MaterialeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         materialeService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/quantita")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MaterialeResponse> updateQuantita(
+            @PathVariable Long id,
+            @Valid @RequestBody ModificaQuantitaRequest request) {
+        MaterialeResponse updated = materialeService.updateQuantita(id, request.getQuantita());
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/{id}/toggle-disponibilita")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MaterialeResponse> toggleDisponibilita(@PathVariable Long id) {
+        MaterialeResponse updated = materialeService.toggleDisponibilita(id);
+        return ResponseEntity.ok(updated);
     }
 }

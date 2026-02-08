@@ -54,6 +54,9 @@ function createMaterialCard(m) {
             </p>
         </div>
         <div class="mat-actions">
+            <button class="btn-mat-action" onclick="openEditQuantityModal(${m.id}, ${m.quantita})" title="Modifica Quantità">
+                <i class="fas fa-edit"></i>
+            </button>
             <button class="btn-mat-action" onclick="patchStatus(${m.id})" title="Cambia Disponibilità">
                 <i class="fas fa-sync-alt"></i>
             </button>
@@ -63,6 +66,35 @@ function createMaterialCard(m) {
         </div>
     `;
     return div;
+}
+
+async function patchStatus(id) {
+    try {
+        await apiCall(`/swa/api/materiali/${id}/toggle-disponibilita`, 'PATCH');
+        await refreshInventory();
+    } catch (err) {
+        Swal.fire('Errore', 'Aggiornamento fallito', 'error');
+    }
+}
+
+async function updateQuantity(id, nuovaQuantita) {
+    try {
+        const payload = { quantita: parseInt(nuovaQuantita) };
+        await apiCall(`/swa/api/materiali/${id}/quantita`, 'PATCH', payload);
+        closeMaterialModal('modal-edit-quantity');
+        await refreshInventory();
+        Swal.fire({ icon: 'success', title: 'Quantità Aggiornata', timer: 1500 });
+    } catch (err) {
+        console.error('Errore:', err);
+        Swal.fire('Errore', 'Impossibile aggiornare la quantità', 'error');
+    }
+}
+
+function openEditQuantityModal(id, currentQuantity) {
+    document.getElementById('edit-qty-material-id').value = id;
+    document.getElementById('edit-qty-input').value = currentQuantity;
+    document.getElementById('modal-edit-quantity').classList.add('show');
+    document.getElementById('edit-qty-input').focus();
 }
 
 async function saveMaterial() {
@@ -85,15 +117,6 @@ async function saveMaterial() {
     }
 }
 
-async function patchStatus(id) {
-    try {
-        await apiCall(`/swa/api/materiali/${id}/toggle-disponibilita`, 'PATCH');
-        await refreshInventory();
-    } catch (err) {
-        Swal.fire('Errore', 'Aggiornamento fallito', 'error');
-    }
-}
-
 async function deleteMaterial(id) {
     const confirm = await Swal.fire({
         title: 'Eliminare articolo?',
@@ -110,5 +133,5 @@ async function deleteMaterial(id) {
     }
 }
 
-function openMaterialModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeMaterialModal(id) { document.getElementById(id).style.display = 'none'; }
+function openMaterialModal(id) { document.getElementById(id).classList.add('show'); }
+function closeMaterialModal(id) { document.getElementById(id).classList.remove('show'); }
