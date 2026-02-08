@@ -260,7 +260,7 @@ INSERT INTO `role` (`id`, `name`) VALUES
 -- Credenziali: admin / admin
 -- Password hashata con BCrypt (strength 10)
 INSERT INTO `user` (`id`, `email`, `password`, `nome`, `cognome`, `attivo`) VALUES
-    (1, 'admin@soccorsoweb.it', '$2a$12$VQE1lW.rgc4Y877S5/d1qu5.ESFJtxqqDUQklcoYwW0yRn6K77dgS', 'Admin', 'Admin', TRUE);
+    (1, 'admin@soccorsoweb.it', '$2a$10$jZMYsSCR4Zt5u/G9P.wq0eqnVg761931RAIPZjKa5F.FdJvRHHDhm', 'Admin', 'Admin', TRUE);
 
 -- Assegnazione ruolo ADMIN all'utente admin
 INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
@@ -270,7 +270,7 @@ INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
 -- Credenziali: operatore@soccorsoweb.it / operatore
 -- Password hashata con BCrypt (strength 10)
 INSERT INTO `user` (`id`, `email`, `password`, `nome`, `cognome`, `attivo`) VALUES
-    (2, 'operatore@soccorsoweb.it', '$2a$12$CuHtzbebRbw5ID24JQ1hV.qBKBuQzyeEVXvPmILEoHtyEufaALXlS', 'Operatore', 'Operatore', TRUE);
+    (2, 'operatore@soccorsoweb.it', '$2a$10$C619opCvLBWfhxGnAoNGmeMllTvDEGYt6Hd.U4vZ0VJQUOhsYSA4G', 'Operatore', 'Operatore', TRUE);
 
 -- Assegnazione ruolo OPERATORE all'utente operatore
 INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
