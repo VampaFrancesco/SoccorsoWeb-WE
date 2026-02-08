@@ -36,7 +36,7 @@
             <span class="name">${nomeUtente!"Admin"}</span>
             <span class="role">Amministratore</span>
         </div>
-        <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        <a href="/auth/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
     </div>
 </aside>
 

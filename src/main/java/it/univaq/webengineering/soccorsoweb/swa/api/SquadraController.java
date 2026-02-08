@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
-@RestController
+@RestController("squadraApiController")
 @RequestMapping("/swa/api/squadre")
 @RequiredArgsConstructor
 public class SquadraController {

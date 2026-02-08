@@ -66,8 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/home",
                                 "/convalida",
-                                "/auth/login",
-                                "/auth/logout"
+                                "/auth/**"
                         ).permitAll()
 
                         // ✅ API pubbliche (senza JWT)

@@ -1,7 +1,6 @@
 package it.univaq.webengineering.soccorsoweb.model.dto.request;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,6 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RichiestaSoccorsoRequest {
 
     @NotBlank(message = "La descrizione è obbligatoria")
@@ -32,14 +30,19 @@ public class RichiestaSoccorsoRequest {
     private BigDecimal longitudine;
 
     @NotBlank(message = "Il nome del segnalante è obbligatorio")
+    @JsonProperty("nome_segnalante")
     private String nomeSegnalante;
 
     @NotBlank(message = "L'email del segnalante è obbligatoria")
     @Email(message = "L'email del segnalante deve essere valida")
+    @JsonProperty("email_segnalante")
     private String emailSegnalante;
 
     @Size(max = 20, message = "Il telefono non può superare i 20 caratteri")
+    @JsonProperty("telefono_segnalante")
     private String telefonoSegnalante;
+
+    private String ipOrigine;
 
     // Foto come byte array (Base64 encoded in JSON)
     private byte[] foto;

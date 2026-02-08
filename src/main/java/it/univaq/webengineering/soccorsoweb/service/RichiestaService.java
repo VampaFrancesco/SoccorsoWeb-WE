@@ -50,6 +50,7 @@ public class RichiestaService {
         RichiestaSoccorso richiesta = richiestaSoccorsoMapper.toEntity(richiestaSoccorsoRequest);
         richiesta.setIpOrigine(getClientIp(request));
         richiesta.setTokenConvalida(UUID.randomUUID().toString());
+        richiesta.setStato(null); // ✅ Stato vuoto fino alla convalida email
 
         RichiestaSoccorso richiestaSalvata = richiestaSoccorsoRepository.save(richiesta);
 

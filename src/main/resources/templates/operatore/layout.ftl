@@ -23,7 +23,7 @@
         <#nested>
 
         <div class="logout-container">
-            <a href="/logout" class="btn-logout">
+            <a href="/auth/logout" class="btn-logout">
                 <i class="fa-solid fa-power-off"></i> Disconnetti
             </a>
         </div>

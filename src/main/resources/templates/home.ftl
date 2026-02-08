@@ -3,251 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${titolo!""} - SoccorsoWeb</title>
+    <title>SoccorsoWeb - Richiesta Intervento</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Font e Icone -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Libreria SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Custom CSS -->
+    <!-- CSS Locale -->
     <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
 
-<!-- Ambient Background -->
+<!-- Sfondo Animato -->
 <div class="bg-circle circle-1"></div>
 <div class="bg-circle circle-2"></div>
 <div class="bg-circle circle-3"></div>
 
-<!-- Top Navigation -->
+<!-- Navigazione -->
 <nav class="top-nav">
     <div class="logo">
-        <i class="fas fa-ambulance"></i>
-        <span>SoccorsoWeb</span>
+        <i class="fa-solid fa-heart-pulse"></i> SoccorsoWeb
     </div>
-    <a href="/login" class="nav-login">
-        <i class="fas fa-user"></i> Accesso Operatori
+    <a href="/auth/login" class="nav-login">
+        <i class="fa-solid fa-user-lock"></i> Area Operatori
     </a>
 </nav>
 
-<!-- Main Container -->
-<div class="main-container">
+<!-- Contenitore Principale -->
+<main class="main-container">
 
-    <!-- Description -->
-    <div class="description-section">
+    <!-- Sezione Sinistra: Descrizione -->
+    <section class="description-section">
         <div class="hero-content">
             <h1>
-                <i class="fas fa-heart-pulse"></i>
-                ${descrizione_h2!"Soccorso Web"}
+                <i class="fa-solid fa-shield-halved"></i>
+                Soccorso Immediato
             </h1>
-            <p class="subtitle">Il portale per le richieste di aiuto in caso di emergenza!
-                                Compilando il modulo verrà inviata una richiesta agli operatori che
-                                organizzeranno in breve tempo un intervento</p>
+            <p class="subtitle">
+                Il portale per le richieste di aiuto in caso di emergenza.
+                Compilando il modulo verrà attivata la procedura di intervento più vicina alla tua posizione.
+            </p>
 
             <div class="features">
                 <div class="feature-item">
-                    <i class="fas fa-clock"></i>
+                    <i class="fa-solid fa-bolt"></i>
                     <span>Intervento rapido 24/7</span>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-shield-halved"></i>
-                    <span>Sicuro e affidabile</span>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-map-location-dot"></i>
+                    <i class="fa-solid fa-location-dot"></i>
                     <span>Geolocalizzazione automatica</span>
                 </div>
-                <p class="subtitle">ATTENZIONE: dopo l'invio della richiesta verrà inoltrata una mail di conferma
-                                                all'indirizzo di posta specificato</p>
+                <div class="feature-item">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Sicuro e Affidabile</span>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Request Form -->
-    <div class="form-section">
+    <!-- Sezione Destra: Form -->
+    <section class="form-section">
         <div class="form-card">
             <div class="form-header">
-                <h2>Richiedi Soccorso</h2>
-                <p>Compila il modulo per inviare una richiesta</p>
+                <h2>Richiedi Aiuto</h2>
+                <p>Compila il modulo sottostante</p>
             </div>
 
-            <form id="richiestaForm">
+            <form id="richiestaForm" action="/richiesta" method="POST" enctype="multipart/form-data">
 
-                <!-- Nome -->
+                <!-- Dati Segnalante -->
                 <div class="form-group">
-                    <label for="nomesegnalante">
-                        <i class="fas fa-user"></i> Nome e Cognome
-                    </label>
-                    <input
-                            type="text"
-                            id="nomesegnalante"
-                            name="nomesegnalante"
-                            class="form-control"
-                            placeholder="Mario Rossi"
-                            required
-                            minlength="3"
-                    >
+                    <label for="nome_segnalante"><i class="fa-solid fa-user"></i> Nome e Cognome</label>
+                    <input type="text" id="nome_segnalante" name="nome_segnalante" class="form-control" placeholder="Il tuo nome" required>
                 </div>
 
-                <!-- Email -->
                 <div class="form-group">
-                    <label for="emailsegnalante">
-                        <i class="fas fa-envelope"></i> Email
-                    </label>
-                    <input
-                            type="email"
-                            id="emailsegnalante"
-                            name="emailsegnalante"
-                            class="form-control"
-                            placeholder="mario.rossi@email.com"
-                            required
-                    >
+                    <label for="email_segnalante"><i class="fa-solid fa-envelope"></i> Email</label>
+                    <input type="email" id="email_segnalante" name="email_segnalante" class="form-control" placeholder="Per la conferma" required>
                 </div>
 
-                <!-- Telefono -->
                 <div class="form-group">
-                    <label for="telefonosegnalante">
-                        <i class="fas fa-phone"></i> Telefono (opzionale)
-                    </label>
-                    <input
-                            type="tel"
-                            id="telefonosegnalante"
-                            name="telefonosegnalante"
-                            class="form-control"
-                            placeholder="333 1234567"
-                    >
+                    <label for="telefono_segnalante"><i class="fa-solid fa-phone"></i> Telefono (Opzionale)</label>
+                    <input type="tel" id="telefono_segnalante" name="telefono_segnalante" class="form-control" placeholder="Per contatti urgenti">
                 </div>
 
-                <!-- Descrizione -->
-                <div class="form-group">
-                    <label for="descrizione">
-                        <i class="fas fa-message"></i> Descrizione Emergenza
-                    </label>
-                    <textarea
-                            id="descrizione"
-                            name="descrizione"
-                            class="form-control"
-                            rows="4"
-                            placeholder="Descrivi brevemente la situazione..."
-                            required
-                            minlength="10"
-                    ></textarea>
-                </div>
-
-                <!-- HIDDEN Coordinates + Indirizzo -->
-                <input type="hidden" id="latitudine" name="latitudine">
-                <input type="hidden" id="longitudine" name="longitudine">
-                <input type="hidden" id="indirizzo" name="indirizzo">
-
-                <!-- Location Display & Manual Input -->
+                <!-- Geolocalizzazione -->
                 <div class="form-group location-display-group">
-                    <label><i class="fas fa-map-pin"></i> Posizione Rilevata</label>
+                    <label><i class="fa-solid fa-map-location-dot"></i> Posizione</label>
 
                     <!-- Status Bar -->
-                    <div id="location-status" class="location-status loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span>Rilevamento GPS in corso...</span>
+                    <div id="location-status" class="location-status">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Rilevamento posizione in corso...
                     </div>
 
-                    <!-- Manual Address Input-->
+                    <!-- Campi Nascosti -->
+                    <input type="hidden" id="latitudine" name="latitudine">
+                    <input type="hidden" id="longitudine" name="longitudine">
+                    <input type="hidden" id="indirizzo" name="indirizzo">
+
+                    <!-- Fallback Manuale -->
                     <div id="manual-address-field" class="manual-input-container" style="display: none;">
-                        <label for="manual-address" class="sub-label">
-                            Non riusciamo a trovarti. Scrivi il tuo indirizzo:
-                        </label>
+                        <span class="sub-label">Inserisci l'indirizzo manualmente:</span>
                         <div class="input-with-btn">
-                            <input
-                                    type="text"
-                                    id="manual-address"
-                                    class="form-control"
-                                    placeholder="Es: Via Roma 10, Milano"
-                            >
+                            <input type="text" id="manual-address" class="form-control" placeholder="Es: Via Roma 1, Milano">
                             <button type="button" id="btn-verify-address" class="btn-verify">
-                                <i class="fas fa-magnifying-glass-location"></i> Cerca
+                                <i class="fa-solid fa-search"></i> Cerca
                             </button>
                         </div>
-                        <p class="manual-note">Inserisci Via e Città</p>
+                        <p class="manual-note">Inserisci città e via per ottenere le coordinate.</p>
                     </div>
                 </div>
 
-                <!-- Photo Upload -->
                 <div class="form-group">
-                    <label for="foto">
-                        <i class="fas fa-camera"></i> Allega Foto (opzionale)
-                    </label>
+                    <label for="descrizione"><i class="fa-solid fa-comment-medical"></i> Descrizione Emergenza</label>
+                    <textarea id="descrizione" name="descrizione" class="form-control" rows="4" placeholder="Descrivi brevemente l'accaduto..." required></textarea>
+                </div>
+
+                <!-- Upload Foto -->
+                <div class="form-group">
+                    <label><i class="fa-solid fa-camera"></i> Foto (Opzionale)</label>
                     <div class="file-input-wrapper">
-                        <input
-                                type="file"
-                                id="foto"
-                                name="foto"
-                                accept="image/*"
-                                class="file-input"
-                        >
+                        <input type="file" id="foto" name="foto" class="file-input" accept="image/*">
                         <label for="foto" class="file-input-label">
-                            <i class="fas fa-cloud-arrow-up"></i>
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
                             <span id="file-name">Seleziona un'immagine</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- CAPTCHA CUSTOM -->
+                <!-- Custom Captcha -->
                 <div class="form-group captcha-group">
-                    <label>
-                        <i class="fas fa-shield-halved"></i> Verifica di Sicurezza
-                    </label>
-
-                    <div class="custom-captcha-container" id="custom-captcha">
-                        <div class="captcha-checkbox" id="captcha-checkbox"></div>
-                        <span class="captcha-text">Non sono un robot</span>
-                        <div class="captcha-logo">
-                            <i class="fas fa-shield-cat"></i>
-                            <small>SafeCheck</small>
+                    <div id="custom-captcha" class="custom-captcha-container">
+                        <div class="captcha-checkbox-wrapper">
+                            <input type="checkbox" id="captcha-checkbox" style="display:none;">
+                            <div class="captcha-checkbox"></div>
+                            <div id="captcha-spinner" class="captcha-spinner"></div>
                         </div>
-
-                        <!-- Spinner nascosto -->
-                        <div class="captcha-spinner" id="captcha-spinner"></div>
+                        <div class="captcha-text">Non sono un robot</div>
+                        <div class="captcha-logo">
+                            <i class="fa-solid fa-shield-cat"></i>
+                            <span>SafeCheck</span>
+                        </div>
                     </div>
-
-                    <!-- Messaggio di errore nascosto -->
-                    <div class="captcha-error" id="captcha-error-msg">
-                        Verifica obbligatoria
-                    </div>
-
-                    <!-- Input nascosto per il token -->
-                    <input type="hidden" id="captcha-token" name="captchaToken">
+                    <div id="captcha-error-msg" class="captcha-error">Verifica il captcha</div>
+                    <input type="hidden" id="captcha-token" name="captcha_token">
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit" class="btn-submit">
-                    <i class="fas fa-paper-plane"></i> Invia Richiesta
+                    <i class="fa-solid fa-paper-plane"></i> INVIA RICHIESTA
                 </button>
 
-                <!-- Privacy Note -->
                 <p class="privacy-note">
-                    <i class="fas fa-lock"></i>
-                    I tuoi dati sono al sicuro
+                    <i class="fa-solid fa-lock"></i> I tuoi dati sono trattati in modo sicuro.
                 </p>
             </form>
         </div>
-    </div>
+    </section>
+</main>
 
-</div>
-
-<!-- Footer -->
 <footer class="footer">
-    <p>
-        2026 SoccorsoWeb | Sviluppato per emergenze
-    </p>
+    &copy; 2026 SoccorsoWeb <span class="footer-separator">|</span> <a href="#">Privacy Policy</a>
 </footer>
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Custom JS -->
-<script src="/js/api.js"></script>
+<!-- Script JS -->
 <script src="/js/home.js"></script>
-
 </body>
 </html>

@@ -1,7 +1,6 @@
 package it.univaq.webengineering.soccorsoweb.model.dto.request;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +14,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ConvalidaRequest {
 
     @NotBlank(message = "Il token di convalida è obbligatorio")
+    @JsonProperty("token_convalida")
     private String tokenConvalida;
 }
 

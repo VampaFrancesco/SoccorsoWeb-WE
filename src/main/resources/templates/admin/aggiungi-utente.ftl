@@ -26,7 +26,7 @@
         <li><a href="/operatori"><i class="fas fa-users"></i> Operatori</a></li>
         <li class="active"><a href="/aggiungi-utente"><i class="fas fa-user-plus"></i> Aggiungi Utente</a></li>
         <li class="spacer"></li>
-        <li><a href="/logout" class="logout-btn-sidebar"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <li><a href="/auth/logout" class="logout-btn-sidebar"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </aside>
 

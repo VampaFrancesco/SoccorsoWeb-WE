@@ -14,7 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
@@ -23,59 +22,76 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     // Constructor Injection - @Autowired opzionale con un solo costruttore
     public JWTAuthenticationFilter(JWTUtil jwtUtil,
-                                   UserDetailsService userDetailsService) {
+            UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        String jwt = null;
+
         // 1. Estrai l'header Authorization
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+        }
+
+        // 2. Se non c'è header, prova i cookie
+        if (jwt == null && request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    jwt = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // Se ancora null, procedi con la filter chain
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. Estrai il token JWT (rimuovi "Bearer ")
-        final String jwt = authHeader.substring(7);
+        // 3. Estrai userEmail dal token
+        // Nota: extractUsername potrebbe lanciare eccezioni se il token è
+        // malformato/scaduto
+        // Idealmente dovresti gestirle, ma qui manteniamo la logica originale
         final String userEmail = jwtUtil.extractUsername(jwt);
 
-        // 3. Se l'utente non è già autenticato
+        // 4. Se l'utente non è già autenticato
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // 4. Carica i dettagli dell'utente
+            // 5. Carica i dettagli dell'utente
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-            // 5. Valida il token
+            // 6. Valida il token
             if (jwtUtil.validateToken(jwt, userDetails)) {
 
-                // 6. Crea l'oggetto Authentication
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                // 7. Crea l'oggetto Authentication
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
 
                 authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                        new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 7. Imposta l'autenticazione nel SecurityContext
+                // 8. Imposta l'autenticazione nel SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
-        // 8. Procedi con la filter chain
+        // 9. Procedi con la filter chain
         filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return  path.startsWith("/v3/api-docs") ||
+        return path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/swa/open") ||
                 path.startsWith("/css/") ||

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://soccorsoweb-swa-production.up.railway.app';
+const API_BASE_URL = 'http://localhost:8080'; // Base URL del backend
 
 async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false) {
     const headers = {};

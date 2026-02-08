@@ -14,14 +14,12 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.net.URI;
 import java.util.Map;
 
-@RestController
+@RestController("richiestaOpenController")
 @RequestMapping("/swa/open/richieste")
 public class RichiestaOpenController {
 
     private final RichiestaService richiestaService;
 
-    @Value("${app.web-service-url}")
-    private String webServiceUrl;
 
     public RichiestaOpenController(RichiestaService richiestaService) {
         this.richiestaService = richiestaService;
@@ -37,7 +35,7 @@ public class RichiestaOpenController {
     @PostMapping
     public ResponseEntity<RichiestaSoccorsoResponse> nuovaRichiesta(
             @Valid @RequestBody RichiestaSoccorsoRequest richiestaSoccorsoRequest,
-            HttpServletRequest request) throws MessagingException {
+            HttpServletRequest request) {
 
         RichiestaSoccorsoResponse response = richiestaService.nuovaRichiesta(richiestaSoccorsoRequest, request);
 

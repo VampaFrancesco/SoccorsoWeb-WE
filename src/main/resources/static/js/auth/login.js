@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Salva il token (dalla tua API si chiama "token")
                 if (data.token) {
                     localStorage.setItem('authToken', data.token);
+                    document.cookie = `jwt=${data.token}; path=/; max-age=86400; SameSite=Strict`;
                 } else {
                     throw new Error('Token non presente nella risposta');
                 }

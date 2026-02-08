@@ -35,7 +35,7 @@
             <li><a href="/mezzi"><i class="fas fa-ambulance"></i> Flotta</a></li>
             <li><a href="/materiali"><i class="fas fa-box-open"></i> Magazzino</a></li>
             <li class="spacer"></li>
-            <li><a href="/registrazione"><i class="fas fa-user-plus"></i> Nuovi Utenti</a></li>
+            <li><a href="/admin/aggiungi-utente"><i class="fas fa-user-plus"></i> Nuovi Utenti</a></li>
 
         <#else>
             <!-- VISTA OPERATORE (Default) -->
@@ -56,7 +56,7 @@
             <!-- Mostra il ruolo formattato -->
             <span class="role">${(ruolo == 'ADMIN')?then('Amministratore', 'Operatore')}</span>
         </div>
-        <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        <a href="/auth/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
     </div>
 </aside>
 

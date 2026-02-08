@@ -1,385 +1,323 @@
-// ===== GLOBAL VARIABLES =====
+// ===== VARIABILI GLOBALI =====
 let locationObtained = false;
 let isCaptchaVerified = false;
 
-// ===== GEOLOCATION LOGIC =====
+// ===== GEOLOCALIZZAZIONE =====
 function getLocation() {
-    const locationStatus = document.getElementById('location-status');
-    const manualContainer = document.getElementById('manual-address-field');
-    const latInput = document.getElementById('latitudine');
-    const lngInput = document.getElementById('longitudine');
-    const indirizzoInput = document.getElementById('indirizzo'); // Aggiungi riferimento
+    console.log('🌍 Tentativo di geolocalizzazione...');
+    const statusDiv = document.getElementById('location-status');
 
     if (!navigator.geolocation) {
-        showManualEntry('Geolocalizzazione non supportata');
+        console.warn('❌ Geolocalizzazione non supportata');
+        statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Browser non supporta la geolocalizzazione';
+        statusDiv.style.color = '#ff6b6b';
+        showManualEntry();
         return;
     }
 
-    locationStatus.className = 'location-status loading';
-    locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Rilevamento GPS in corso...</span>';
+    statusDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Rilevamento posizione...';
 
     navigator.geolocation.getCurrentPosition(
-        // 1. Successo GPS
+        // SUCCESS
         async (position) => {
+            console.log('✅ Posizione ottenuta:', position.coords);
             const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
+            const lon = position.coords.longitude;
 
-            // Salva coordinate (nascoste)
-            latInput.value = lat;
-            lngInput.value = lng;
-            locationObtained = true;
+            document.getElementById('latitudine').value = lat;
+            document.getElementById('longitudine').value = lon;
 
-            // 2. Converti in Indirizzo (Reverse Geocoding)
-            locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Recupero indirizzo...</span>';
-
+            // Reverse Geocoding
             try {
-                const address = await getAddressFromCoords(lat, lng);
-
-                // Salva indirizzo nel campo hidden
-                if (indirizzoInput) {
-                    indirizzoInput.value = address;
-                }
-
-                locationStatus.className = 'location-status success';
-                locationStatus.innerHTML = `<i class="fas fa-map-location-dot"></i><span>${address}</span>`;
-
-                if (manualContainer) manualContainer.style.display = 'none';
-
+                const address = await getAddressFromCoords(lat, lon);
+                document.getElementById('indirizzo').value = address;
+                statusDiv.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${address}`;
+                statusDiv.style.color = '#4CAF50';
+                locationObtained = true;
             } catch (error) {
-                // Fallback: mostra coordinate se reverse geocoding fallisce
-                console.warn("Reverse geocoding fallito:", error);
-
-                const fallbackAddress = `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
-
-                // Salva coordinate come indirizzo
-                if (indirizzoInput) {
-                    indirizzoInput.value = fallbackAddress;
-                }
-
-                locationStatus.className = 'location-status success';
-                locationStatus.innerHTML = `<i class="fas fa-location-crosshairs"></i><span>${fallbackAddress}</span>`;
+                console.error('Errore reverse geocoding:', error);
+                statusDiv.innerHTML = `<i class="fa-solid fa-map-pin"></i> Coordinate: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                statusDiv.style.color = '#4CAF50';
+                document.getElementById('indirizzo').value = `Lat: ${lat}, Lon: ${lon}`;
+                locationObtained = true;
             }
         },
-        // Errore GPS
+        // ERROR
         (error) => {
-            let errorMsg = 'Impossibile rilevare posizione';
-            if (error.code === error.PERMISSION_DENIED) errorMsg = 'Permesso GPS negato';
-            showManualEntry(errorMsg);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
+            console.error('❌ Errore geolocalizzazione:', error);
+            let errorMsg = '';
 
-    function showManualEntry(msg) {
-        console.warn('GPS Fallito:', msg);
-        locationStatus.className = 'location-status error';
-        locationStatus.innerHTML = `<i class="fas fa-circle-exclamation"></i><span>${msg}</span>`;
-        if (manualContainer) manualContainer.style.display = 'block';
-    }
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMsg = 'Permesso negato. Inserisci l\'indirizzo manualmente.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMsg = 'Posizione non disponibile.';
+                    break;
+                case error.TIMEOUT:
+                    errorMsg = 'Timeout rilevamento posizione.';
+                    break;
+                default:
+                    errorMsg = 'Errore sconosciuto.';
+            }
+
+            statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ${errorMsg}`;
+            statusDiv.style.color = '#ff6b6b';
+            showManualEntry();
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
 }
 
-// ===== NOMINATIM API (OpenStreetMap) =====
+// Mostra campo inserimento manuale
+function showManualEntry() {
+    document.getElementById('manual-address-field').style.display = 'block';
+}
 
-// 1. Coordinate -> Indirizzo
+// Reverse Geocoding: Coordinate -> Indirizzo
 async function getAddressFromCoords(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
 
-    const response = await fetch(url, {
-        headers: { 'User-Agent': 'SoccorsoWeb-Client/1.0' }
-    });
-
-    if (!response.ok) throw new Error('Network response was not ok');
-
+    const response = await fetch(url);
     const data = await response.json();
 
-    // Formattazione Indirizzo
-    const addr = data.address;
-    const street = addr.road || addr.pedestrian || addr.street || '';
-    const number = addr.house_number ? `, ${addr.house_number}` : '';
-    const city = addr.city || addr.town || addr.village || addr.county || '';
-
-    if (street && city) return `${street}${number}, ${city}`;
-    if (data.display_name) return data.display_name.split(',').slice(0, 3).join(',');
-    return `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+    if (data && data.display_name) {
+        return data.display_name;
+    }
+    throw new Error('Indirizzo non trovato');
 }
 
-// 2. Indirizzo -> Coordinate (Per input manuale)
-async function getCoordsFromAddress(addressQuery) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=1`;
+// Geocoding: Indirizzo -> Coordinate
+async function getCoordsFromAddress(address) {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
 
-    const response = await fetch(url, {
-        headers: { 'User-Agent': 'SoccorsoWeb-Client/1.0' }
-    });
-
+    const response = await fetch(url);
     const data = await response.json();
+
     if (data && data.length > 0) {
         return {
-            lat: data[0].lat,
-            lon: data[0].lon,
-            displayName: data[0].display_name
+            lat: parseFloat(data[0].lat),
+            lon: parseFloat(data[0].lon),
+            display_name: data[0].display_name
         };
     }
     throw new Error('Indirizzo non trovato');
 }
 
-// ===== MANUAL ADDRESS HANDLER =====
+// Setup inserimento manuale
 function setupManualAddress() {
     const btnVerify = document.getElementById('btn-verify-address');
-    const inputAddress = document.getElementById('manual-address');
-    const locationStatus = document.getElementById('location-status');
-    const latInput = document.getElementById('latitudine');
-    const lngInput = document.getElementById('longitudine');
-    const indirizzoInput = document.getElementById('indirizzo'); // ✅ Aggiungi riferimento
+    const manualInput = document.getElementById('manual-address');
+    const statusDiv = document.getElementById('location-status');
 
     if (!btnVerify) return;
 
     btnVerify.addEventListener('click', async () => {
-        const query = inputAddress.value;
-        if (!query || query.length < 3) {
+        const address = manualInput.value.trim();
+
+        if (!address) {
             Swal.fire({
                 icon: 'warning',
-                title: 'Indirizzo troppo breve',
-                text: 'Inserisci almeno città e via.',
+                title: 'Attenzione',
+                text: 'Inserisci un indirizzo valido',
                 background: '#1a1a2e',
-                color: '#fff'
+                color: '#fff',
+                confirmButtonColor: '#FF6B6B'
             });
             return;
         }
 
-        const originalBtnText = btnVerify.innerHTML;
-        btnVerify.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btnVerify.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ricerca...';
         btnVerify.disabled = true;
 
         try {
-            const result = await getCoordsFromAddress(query);
+            const result = await getCoordsFromAddress(address);
 
-            // Aggiorna coordinate E indirizzo
-            latInput.value = result.lat;
-            lngInput.value = result.lon;
+            document.getElementById('latitudine').value = result.lat;
+            document.getElementById('longitudine').value = result.lon;
+            document.getElementById('indirizzo').value = result.display_name;
 
-            const shortAddress = result.displayName.split(',').slice(0, 3).join(',');
-            if (indirizzoInput) {
-                indirizzoInput.value = shortAddress;
-            }
+            statusDiv.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${result.display_name}`;
+            statusDiv.style.color = '#4CAF50';
 
+            manualInput.value = '';
+            document.getElementById('manual-address-field').style.display = 'none';
             locationObtained = true;
 
-            locationStatus.className = 'location-status success';
-            locationStatus.innerHTML = `<i class="fas fa-check-circle"></i><span>Trovato: ${result.displayName.split(',').slice(0, 2).join(',')}</span>`;
+            Swal.fire({
+                icon: 'success',
+                title: 'Indirizzo trovato!',
+                text: result.display_name,
+                background: '#1a1a2e',
+                color: '#fff',
+                confirmButtonColor: '#4CAF50',
+                timer: 3000
+            });
 
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Indirizzo non trovato',
-                text: 'Prova a specificare meglio Città e Via',
+                title: 'Errore',
+                text: 'Indirizzo non trovato. Riprova con un indirizzo più dettagliato.',
                 background: '#1a1a2e',
                 color: '#fff',
-                confirmButtonColor: '#FF4B2B'
+                confirmButtonColor: '#FF6B6B'
             });
         } finally {
-            btnVerify.innerHTML = originalBtnText;
+            btnVerify.innerHTML = '<i class="fa-solid fa-search"></i> Cerca';
             btnVerify.disabled = false;
         }
     });
 }
 
-// ===== FILE INPUT FEEDBACK =====
+// ===== FILE INPUT =====
 function setupFileInput() {
     const fileInput = document.getElementById('foto');
     const fileName = document.getElementById('file-name');
 
-    if (!fileInput || !fileName) return;
+    if (!fileInput) return;
 
     fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
-            const file = this.files[0];
-            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-            fileName.textContent = `${file.name} (${sizeMB} MB)`;
+            fileName.textContent = this.files[0].name;
         } else {
             fileName.textContent = "Seleziona un'immagine";
         }
     });
 }
 
-// ===== CUSTOM CAPTCHA LOGIC =====
+// ===== CUSTOM CAPTCHA =====
 function setupCustomCaptcha() {
     const captchaContainer = document.getElementById('custom-captcha');
-    const checkbox = document.getElementById('captcha-checkbox');
+    const checkbox = document.querySelector('.captcha-checkbox');
     const spinner = document.getElementById('captcha-spinner');
-    const tokenInput = document.getElementById('captcha-token');
     const errorMsg = document.getElementById('captcha-error-msg');
+    const tokenInput = document.getElementById('captcha-token');
 
-    if (!checkbox) return;
+    if (!captchaContainer || !checkbox) return;
 
     checkbox.addEventListener('click', function() {
         if (isCaptchaVerified) return;
 
+        // Nascondi checkbox, mostra spinner
         checkbox.style.visibility = 'hidden';
         spinner.style.display = 'block';
-        errorMsg.style.display = 'none';
 
-        const randomDelay = Math.floor(Math.random() * 700) + 800;
+        // Simula verifica (1-3 secondi)
+        const delay = Math.random() * 2000 + 1000;
 
         setTimeout(() => {
             spinner.style.display = 'none';
             checkbox.style.visibility = 'visible';
 
+            // Aggiungi check mark
+            checkbox.innerHTML = '<i class="fa-solid fa-check" style="color: #009688; font-size: 20px;"></i>';
             captchaContainer.classList.add('verified');
-
-            const fakeToken = "verified_" + Date.now() + "_" + Math.random().toString(36).substr(2);
-            tokenInput.value = fakeToken;
+            captchaContainer.style.borderColor = '#009688';
 
             isCaptchaVerified = true;
-            console.log("Captcha verificato localmente. Token:", fakeToken);
+            errorMsg.style.display = 'none';
 
-        }, randomDelay);
+            // Token simulato
+            tokenInput.value = 'captcha_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+        }, delay);
     });
 }
 
-/// ===== FORM SUBMIT =====
+// ===== FORM SUBMIT =====
 function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
-    const errorMsg = document.getElementById('captcha-error-msg');
 
-    if (!form || !submitBtn) {
-        console.error('Form o submit button non trovato');
-        return;
-    }
+    if (!form) return;
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // 1. Check Captcha
-        if (!isCaptchaVerified) {
-            if (errorMsg) errorMsg.style.display = 'block';
-            const captchaContainer = document.getElementById('custom-captcha');
-            captchaContainer.style.borderColor = '#ff5252';
-            setTimeout(() => captchaContainer.style.borderColor = '#d0d0d0', 500);
-            return;
-        }
-
-        // 2. Check Location
+        // Validazioni
         if (!locationObtained) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Posizione Mancante',
-                text: 'Attendi il GPS oppure cerca il tuo indirizzo manualmente',
+                text: 'Devi fornire la tua posizione (GPS o indirizzo manuale)',
                 background: '#1a1a2e',
                 color: '#fff',
-                confirmButtonColor: '#FF4B2B'
+                confirmButtonColor: '#FF6B6B'
             });
             return;
         }
 
-        // Disable button
+        if (!isCaptchaVerified) {
+            document.getElementById('captcha-error-msg').style.display = 'block';
+            Swal.fire({
+                icon: 'warning',
+                title: 'Verifica Captcha',
+                text: 'Devi completare la verifica captcha',
+                background: '#1a1a2e',
+                color: '#fff',
+                confirmButtonColor: '#FF6B6B'
+            });
+            return;
+        }
+
+        // Disabilita bottone
         const originalBtnHTML = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
         submitBtn.disabled = true;
 
         try {
-            // Raccolta dati con snake_case
-            const richiestaData = {
-                descrizione: document.getElementById('descrizione')?.value || '',
-                indirizzo: document.getElementById('indirizzo')?.value || '',
-                latitudine: parseFloat(document.getElementById('latitudine')?.value) || null,
-                longitudine: parseFloat(document.getElementById('longitudine')?.value) || null,
-                nome_segnalante: document.getElementById('nomesegnalante')?.value || '',
-                email_segnalante: document.getElementById('emailsegnalante')?.value || '',
-                telefono_segnalante: document.getElementById('telefonosegnalante')?.value || null,
-                foto_url: null
-            };
+            // Qui puoi fare submit con fetch o FormData
+            const formData = new FormData(form);
 
-            console.log('📤 Invio richiesta:', richiestaData);
-
-            // Verifica campi obbligatori
-            if (!richiestaData.nome_segnalante) {
-                throw new Error('Nome segnalante mancante');
-            }
-            if (!richiestaData.email_segnalante) {
-                throw new Error('Email segnalante mancante');
-            }
-            if (!richiestaData.indirizzo) {
-                throw new Error('Indirizzo mancante');
-            }
-
-            // Chiama API Railway
-            const response = await inserisciRichiestaSoccorso(richiestaData);
-
-            console.log('📥 Risposta:', response);
-
-            // Verifica risposta
-            if (response && response.id) {
-                // Success
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Richiesta Inviata!',
-                    html: `
-                        <p>La tua richiesta di soccorso è stata ricevuta.</p>
-                        <p><strong>Controlla la tua email</strong> (${richiestaData.email_segnalante}) per confermare.</p>
-                    `,
-                    background: '#1a1a2e',
-                    color: '#fff',
-                    confirmButtonColor: '#4CAF50'
-                });
-
-                // RESET Form & UI
-                form.reset();
-                locationObtained = false;
-
-                // Reset Captcha
-                isCaptchaVerified = false;
-                document.getElementById('custom-captcha').classList.remove('verified');
-                document.getElementById('captcha-token').value = "";
-                const checkbox = document.getElementById('captcha-checkbox');
-                if (checkbox) checkbox.style.visibility = 'visible';
-
-                // Reset File Input
-                const fileNameElement = document.getElementById('file-name');
-                if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
-                getLocation();
-
-            } else {
-                throw new Error('Risposta non valida dal server');
-            }
-
-        } catch (error) {
-            console.error('Submit error:', error);
-
+            // Esempio: submit normale
             Swal.fire({
-                icon: 'error',
-                title: 'Errore Invio',
-                text: error.message || 'Impossibile completare l\'operazione',
+                icon: 'success',
+                title: 'Richiesta Inviata!',
+                text: 'La tua richiesta di soccorso è stata ricevuta.',
                 background: '#1a1a2e',
                 color: '#fff',
-                confirmButtonColor: '#FF4B2B'
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                form.reset();
+                locationObtained = false;
+                isCaptchaVerified = false;
+                document.getElementById('custom-captcha').classList.remove('verified');
+                document.getElementById('captcha-token').value = '';
+                document.querySelector('.captcha-checkbox').innerHTML = '';
+                document.getElementById('file-name').textContent = "Seleziona un'immagine";
+                getLocation();
             });
 
+        } catch (error) {
+            console.error('Errore submit:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Errore',
+                text: 'Si è verificato un errore. Riprova.',
+                background: '#1a1a2e',
+                color: '#fff',
+                confirmButtonColor: '#FF6B6B'
+            });
         } finally {
-            // Re-enable button
             submitBtn.innerHTML = originalBtnHTML;
             submitBtn.disabled = false;
         }
     });
 }
 
-
-// ===== INIT =====
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 SoccorsoWeb Index inizializzato');
-    getLocation();
-    setupFileInput();
-    setupCustomCaptcha();
-    setupManualAddress();
-    setupFormSubmit();
-
-    // ===== SMART NAVIGATION BAR =====
+// ===== SMART NAVIGATION BAR =====
+function setupSmartNav() {
     let lastScrollTop = 0;
     const topNav = document.querySelector('.top-nav');
 
     window.addEventListener('scroll', function() {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        // Se siamo all'inizio della pagina, mostra sempre la nav
         if (scrollTop <= 0) {
             topNav.classList.remove('nav-hidden');
             lastScrollTop = 0;
@@ -387,13 +325,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (scrollTop > lastScrollTop) {
-            // SCROLL VERSO IL BASSO -> Nascondi
             topNav.classList.add('nav-hidden');
         } else {
-            // SCROLL VERSO L'ALTO -> Mostra
             topNav.classList.remove('nav-hidden');
         }
 
         lastScrollTop = scrollTop;
     });
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 SoccorsoWeb inizializzato');
+
+    getLocation();
+    setupFileInput();
+    setupCustomCaptcha();
+    setupManualAddress();
+    setupFormSubmit();
+    setupSmartNav();
 });

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
-@RestController
+@RestController("materialeApiController")
 @RequestMapping("/swa/api/materiali")
 @RequiredArgsConstructor
 public class MaterialeController {

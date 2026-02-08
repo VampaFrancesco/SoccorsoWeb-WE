@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.relation.RoleNotFoundException;
 import java.util.List;
 
-@RestController
+@RestController("operatoreApiController")
 @RequestMapping("/swa/api/operatori")
 public @Data class OperatoreController {
 

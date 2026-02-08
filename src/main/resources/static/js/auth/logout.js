@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('userRoles');
     localStorage.removeItem('user');
     sessionStorage.clear();
+    document.cookie = "jwt=; path=/; max-age=0; SameSite=Strict";
 
     // Animazione della barra di progresso
     const interval = setInterval(() => {
@@ -18,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Reindirizzamento finale
             setTimeout(() => {
-                window.location.href = '/login';
+                window.location.href = '/auth/login';
             }, 500);
         } else {
             width += 2;
             progressBar.style.width = width + '%';
 
-            if(width === 40) statusText.innerText = "Pulizia cache locale...";
-            if(width === 80) statusText.innerText = "Finalizzazione...";
+            if (width === 40) statusText.innerText = "Pulizia cache locale...";
+            if (width === 80) statusText.innerText = "Finalizzazione...";
         }
     }, 30);
 });

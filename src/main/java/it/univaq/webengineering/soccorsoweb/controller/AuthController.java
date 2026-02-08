@@ -3,15 +3,15 @@ package it.univaq.webengineering.soccorsoweb.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Controller
+@Controller("authWebController")
 public class AuthController {
 
-    @GetMapping("/login")
+    @GetMapping("/auth/login")
     public String showLoginPage() {
         return "auth/login";
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/auth/logout")
     public String showLogoutPage() {
         return "auth/logout";
     }

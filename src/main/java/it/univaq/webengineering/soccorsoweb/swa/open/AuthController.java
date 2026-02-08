@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController("authOpenController")
 @RequestMapping("/swa/open/auth")
 public class AuthController {
 
