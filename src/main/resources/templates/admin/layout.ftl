@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="stylesheet" href="/css/materiali.css">
+        <link rel="stylesheet" href="/css/richieste.css">
         ${extraHead}
     </head>
     <body>
