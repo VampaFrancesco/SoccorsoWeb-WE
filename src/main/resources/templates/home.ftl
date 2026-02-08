@@ -227,31 +227,31 @@
                     <small class="form-hint">Dimensione massima: 5MB. Formati: JPG, PNG, WEBP</small>
                 </div>
 
-                <!-- CAPTCHA -->
+                <!-- CAPTCHA CUSTOM -->
                 <div class="form-group captcha-group">
                     <label>
                         <i class="fas fa-shield-halved"></i> Verifica di Sicurezza
-                        <span class="required">*</span>
                     </label>
 
                     <div class="custom-captcha-container" id="custom-captcha">
-                        <label class="captcha-checkbox-label" for="captcha-checkbox">
-                            <div class="captcha-checkbox"></div>
-                            <span class="captcha-text">Non sono un robot</span>
-                        </label>
+                        <div class="captcha-checkbox" id="captcha-checkbox"></div>
+                        <span class="captcha-text">Non sono un robot</span>
                         <div class="captcha-logo">
                             <i class="fas fa-shield-cat"></i>
                             <small>SafeCheck</small>
                         </div>
+
+                        <!-- Spinner nascosto -->
                         <div class="captcha-spinner" id="captcha-spinner"></div>
                     </div>
 
-                    <input type="checkbox" id="captcha-checkbox" name="captchaverificato" required style="display: none;">
-                    <input type="hidden" id="captcha-token" name="captchaToken" value="">
-
+                    <!-- Messaggio di errore nascosto -->
                     <div class="captcha-error" id="captcha-error-msg">
-                        <i class="fas fa-exclamation-circle"></i>Verifica obbligatoria
+                        Verifica obbligatoria
                     </div>
+
+                    <!-- Input nascosto per il token -->
+                    <input type="hidden" id="captcha-token" name="captchaToken">
                 </div>
 
                 <!-- SUBMIT BUTTON -->
@@ -262,7 +262,7 @@
                 <!-- PRIVACY NOTE -->
                 <p class="privacy-note">
                     <i class="fas fa-lock"></i>
-                    I tuoi dati sono protetti e verranno utilizzati solo per gestire la richiesta di soccorso
+                    I tuoi dati sono al sicuro
                 </p>
 
                 <p class="required-note">
@@ -281,17 +281,8 @@
 <footer class="footer">
     <div class="footer-content">
         <p>
-            &copy; 2026 SoccorsoWeb |
-            Sviluppato per emergenze |
-            <a href="/privacy">Privacy Policy</a> |
-            <a href="/termini">Termini di Servizio</a>
-        </p>
-        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 8px;">
-            <i class="fas fa-phone-volume"></i>
-            Numero emergenze: <strong>118</strong> |
-            <i class="fas fa-envelope"></i>
-            Email: <a href="mailto:info@soccorsoweb.it">info@soccorsoweb.it</a>
-        </p>
+            2026 SoccorsoWeb |
+            Sviluppato per emergenze
     </div>
 </footer>
 

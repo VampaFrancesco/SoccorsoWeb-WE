@@ -455,7 +455,7 @@ textarea.form-control {
     font-size: 1.2rem;
 }
 
-/* ===== CUSTOM CAPTCHA (SAFECHECK) ===== */
+/* ===== CUSTOM CAPTCHA (SAFECHECK) - FIXED DEFINITIVO ===== */
 .captcha-group {
     margin-top: 25px;
 }
@@ -467,7 +467,7 @@ textarea.form-control {
     padding: 0 12px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; /* Separa sinistra (checkbox) e destra (logo) */
     width: 100%;
     max-width: 304px;
     height: 74px;
@@ -482,7 +482,8 @@ textarea.form-control {
     display: flex;
     align-items: center;
     cursor: pointer;
-    flex: 1;
+    flex-grow: 1;
+    height: 100%; /* Occupa tutta l'altezza */
 }
 
 .captcha-checkbox {
@@ -491,12 +492,17 @@ textarea.form-control {
     border: 2px solid #c1c1c1;
     border-radius: 2px;
     background: #fff;
-    margin-right: 12px;
+
+    /* --- FIXED SPACE --- */
+    margin-right: 15px; /* Spazio fisico a destra del quadrato */
+    position: relative;
+    flex-shrink: 0;
+    /* ------------------ */
+
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
 }
 
 .captcha-checkbox:hover {
@@ -521,6 +527,7 @@ textarea.form-control {
     font-weight: 500;
     color: #2d2d2d;
     font-family: 'Roboto', sans-serif;
+    white-space: nowrap; /* Evita a capo strani */
 }
 
 .captcha-logo {
@@ -531,6 +538,7 @@ textarea.form-control {
     color: #555;
     font-size: 10px;
     margin-left: 10px;
+    flex-shrink: 0;
 }
 
 .captcha-logo i {
@@ -549,6 +557,7 @@ textarea.form-control {
     animation: spin 1s linear infinite;
     position: absolute;
     left: 11px;
+    top: 24px;
 }
 
 @keyframes spin {
