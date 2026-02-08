@@ -55,33 +55,41 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 3. Estrai userEmail dal token
-        // Nota: extractUsername potrebbe lanciare eccezioni se il token è
-        // malformato/scaduto
-        // Idealmente dovresti gestirle, ma qui manteniamo la logica originale
-        final String userEmail = jwtUtil.extractUsername(jwt);
+        try {
+            // 3. Estrai userEmail dal token
+            final String userEmail = jwtUtil.extractUsername(jwt);
 
-        // 4. Se l'utente non è già autenticato
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // 4. Se l'utente non è già autenticato
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // 5. Carica i dettagli dell'utente
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+                // 5. Carica i dettagli dell'utente
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-            // 6. Valida il token
-            if (jwtUtil.validateToken(jwt, userDetails)) {
+                // 6. Valida il token
+                if (jwtUtil.validateToken(jwt, userDetails)) {
 
-                // 7. Crea l'oggetto Authentication
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
+                    // 7. Crea l'oggetto Authentication
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities());
 
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 8. Imposta l'autenticazione nel SecurityContext
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    // 8. Imposta l'autenticazione nel SecurityContext
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception e) {
+            // Se il token è scaduto, malformato, o l'utente non esiste più:
+            // Logghiamo l'errore ma NON blocchiamo la richiesta.
+            // La richiesta procederà come "anonima".
+            // Se l'endpoint richiede autenticazione, ci penserà Spring Security a dare 403.
+            // Se è pubblico (come /auth/login), funzionerà correttamente.
+            logger.warn("JWT validation failed: " + e.getMessage());
+            // Opzionale: pulire il SecurityContext per sicurezza
+            SecurityContextHolder.clearContext();
         }
 
         // 9. Procedi con la filter chain

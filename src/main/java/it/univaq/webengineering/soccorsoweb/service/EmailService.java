@@ -118,7 +118,7 @@ public class EmailService {
                             <p>Per la tua sicurezza, ti chiediamo di cambiare la password al primo accesso.</p>
 
                             <div style="text-align: center; margin: 30px 0;">
-                                <a href="http://localhost:8080/login?action=change-password" class="button">🔄 Accedi e Cambia Password</a>
+                                <a href="http://localhost:8080/auth/login?action=change-password" class="button">🔄 Accedi e Cambia Password</a>
                             </div>
 
                             <p style="margin-top: 30px; color: #856404; background-color: #fff3cd; padding: 10px; border-radius: 5px;">

@@ -77,7 +77,6 @@ public class RichiestaSoccorso {
 
     // Enum per lo stato
     public enum StatoRichiesta {
-        PENDING,      // In attesa di convalida email
         ATTIVA,       // Convalidata, in attesa di gestione
         IN_CORSO,     // Missione assegnata e in corso
         CHIUSA,       // Missione completata

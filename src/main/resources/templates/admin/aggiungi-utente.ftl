@@ -1,45 +1,11 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aggiungi Utente - SoccorsoWeb</title>
+<#import "layout.ftl" as layout>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <link rel="stylesheet" href="/css/aggiungi-utente.css">
-</head>
-<body>
-
-<aside class="sidebar">
-    <div class="sidebar-header">
-        <div class="logo-icon"><i class="fas fa-star-of-life"></i></div>
-        <span class="logo-text">SoccorsoWeb</span>
-    </div>
-
-    <ul class="nav-links">
-        <li><a href="/admin"><i class="fas fa-grid-2"></i> Dashboard</a></li>
-        <li><a href="/richieste"><i class="fas fa-bell"></i> Richieste</a></li>
-        <li><a href="/operatori"><i class="fas fa-users"></i> Operatori</a></li>
-        <li class="active"><a href="/aggiungi-utente"><i class="fas fa-user-plus"></i> Aggiungi Utente</a></li>
-        <li class="spacer"></li>
-        <li><a href="/auth/logout" class="logout-btn-sidebar"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
-</aside>
-
-<main class="main-content">
-    <header class="top-header">
-        <div class="header-title">
-            <h1>Gestione Staff</h1>
-            <p>Registrazione di un nuovo profilo operativo nel sistema</p>
-        </div>
-        <div class="header-status">
-            <span class="status-indicator"><i class="fas fa-shield-halved"></i> Area Protetta</span>
-        </div>
-    </header>
+<@layout.pagina_admin 
+    titolo="Gestione Staff"
+    nomeUtente=nomeUtente!"Admin"
+    extraHead='<link rel="stylesheet" href="/css/aggiungi-utente.css"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>'
+    extraScripts='<script src="/js/admin/aggiungi-utente.js"></script>'
+    headerContent='<div class="header-status"><span class="status-indicator"><i class="fas fa-shield-halved"></i> Area Protetta</span></div>'>
 
     <div class="form-container">
         <div class="widget">
@@ -93,10 +59,4 @@
             </form>
         </div>
     </div>
-</main>
-
-<script src="/js/auth-guard.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/admin/aggiungi-utente.js"></script>
-</body>
-</html>
+</@layout.pagina_admin>

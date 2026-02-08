@@ -1,35 +1,18 @@
+
 function determineRedirectUrl(data) {
-    // 🔍 DEBUG: Stampa TUTTO quello che ricevi
-    console.log('🔍 DEBUG REDIRECT:');
-    console.log('data completo:', data);
-    console.log('data.roles:', data.roles);
-    console.log('data.first_attempt:', data.first_attempt);
-
-    if (data.first_attempt) {
-        console.log('✅ Primo accesso rilevato. Redirect a: /auth/cambia-password');
+    if (data.first_attempt === true || data.firstAttempt === true) {
         return '/auth/cambia-password';
-    }
-
-    if (data.roles) {
-        data.roles.forEach((role, index) => {
-            console.log(`Role ${index}:`, role);
-            console.log(`  - name: "${role.name}"`);
-            console.log(`  - tipo: ${typeof role.name}`);
-        });
     }
 
     const isAdmin = data.roles && data.roles.some(role => role.name === 'ADMIN');
     const isOperatore = data.roles && data.roles.some(role => role.name === 'OPERATORE');
 
-    console.log('isAdmin:', isAdmin);
-    console.log('isOperatore:', isOperatore);
-
     if (isAdmin) {
-        console.log('✅ Redirect a: /admin');
         return '/admin';
-    } else {
-        console.log('✅ Redirect a: /operatore');
+    } else if (isOperatore) {
         return '/operatore';
+    } else {
+        return '/home';
     }
 }
 
@@ -154,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
             } catch (error) {
-                console.error('Login error:', error);
+                console.error('Login Error');
 
                 const msg = error.message || 'Credenziali non valide o errore server.';
 

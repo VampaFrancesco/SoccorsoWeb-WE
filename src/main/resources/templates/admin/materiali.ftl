@@ -1,39 +1,34 @@
 <#import "layout.ftl" as layout>
 
-<@layout.pagina_admin titolo="Gestione Magazzino" nomeUtente=nomeUtente!"Admin">
-    <main class="main-content">
-        <header class="top-header">
-            <div class="header-title">
-                <h1>Magazzino Materiali</h1>
-                <p>Monitoraggio scorte e presidi sanitari</p>
-            </div>
-            <button class="btn-modern-add" onclick="openMaterialModal('modal-add-material')">
+<@layout.pagina_admin 
+    titolo="Gestione Magazzino" 
+    nomeUtente=nomeUtente!"Admin"
+    headerContent='<button class="btn-modern-add" onclick="openMaterialModal(\'modal-add-material\')">
                 <i class="fas fa-plus-circle"></i>
                 <span>Aggiungi Articolo</span>
-            </button>
-        </header>
+            </button>'
+    extraScripts='<script src="/js/admin/materiali.js"></script>'>
 
-        <div class="inventory-container">
-            <div class="inventory-column">
-                <div class="section-header">
-                    <h3 class="status-title available"><i class="fas fa-box"></i> In Stock</h3>
-                    <span class="inventory-badge" id="count-available">0</span>
-                </div>
-                <div id="list-available" class="material-list">
-                    <div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i></div>
-                </div>
+    <div class="inventory-container">
+        <div class="inventory-column">
+            <div class="section-header">
+                <h3 class="status-title available"><i class="fas fa-box"></i> In Stock</h3>
+                <span class="inventory-badge" id="count-available">0</span>
             </div>
-
-            <div class="inventory-column">
-                <div class="section-header">
-                    <h3 class="status-title unavailable"><i class="fas fa-exclamation-triangle"></i> Esauriti / In Manutenzione</h3>
-                    <span class="inventory-badge" id="count-unavailable">0</span>
-                </div>
-                <div id="list-unavailable" class="material-list">
-                </div>
+            <div id="list-available" class="material-list">
+                <div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i></div>
             </div>
         </div>
-    </main>
+
+        <div class="inventory-column">
+            <div class="section-header">
+                <h3 class="status-title unavailable"><i class="fas fa-exclamation-triangle"></i> Esauriti / In Manutenzione</h3>
+                <span class="inventory-badge" id="count-unavailable">0</span>
+            </div>
+            <div id="list-unavailable" class="material-list">
+            </div>
+        </div>
+    </div>
 
     <div id="modal-add-material" class="modal-overlay">
         <div class="modal-content">

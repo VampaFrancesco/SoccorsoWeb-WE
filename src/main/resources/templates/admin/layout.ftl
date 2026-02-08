@@ -1,4 +1,4 @@
-<#macro pagina_admin titolo="Control Room" nomeUtente="Admin">
+<#macro pagina_admin titolo="Control Room" nomeUtente="Admin" extraHead="" headerContent='<div class="header-status"><span class="status-indicator online"><i class="fas fa-circle"></i> Sistema Operativo</span></div>' extraScripts="">
     <!DOCTYPE html>
     <html lang="it">
     <head>
@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="stylesheet" href="/css/materiali.css">
+        ${extraHead}
     </head>
     <body>
 
@@ -48,8 +49,8 @@
                 <h1>${titolo}</h1>
                 <p id="current-date">Caricamento data...</p>
             </div>
-            <div class="header-status">
-                <span class="status-indicator online"><i class="fas fa-circle"></i> Sistema Operativo</span>
+            <div class="header-actions">
+                ${headerContent}
             </div>
         </header>
 
@@ -60,6 +61,7 @@
     <script src="/js/auth-guard.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/admin/admin.js"></script>
+    ${extraScripts}
     </body>
     </html>
 </#macro>

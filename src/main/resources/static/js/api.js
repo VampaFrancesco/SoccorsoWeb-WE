@@ -22,12 +22,6 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
     };
 
     if (body) {
-        console.log('🚀 REQUEST DEBUG:');
-        console.log('  URL:', `${API_BASE_URL}${endpoint}`);
-        console.log('  Method:', method);
-        console.log('  Headers:', headers);
-        console.log('  Body Object:', body);
-        console.log('  Body JSON:', JSON.stringify(body, null, 2));
         options.body = (body instanceof FormData) ? body : JSON.stringify(body);
     }
 
@@ -257,25 +251,8 @@ async function getMissioniMezzo(id) {
 
 // API 24 - Cambio Password
 async function cambiaPassword(oldPassword, newPassword) {
-    // Usa il path relativo se siamo sullo stesso dominio, altrimenti usa API_BASE_URL
-    // Modifichiamo la chiamata per essere coerenti con il resto
     return await apiCall('/swa/api/auth/change-password', 'PUT', {
         old_password: oldPassword,
         new_password: newPassword
     }, true);
-}
-
-// API 25 - Completa Primo Accesso
-async function completePrimoAccesso() {
-    return await apiCall('/swa/api/auth/complete-first-login', 'PUT', null, true);
-}
-
-async function changeUserPassword(userId, newPassword) {
-    return await apiCall(`/swa/api/auth/change-password`, 'PUT', {
-        new_password: newPassword
-    }, true);
-}
-
-async function changeDisponibilitaMezzo(id){
-    return await apiCall('/swa/api/mezzi/{id}/disponibilita', 'PATCH', null, true);
 }

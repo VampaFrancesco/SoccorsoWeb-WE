@@ -64,10 +64,10 @@ public class RichiestaService {
                     richiestaSalvata.getNomeSegnalante(),
                     linkConvalida);
 
-            log.info("✅ Email di convalida inviata a: {}", richiestaSalvata.getEmailSegnalante());
+            log.info("Email di convalida inviata a: {}", richiestaSalvata.getEmailSegnalante());
 
         } catch (Exception e) {
-            log.error("⚠️ Impossibile inviare email di convalida a {}: {}",
+            log.error("⚠Impossibile inviare email di convalida a {}: {}",
                     richiestaSalvata.getEmailSegnalante(), e.getMessage());
             log.error("Stack trace completo: ", e);
         }
@@ -76,7 +76,7 @@ public class RichiestaService {
         return richiestaSoccorsoMapper.toResponse(richiestaSalvata);
     }
 
-    public boolean convalidaRichiesta(String token) throws EntityNotFoundException {
+    public void convalidaRichiesta(String token) throws EntityNotFoundException {
         RichiestaSoccorso richiesta = richiestaSoccorsoRepository.findByTokenConvalida(token);
 
         if (richiesta == null) {
@@ -87,7 +87,6 @@ public class RichiestaService {
         richiesta.setConvalidataAt(LocalDateTime.now());
         richiesta.setUpdatedAt(LocalDateTime.now());
         richiestaSoccorsoRepository.save(richiesta);
-        return true;
     }
 
     public Page<RichiestaSoccorsoResponse> richiesteFiltrate(String stato, Pageable pageable) {
