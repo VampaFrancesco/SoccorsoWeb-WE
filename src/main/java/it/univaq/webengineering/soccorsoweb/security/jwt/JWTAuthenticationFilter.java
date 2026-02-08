@@ -22,7 +22,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     // Constructor Injection - @Autowired opzionale con un solo costruttore
     public JWTAuthenticationFilter(JWTUtil jwtUtil,
-            UserDetailsService userDetailsService) {
+                                   UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
