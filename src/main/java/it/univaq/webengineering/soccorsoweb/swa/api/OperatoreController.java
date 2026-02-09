@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.relation.RoleNotFoundException;
 import java.util.List;
 
 @RestController("operatoreApiController")
@@ -59,6 +58,17 @@ public @Data class OperatoreController {
     @PreAuthorize("hasAnyRole('ADMIN','OPERATORE')")
     public ResponseEntity<List<MissioneResponse>> missioniOperatore(@PathVariable Long id) {
         return ResponseEntity.ok().body(missioneService.missioniOperatore(id));
+    }
+
+    /**
+     * API: Liste missioni dell'operatore loggato
+     */
+    // GET /swa/api/operatori/me/missioni
+    @GetMapping("/me/missioni")
+    @PreAuthorize("hasRole('OPERATORE')")
+    public ResponseEntity<List<MissioneResponse>> myMissioni() {
+        UserResponse profile = operatoreService.getProfile();
+        return ResponseEntity.ok().body(missioneService.missioniOperatore(profile.getId()));
     }
 
     /**

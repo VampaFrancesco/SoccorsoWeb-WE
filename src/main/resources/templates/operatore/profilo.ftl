@@ -92,15 +92,14 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
                 <div class="form-group">
                     <label for="abilita">Abilità e Competenze</label>
-                    <p class="help-text">Elenco abilità (Separate da virgola)</p>
-                     <#-- Convert set of abilita to comma string -->
-                    <#assign abilitaStr = "">
-                    <#if user?? && user.abilita??>
-                         <#list user.abilita as ab>
-                             <#assign abilitaStr = abilitaStr + ab.nome + ", ">
-                         </#list>
-                    </#if>
-                    <input type="text" id="abilita" class="form-control" placeholder="Abilità..." value="${abilitaStr}">
+                    <p class="help-text">Clicca per gestire le tue abilità</p>
+                    <div id="abilita-tags" class="abilita-tags-container">
+                        <#-- Le abilità vengono caricate via JS -->
+                    </div>
+                    <button type="button" class="btn-secondary" id="btn-gestisci-abilita" onclick="apriModaleAbilita()">
+                        <i class="fas fa-plus"></i> Gestisci Abilità
+                    </button>
+                    <input type="hidden" id="abilita" name="abilita" value="">
                 </div>
 
                 <!-- Pulsante Salva -->
@@ -114,6 +113,61 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
         </div>
 
+    </div>
+
+    <!-- Modal Gestione Abilità -->
+    <div id="modal-abilita" class="modal-overlay">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-tools"></i> Gestisci Abilità</h3>
+                <button class="modal-close" onclick="chiudiModaleAbilita()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Abilità Selezionate -->
+                <div class="abilita-section">
+                    <h4>Le tue abilità</h4>
+                    <div id="abilita-selezionate" class="abilita-chips">
+                        <p class="text-muted">Nessuna abilità selezionata</p>
+                    </div>
+                </div>
+                
+                <hr class="divider">
+                
+                <!-- Abilità Disponibili -->
+                <div class="abilita-section">
+                    <h4>Abilità disponibili</h4>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-abilita" placeholder="Cerca abilità..." oninput="filtraAbilita()">
+                    </div>
+                    <div id="abilita-disponibili" class="abilita-list">
+                        <p class="text-muted">Caricamento...</p>
+                    </div>
+                </div>
+                
+                <hr class="divider">
+                
+                <!-- Crea Nuova Abilità -->
+                <div class="abilita-section">
+                    <h4>Crea nuova abilità</h4>
+                    <div class="new-abilita-form">
+                        <input type="text" id="nuova-abilita-nome" placeholder="Nome abilità" class="form-control">
+                        <input type="text" id="nuova-abilita-desc" placeholder="Descrizione (opzionale)" class="form-control">
+                        <button type="button" class="btn-primary" onclick="creaNuovaAbilita()">
+                            <i class="fas fa-plus"></i> Aggiungi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="chiudiModaleAbilita()">Chiudi</button>
+                <button type="button" class="btn-primary" onclick="salvaAbilitaSelezionate()">
+                    <i class="fas fa-check"></i> Conferma Selezione
+                </button>
+            </div>
+        </div>
     </div>
 
 </@layout.pagina_operatore>

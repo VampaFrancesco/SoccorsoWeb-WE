@@ -146,12 +146,14 @@ public class MissioneService {
         return missioneMapper.toResponse(missioneSalvata);
     }
 
+    @Transactional(readOnly = true)
     public MissioneResponse dettagliMissione(Long id) {
         Missione missione = missioneRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Missione non trovata con ID: " + id));
         return missioneMapper.toResponse(missione);
     }
 
+    @Transactional(readOnly = true)
     public List<MissioneResponse> missioniOperatore(Long id) {
         List<Missione> missioni = missioneRepository.findAllByOperatoreId(id);
         return missioneMapper.toResponseList(missioni);
@@ -160,6 +162,7 @@ public class MissioneService {
     // TODO: Implementare findAllByOperatoreId in Repository se manca, o usare query
     // su MissioneOperatore
 
+    @Transactional(readOnly = true)
     public List<MissioneResponse> tutteLeMissioni() {
         List<Missione> missioni = missioneRepository.findAll();
         return missioneMapper.toResponseList(missioni);

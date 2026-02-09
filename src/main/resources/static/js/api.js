@@ -256,3 +256,14 @@ async function cambiaPassword(oldPassword, newPassword) {
         new_password: newPassword
     }, true);
 }
+
+// ABILITA
+// API 25 - Lista tutte le abilità disponibili
+async function getTutteAbilita() {
+    return await apiCall('/swa/api/abilita', 'GET', null, true);
+}
+
+// API 26 - Crea una nuova abilità
+async function creaAbilita(nome, descrizione = '') {
+    return await apiCall('/swa/api/abilita', 'POST', { nome, descrizione }, true);
+}

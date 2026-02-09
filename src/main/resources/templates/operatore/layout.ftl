@@ -6,33 +6,64 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${titolo} - SoccorsoWeb</title>
 
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="/css/global.css">
         <link rel="stylesheet" href="/css/operatore.css">
         ${extraHead}
     </head>
     <body>
 
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>${titolo}</h1>
-            <p>Gestione operativa Soccorso Web</p>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="fas fa-star-of-life"></i></div>
+            <span class="logo-text">SoccorsoWeb</span>
         </div>
 
-        <#-- Punto di inserimento per il contenuto specifico della pagina -->
+        <ul class="nav-links">
+            <li><a href="/operatore"><i class="fas fa-gauge-high"></i> <span>Dashboard</span></a></li>
+            <li>
+            </li>
+            <li><a href="/operatore/missioni"><i class="fas fa-map-location-dot"></i> <span>Missioni</span></a></li>
+            <li class="spacer"></li>
+            <li><a href="/operatore/profilo"><i class="fas fa-user-gear"></i> <span>Profilo</span></a></li>
+        </ul>
+
+        <div class="user-profile">
+            <div class="user-avatar">
+                <#if loggedUser??>
+                    ${(loggedUser.nome!"O")?substring(0,1)}${(loggedUser.cognome!"")?substring(0,1)}
+                <#else>
+                    ${(nomeUtente!"Operatore")?substring(0,1)}
+                </#if>
+            </div>
+            <div class="user-details">
+                <span class="name">
+                    <#if loggedUser??>
+                        ${loggedUser.nome!} ${loggedUser.cognome!}
+                    <#else>
+                        ${nomeUtente!"Operatore"}
+                    </#if>
+                </span>
+                <span class="role">Operatore</span>
+            </div>
+            <a href="/auth/logout" class="logout-btn"><i class="fas fa-right-from-bracket"></i></a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-title">
+                <h1>${titolo}</h1>
+                <p>Gestione operativa Soccorso Web</p>
+            </div>
+        </header>
+
         <#nested>
+    </main>
 
-        <div class="logout-container">
-            <a href="/auth/logout" class="btn-logout">
-                <i class="fa-solid fa-power-off"></i> Disconnetti
-            </a>
-        </div>
-    </div>
-
-    <script src="/js/auth-guard.js"></script>
     <script src="/js/api.js"></script>
-    <script src="/js/operatore_comune.js"></script>
+    <script src="/js/operatore/operatore.js"></script>
     ${extraScripts}
     </body>
     </html>

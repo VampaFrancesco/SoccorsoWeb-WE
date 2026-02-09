@@ -36,85 +36,83 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JWTAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomUserDetailsService customUserDetailsService;
+        private final JWTAuthenticationFilter jwtAuthenticationFilter;
+        private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(JWTAuthenticationFilter jwtAuthenticationFilter,
-            CustomUserDetailsService customUserDetailsService) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.customUserDetailsService = customUserDetailsService;
-    }
+        public SecurityConfig(JWTAuthenticationFilter jwtAuthenticationFilter,
+                        CustomUserDetailsService customUserDetailsService) {
+                this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+                this.customUserDetailsService = customUserDetailsService;
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        // ✅ File statici (CSS, JS, immagini)
-                        .requestMatchers(
-                                "/",
-                                "/index.html",
-                                "/css/**",
-                                "/js/**",
-                                "/img/**",
-                                "/static/**",
-                                "/favicon.ico"
-                        ).permitAll()
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .cors(Customizer.withDefaults())
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(auth -> auth
+                                                // ✅ File statici (CSS, JS, immagini)
+                                                .requestMatchers(
+                                                                "/",
+                                                                "/index.html",
+                                                                "/css/**",
+                                                                "/js/**",
+                                                                "/img/**",
+                                                                "/static/**",
+                                                                "/favicon.ico")
+                                                .permitAll()
 
-                        // ✅ Pagine pubbliche (senza autenticazione)
-                        .requestMatchers(
-                                "/home",
-                                "/convalida",
-                                "/auth/**"
-                        ).permitAll()
+                                                // ✅ Pagine pubbliche (senza autenticazione)
+                                                .requestMatchers(
+                                                                "/home",
+                                                                "/convalida",
+                                                                "/auth/**",
+                                                                "/error")
+                                                .permitAll()
 
-                        // ✅ API pubbliche (senza JWT)
-                        .requestMatchers("/swa/open/**").permitAll()
+                                                // ✅ API pubbliche (senza JWT)
+                                                .requestMatchers("/swa/open/**").permitAll()
 
-                        // ✅ Swagger/OpenAPI
-                        .requestMatchers(
-                                "/api-docs/**",
-                                "/api-docs.yaml",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
+                                                // ✅ Swagger/OpenAPI
+                                                .requestMatchers(
+                                                                "/api-docs/**",
+                                                                "/api-docs.yaml",
+                                                                "/swagger-ui/**",
+                                                                "/swagger-ui.html")
+                                                .permitAll()
 
-                        // 🔒 Sezioni protette per ruolo
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/operatore/**").hasRole("OPERATORE")
+                                                // 🔒 Sezioni protette per ruolo
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/operatore/**").hasRole("OPERATORE")
 
-                        // 🔒 API protette (richiedono JWT)
-                        .requestMatchers("/swa/api/**").authenticated()
+                                                // 🔒 API protette (richiedono JWT)
+                                                .requestMatchers("/swa/api/**").authenticated()
 
-                        // 🔒 Tutto il resto richiede autenticazione
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                                                // 🔒 Tutto il resto richiede autenticazione
+                                                .anyRequest().authenticated())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authenticationProvider(authenticationProvider())
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
+        @Bean
+        public AuthenticationProvider authenticationProvider() {
+                DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
+                provider.setPasswordEncoder(passwordEncoder());
+                return provider;
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+                return config.getAuthenticationManager();
+        }
 
 }
-
