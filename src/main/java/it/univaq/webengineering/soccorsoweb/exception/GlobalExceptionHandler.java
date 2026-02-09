@@ -15,7 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpClientErrorException.*;
 
 import javax.management.relation.RoleNotFoundException;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED,
                 ex.getMessage()
         );
-        problemDetail.setTitle("Credenziali Errate - Login Fallito!");
+        problemDetail.setTitle("Credenziali Errate - Login Fallito!" + ex.getCause());
         return problemDetail;
     }
 
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 errors.toString()
         );
-        problemDetail.setTitle("Validation Error");
+        problemDetail.setTitle("Errore nella validazione dei dati");
         return problemDetail;
     }
 
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Errore interno del server"
         );
-        problemDetail.setTitle("Internal Server Error");
+        problemDetail.setTitle("Problema interno al server, contattare l'amministratore" + ex.getCause().getMessage());
         return problemDetail;
     }
 
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "Messaggio HTTP non leggibile"
         );
-        problemDetail.setTitle("HTTP Message Not Readable");
+        problemDetail.setTitle("Parsing HTTP non riuscito" + ex.getCause());
         return problemDetail;
     }
 
@@ -79,8 +79,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "Non è stato possibile creare l'entità a causa di una violazione dell'integrità dei dati"
         );
-        problemDetail.setTitle("Data Integrity Violation");
-        ex.printStackTrace();
+        problemDetail.setTitle("Integrità dei dati violata"+ ex.getCause());
         return problemDetail;
     }
 
@@ -102,18 +101,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Impossibile completare l'operazione: errore nell'invio dell'email di convalida"
         );
-        problemDetail.setTitle("Errore invio email");
+        problemDetail.setTitle("Errore invio email" + ex.getCause());
         return problemDetail;
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
-    public ProblemDetail handleTooManyRequest(HttpClientErrorException.TooManyRequests ex) {
+    @ExceptionHandler(TooManyRequests.class)
+    public ProblemDetail handleTooManyRequest(TooManyRequests ex) {
                 ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Impossibile completare l'operazione: errore nell'invio dell'email di convalida"
         );
-        problemDetail.setTitle("Errore invio email");
+        problemDetail.setTitle("Errore invio email"+ ex.getCause());
         return problemDetail;
     }
 
@@ -124,7 +123,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 ex.getMessage()
         );
-        problemDetail.setTitle("Argomento non valido per l'URL richiesto.");
+        problemDetail.setTitle("Argomento non valido per l'URL richiesto. Argomento non valido");
         return problemDetail;
     }
 
@@ -135,13 +134,13 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 ex.getMessage()
         );
-        problemDetail.setTitle("Argomento non valido per l'URL richiesto.");
+        problemDetail.setTitle("Argomento non valido per l'URL richiesto. Ruolo non valido");
         return problemDetail;
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ProblemDetail handleAccessDenied(org.springframework.security.authorization.AuthorizationDeniedException ex) {
+    public ProblemDetail handleAccessDenied(AuthorizationDeniedException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.FORBIDDEN,
                 "Non hai i permessi necessari per accedere a questa risorsa"
@@ -152,10 +151,21 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
-    public ProblemDetail handleAuthenticationError(org.springframework.security.core.AuthenticationException ex) {
+    public ProblemDetail handleAuthenticationError(AuthenticationException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.UNAUTHORIZED,
                 "Autenticazione richiesta o token non valido"
+        );
+        problemDetail.setTitle("Autenticazione Fallita");
+        return problemDetail;
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(Conflict.class)
+    public ProblemDetail handleConflict(Conflict ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "Entity in conflitto, esiste già un'entità con lo stesso identificatore o attributi univoci"
         );
         problemDetail.setTitle("Autenticazione Fallita");
         return problemDetail;
