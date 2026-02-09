@@ -3,10 +3,6 @@
 <@layout.pagina_admin titolo="Gestione Richieste" nomeUtente=nomeUtente!"Admin" extraScripts='<script src="/js/admin/richieste.js"></script>'>
     <main>
         <header class="top-header">
-            <div class="header-title">
-                <h1>Richieste di Soccorso</h1>
-                <p>Monitoraggio emergenze e assegnazione missioni</p>
-            </div>
             <div class="filter-bar">
                 <button class="filter-btn active" onclick="loadRichieste('ATTIVA')">Nuove (Attive)</button>
                 <button class="filter-btn" onclick="loadRichieste('IN_CORSO')">In Corso</button>

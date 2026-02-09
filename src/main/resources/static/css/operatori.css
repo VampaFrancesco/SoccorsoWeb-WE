@@ -7,6 +7,18 @@
     padding: 20px;
 }
 
+/* Sposta filtro a destra */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+
+.top-header .filter-bar {
+    margin-left: auto;
+}
+
 /* Tabella Operatori */
 .table-container {
     background: var(--bg-card);

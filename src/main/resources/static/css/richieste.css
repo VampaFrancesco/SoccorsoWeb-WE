@@ -2,6 +2,18 @@
    RICHIESTE - DARK TECH THEME
    ======================================== */
 
+/* Sposta filtro a destra */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+
+.top-header .filter-bar {
+    margin-left: auto;
+}
+
 /* Container e Filtri */
 .filter-bar {
     display: flex;
