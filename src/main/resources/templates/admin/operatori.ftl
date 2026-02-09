@@ -1,24 +1,26 @@
 <#import "layout.ftl" as layout>
 
 <@layout.pagina_admin titolo="Gestione Operatori" nomeUtente=nomeUtente!"Admin" extraScripts='<script src="/js/admin/operatori.js"></<script>'>
-    <div class="operators-container">
-        <h2>Gestione Personale</h2>
+    <main>
+        <header class="top-header">
+            <div class="header-title">
+                <h1>Gestione Personale</h1>
+                <p>Monitoraggio operatori e assegnazione missioni</p>
+            </div>
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="tutti">
+                    <i class="fas fa-users"></i> Tutti
+                </button>
+                <button class="filter-btn" data-filter="disponibili">
+                    <i class="fas fa-check-circle"></i> Disponibili
+                </button>
+                <button class="filter-btn" data-filter="occupati">
+                    <i class="fas fa-tasks"></i> Occupati
+                </button>
+            </div>
+        </header>
 
-        <!-- Filtri -->
-        <div class="filter-bar">
-            <button class="filter-btn active" data-filter="tutti">
-                <i class="fas fa-users"></i> Tutti
-            </button>
-            <button class="filter-btn" data-filter="disponibili">
-                <i class="fas fa-check-circle"></i> Disponibili
-            </button>
-            <button class="filter-btn" data-filter="occupati">
-                <i class="fas fa-tasks"></i> Occupati
-            </button>
-        </div>
-
-        <!-- Tabella Operatori -->
-        <div class="table-container">
+        <div class="table-container card">
             <table class="modern-table">
                 <thead>
                     <tr>
@@ -37,6 +39,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </main>
 </@layout.pagina_admin>
 

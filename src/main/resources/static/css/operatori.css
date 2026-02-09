@@ -3,34 +3,10 @@
     padding: 20px;
 }
 
-/* Filtri e Header */
-.filter-bar {
-    display: flex;
-    gap: 8px;
-    background: #f1f5f9;
-    padding: 6px;
-    border-radius: 14px;
-    margin-bottom: 25px;
-}
+/* Filtri - Importati da richieste.css */
+/* .filter-bar e .filter-btn sono già definiti in richieste.css */
 
-.filter-btn {
-    padding: 10px 20px;
-    border: none;
-    background: transparent;
-    color: #64748b;
-    font-weight: 600;
-    cursor: pointer;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-}
-
-.filter-btn.active {
-    background: white;
-    color: #0f4c81;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-/* Tabella Operatori */
+/* Tabella Operatori - Ereditati da richieste.css */
 .table-container {
     background: #ffffff;
     border-radius: 16px;
