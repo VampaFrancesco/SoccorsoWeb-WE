@@ -5,30 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="SoccorsoWeb - Portale per richieste di soccorso in emergenza">
     <title>${titolo!} - SoccorsoWeb</title>
-
-    <!-- Google Fonts -->
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
 
-<!-- ============================================ -->
-<!-- BACKGROUND DECORATIVO                       -->
-<!-- ============================================ -->
 <div class="bg-circle circle-1"></div>
 <div class="bg-circle circle-2"></div>
 <div class="bg-circle circle-3"></div>
 
-<!-- ============================================ -->
-<!-- TOP NAVIGATION                              -->
-<!-- ============================================ -->
 <nav class="top-nav">
     <div class="logo">
         <i class="fas fa-ambulance"></i>
@@ -51,14 +40,8 @@
     </div>
 </nav>
 
-<!-- ============================================ -->
-<!-- MAIN CONTAINER                              -->
-<!-- ============================================ -->
 <div class="main-container">
 
-    <!-- ============================================ -->
-    <!-- DESCRIPTION SECTION                         -->
-    <!-- ============================================ -->
     <div class="description-section">
         <div class="hero-content">
             <h1>
@@ -88,9 +71,6 @@
         </div>
     </div>
 
-    <!-- ============================================ -->
-    <!-- FORM SECTION                                -->
-    <!-- ============================================ -->
     <div class="form-section">
         <div class="form-card">
             <div class="form-header">
@@ -98,9 +78,6 @@
                 <p>Compila il modulo per inviare una richiesta</p>
             </div>
 
-            <!-- ========================================== -->
-            <!-- FORM - Progressive Enhancement             -->
-            <!-- ========================================== -->
             <form id="richiestaForm" method="POST" novalidate>
 
                 <!-- NOME E COGNOME -->
@@ -170,9 +147,10 @@
                     <small class="form-hint">Minimo 10 caratteri, massimo 1000</small>
                 </div>
 
-                <!-- CAMPI HIDDEN - COORDINATE -->
+                <!-- CAMPI HIDDEN - COORDINATE E INDIRIZZO REALE -->
                 <input type="hidden" id="latitudine" name="latitudine" value="">
                 <input type="hidden" id="longitudine" name="longitudine" value="">
+                <input type="hidden" id="indirizzo" name="indirizzo" value="">
 
                 <!-- LOCATION / INDIRIZZO -->
                 <div class="form-group location-display-group">
@@ -189,19 +167,25 @@
 
                     <!-- Manual Address Input (nascosto finché non serve) -->
                     <div class="manual-input-container" id="manual-input">
-                        <label for="indirizzo" class="sub-label">
+                        <label for="manual-address" class="sub-label">
                             Indirizzo completo (Via, Città, CAP)
                         </label>
-                        <input
-                                type="text"
-                                id="indirizzo"
-                                name="indirizzo"
-                                class="form-control"
-                                placeholder="Es: Via Roma 10, 20121 Milano (MI)"
-                                required>
+
+                        <div style="display: flex; gap: 8px;">
+                            <input
+                                    type="text"
+                                    id="manual-address"
+                                    class="form-control"
+                                    placeholder="Es: Via Roma 10, 20121 Milano (MI)"
+                            >
+                            <button type="button" id="btn-verify-address" class="form-control" style="width: auto; background: var(--primary); color: white; border: none; cursor: pointer;">
+                                <i class="fas fa-search-location"></i>
+                            </button>
+                        </div>
+
                         <small class="manual-note">
                             <i class="fas fa-info-circle"></i>
-                            Inserisci l'indirizzo completo per un intervento rapido
+                            Inserisci l'indirizzo e clicca sulla lente per confermare la posizione
                         </small>
                     </div>
                 </div>
@@ -254,12 +238,11 @@
                     <input type="hidden" id="captcha-token" name="captchaToken">
                 </div>
 
-                <!-- SUBMIT BUTTON -->
                 <button type="submit" class="btn-submit">
                     <i class="fas fa-paper-plane"></i> Invia Richiesta
                 </button>
 
-                <!-- PRIVACY NOTE -->
+
                 <p class="privacy-note">
                     <i class="fas fa-lock"></i>
                     I tuoi dati sono al sicuro
@@ -274,6 +257,7 @@
     </div>
 
 </div>
+
 <footer class="footer">
     <div class="footer-content">
         <p>

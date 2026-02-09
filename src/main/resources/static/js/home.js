@@ -1,8 +1,6 @@
-// ===== GLOBAL VARIABLES =====
 let locationObtained = false;
 let isCaptchaVerified = false;
 
-// ===== GEOLOCATION LOGIC =====
 function getLocation() {
     const locationStatus = document.getElementById('location-status');
     const manualContainer = document.getElementById('manual-input');
@@ -118,14 +116,13 @@ async function getCoordsFromAddress(addressQuery) {
     }
     throw new Error('Indirizzo non trovato');
 }
-
 function setupManualAddress() {
     const btnVerify = document.getElementById('btn-verify-address');
     const inputAddress = document.getElementById('manual-address');
     const locationStatus = document.getElementById('location-status');
     const latInput = document.getElementById('latitudine');
     const lngInput = document.getElementById('longitudine');
-    const indirizzoInput = document.getElementById('indirizzo'); // ✅ Aggiungi riferimento
+    const indirizzoInput = document.getElementById('indirizzo');
 
     if (!btnVerify) return;
 
@@ -135,7 +132,7 @@ function setupManualAddress() {
             Swal.fire({
                 icon: 'warning',
                 title: 'Indirizzo troppo breve',
-                text: 'Inserisci almeno città e via',
+                text: 'Inserisci almeno città e via.',
                 background: '#1a1a2e',
                 color: '#fff'
             });
@@ -149,7 +146,7 @@ function setupManualAddress() {
         try {
             const result = await getCoordsFromAddress(query);
 
-            // Aggiorna coordinate/indirizzo
+            // Aggiorna coordinate e indirizzo
             latInput.value = result.lat;
             lngInput.value = result.lon;
 
@@ -179,6 +176,7 @@ function setupManualAddress() {
     });
 }
 
+// ===== FILE INPUT FEEDBACK =====
 function setupFileInput() {
     const fileInput = document.getElementById('foto');
     const fileName = document.getElementById('file-name');
@@ -252,7 +250,7 @@ function setupFormSubmit() {
             return;
         }
 
-        // 2. Check Posizione
+        // 2. Check Location
         if (!locationObtained) {
             Swal.fire({
                 icon: 'warning',
@@ -265,10 +263,10 @@ function setupFormSubmit() {
             return;
         }
 
+        // Disable button
         const originalBtnHTML = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
         submitBtn.disabled = true;
-
         let fotoBase64 = null;
         const fileInput = document.getElementById('foto');
         const toBase64 = file => new Promise((resolve, reject) => {
@@ -287,7 +285,7 @@ function setupFormSubmit() {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Errore Immagine',
-                    text: 'Impossibile elaborare l\'immagine selezionata',
+                    text: 'Impossibile elaborare l\'immagine selezionata. La richiesta verrà inviata senza foto',
                 });
             }
         }
@@ -324,18 +322,19 @@ function setupFormSubmit() {
 
             // Verifica risposta
             if (response && response.id) {
-                // Success
                 await Swal.fire({
                     icon: 'success',
                     title: 'Richiesta Inviata!',
                     html: `
-                        <p>La tua richiesta di soccorso è stata ricevuta.</p>
-                        <p><strong>Controlla la tua email</strong> (${richiestaData.email_segnalante}) per confermare.</p>
+                        <p>La tua richiesta di soccorso è stata ricevuta</p>
+                        <p><strong>Controlla la tua email</strong> (${richiestaData.email_segnalante}) per confermare</p>
                     `,
                     background: '#1a1a2e',
                     color: '#fff',
                     confirmButtonColor: '#4CAF50'
                 });
+
+                // RESET Form & UI
                 form.reset();
                 locationObtained = false;
 
