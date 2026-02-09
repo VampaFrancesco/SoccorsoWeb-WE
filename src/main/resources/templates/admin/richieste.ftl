@@ -24,7 +24,7 @@
                     <th>Data Convalida</th>
                     <th>Indirizzo</th>
                     <th>Descrizione</th>
-                    <th class="text-right">Azioni</th>
+                    <th>Stato</th>
                 </tr>
                 </thead>
                 <tbody id="requests-body">

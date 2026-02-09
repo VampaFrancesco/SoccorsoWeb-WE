@@ -63,6 +63,7 @@ public class RichiestaApiController {
         return ResponseEntity.noContent().build();
     }
 
+
     /**
      * API 9: Annulla richiesta di soccorso
      * Metodo per l'annullamento di una richiesta di soccorso

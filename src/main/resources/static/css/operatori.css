@@ -1,10 +1,16 @@
-/* Container e Filtri */
+/* Container principale */
+.operators-container {
+    padding: 20px;
+}
+
+/* Filtri e Header */
 .filter-bar {
     display: flex;
     gap: 8px;
     background: #f1f5f9;
     padding: 6px;
     border-radius: 14px;
+    margin-bottom: 25px;
 }
 
 .filter-btn {
@@ -24,22 +30,16 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Tabella */
+/* Tabella Operatori */
 .table-container {
     background: #ffffff;
     border-radius: 16px;
     margin-top: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     min-height: 400px;
     display: flex;
     flex-direction: column;
-}
-
-.card {
-    background: #f0f9ff; /* Azzurro molto chiaro */
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .modern-table {
@@ -48,18 +48,14 @@
     table-layout: fixed;
 }
 
-.modern-table tbody {
-    display: table-row-group;
-}
-
 .modern-table th {
-    background: #e0f2fe; /* Azzurro chiaro pastello */
+    background: #e0f2fe;
     padding: 18px;
     text-align: center;
     font-size: 0.8rem;
     text-transform: uppercase;
-    color: #0c4a6e; /* Blu scuro per ottimo contrasto */
-    border-bottom: 2px solid #0ea5e9; /* Bordo azzurro vivace */
+    color: #0c4a6e;
+    border-bottom: 2px solid #0ea5e9;
     font-weight: 700;
 }
 
@@ -68,126 +64,111 @@
     border-bottom: 1px solid #e0f2fe;
     vertical-align: middle;
     font-size: 0.95rem;
-    color: #1e293b; /* Grigio molto scuro */
+    color: #1e293b;
     text-align: center;
 }
 
 .modern-table tbody tr:hover {
-    background: #dbeafe; /* Azzurro pastello al hover */
+    background: #dbeafe;
     transition: 0.2s;
 }
 
 .modern-table tbody tr:nth-child(even) {
-    background: #f8fafc; /* Grigio chiarissimo per righe alternate */
+    background: #f8fafc;
 }
 
 .modern-table tbody tr:nth-child(even):hover {
     background: #dbeafe;
 }
 
-
-/* Badge e Etichette */
-.targa-badge {
+/* Badge Status */
+.status-badge {
     display: inline-block;
-    background: #0f4c81;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.85rem;
-}
-
-.status-pill {
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 700;
-    display: inline-block;
+    white-space: nowrap;
 }
 
-.status-ATTIVA {
+.status-disponibile {
     background: #dcfce7;
     color: #166534;
     border: 1px solid #bbf7d0;
 }
 
-.status-IN_CORSO {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #bfdbfe;
+.status-occupato {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
 }
 
-.status-CHIUSA {
+.status-non-attivo {
     background: #f1f5f9;
     color: #475569;
     border: 1px solid #e2e8f0;
 }
 
-.status-IGNORATA {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-}
-
-/* Pulsanti Azione */
-.action-group {
+/* Informazioni Operatore */
+.operator-info {
     display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
 }
 
-.btn-assign {
+.operator-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     background: #0f4c81;
     color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    white-space: nowrap;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
 }
 
-.btn-assign:hover {
-    background: #083358;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+.operator-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.btn-assign:active {
-    transform: translateY(0);
-}
-
-.btn-ignore {
-    background: white;
-    color: #ef4444;
-    border: 1px solid #fecaca;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
+.operator-name {
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
+    color: #0f4c81;
+}
+
+.operator-email {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* Missione Info */
+.mission-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mission-title {
+    font-weight: 600;
+    color: #0f4c81;
+    font-size: 0.95rem;
+}
+
+.mission-details {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.mission-time {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-}
-
-.btn-ignore:hover {
-    background: #fef2f2;
-    border-color: #ef4444;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
-}
-
-.btn-ignore:active {
-    transform: translateY(0);
+    gap: 4px;
 }
 
 /* Stato vuoto */
@@ -210,19 +191,6 @@
 .empty-state p {
     margin: 0;
     font-size: 1.05rem;
-}
-
-/* Utilità */
-.text-right {
-    text-align: right;
-}
-
-.text-left {
-    text-align: left;
-}
-
-.text-center {
-    text-align: center;
 }
 
 /* Loading Spinner */
@@ -251,6 +219,40 @@
     100% { transform: rotate(360deg); }
 }
 
+/* Pulsanti Azione */
+.action-group {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    background: #0f4c81;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.btn-action:hover {
+    background: #083358;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+}
+
+.btn-action:active {
+    transform: translateY(0);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .filter-bar {
@@ -263,24 +265,23 @@
         font-size: 0.85rem;
     }
 
+    .operator-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+
     .action-group {
         justify-content: flex-start;
         gap: 6px;
     }
 
-    .btn-assign,
-    .btn-ignore {
+    .btn-action {
         padding: 6px 12px;
         font-size: 0.75rem;
     }
 
-    .btn-assign i,
-    .btn-ignore i {
+    .btn-action i {
         display: none;
-    }
-
-    .targa-badge {
-        padding: 4px 8px;
-        font-size: 0.75rem;
     }
 }

@@ -69,19 +69,33 @@ function createMaterialCard(m) {
 }
 
 async function patchStatus(id) {
-    const confirm = await Swal.fire({
-        title: 'Cambiare disponibilità?',
-        text: "Il materiale cambierà stato di disponibilità",
-        icon: 'warning',
+    const result = await Swal.fire({
+        title: 'Cambio Disponibilità',
+        text: "Vuoi davvero cambiare lo stato di disponibilità di questo materiale?",
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#3b82f6'
+        confirmButtonColor: '#3b82f6',
+        cancelButtonColor: '#ef4444',
+        confirmButtonText: 'Sì, procedi',
+        cancelButtonText: 'Annulla'
     });
 
-    if (confirm.isConfirmed) {
+    if (result.isConfirmed) {
         try {
+            Swal.showLoading();
+
             await apiCall(`/swa/api/materiali/${id}/toggle-disponibilita`, 'PATCH');
+
+            // Feedback toast
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
+            toast.fire({ icon: 'success', title: 'Stato aggiornato' });
+
             await refreshInventory();
-            Swal.fire('Aggiornato', '', 'success');
         } catch (err) {
             Swal.fire('Errore', 'Aggiornamento fallito', 'error');
         }
@@ -90,11 +104,20 @@ async function patchStatus(id) {
 
 async function updateQuantity(id, nuovaQuantita) {
     try {
+        Swal.showLoading();
+
         const payload = { quantita: parseInt(nuovaQuantita) };
         await apiCall(`/swa/api/materiali/${id}/quantita`, 'PATCH', payload);
+
         closeMaterialModal('modal-edit-quantity');
         await refreshInventory();
-        Swal.fire({ icon: 'success', title: 'Quantità Aggiornata', timer: 1500 });
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Quantità Aggiornata',
+            timer: 1500,
+            showConfirmButton: false
+        });
     } catch (err) {
         console.error('Errore:', err);
         Swal.fire('Errore', 'Impossibile aggiornare la quantità', 'error');
@@ -118,29 +141,56 @@ async function saveMaterial() {
     };
 
     try {
+        Swal.showLoading();
+
         await apiCall('/swa/api/materiali', 'POST', payload);
+
         closeMaterialModal('modal-add-material');
         document.getElementById('formMateriale').reset();
         await refreshInventory();
-        Swal.fire({ icon: 'success', title: 'Articolo Salvato', timer: 1500 });
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Articolo Salvato',
+            timer: 1500,
+            showConfirmButton: false
+        });
     } catch (err) {
         Swal.fire('Errore', 'Impossibile salvare il materiale', 'error');
     }
 }
 
 async function deleteMaterial(id) {
-    const confirm = await Swal.fire({
+    const result = await Swal.fire({
         title: 'Eliminare articolo?',
         text: "L'azione è definitiva",
-        icon: 'warning',
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#ef4444'
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#3b82f6',
+        confirmButtonText: 'Sì, elimina',
+        cancelButtonText: 'Annulla'
     });
 
-    if (confirm.isConfirmed) {
-        await apiCall(`/swa/api/materiali/${id}`, 'DELETE');
-        await refreshInventory();
-        Swal.fire('Eliminato', '', 'success');
+    if (result.isConfirmed) {
+        try {
+            Swal.showLoading();
+
+            await apiCall(`/swa/api/materiali/${id}`, 'DELETE');
+
+            // Feedback toast
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
+            toast.fire({ icon: 'success', title: 'Articolo eliminato' });
+
+            await refreshInventory();
+        } catch (err) {
+            Swal.fire('Errore', 'Impossibile eliminare l\'articolo', 'error');
+        }
     }
 }
 

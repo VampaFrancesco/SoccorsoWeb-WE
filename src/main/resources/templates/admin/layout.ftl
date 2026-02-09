@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="stylesheet" href="/css/materiali.css">
         <link rel="stylesheet" href="/css/richieste.css">
+        <link rel="stylesheet" href="/css/operatori.css">
         ${extraHead}
     </head>
     <body>
