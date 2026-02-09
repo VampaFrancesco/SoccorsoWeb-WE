@@ -80,7 +80,7 @@
     text-align: center;
 }
 
-/* Card Destra (Form) */
+/* Card Destra */
 .profile-details-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -195,9 +195,6 @@ textarea.form-control {
     }
 }
 
-/* ===================== */
-/* Modal Styles          */
-/* ===================== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -298,9 +295,6 @@ textarea.form-control {
     gap: 12px;
 }
 
-/* ===================== */
-/* Abilita Styles        */
-/* ===================== */
 .abilita-tags-container {
     display: flex;
     flex-wrap: wrap;
@@ -466,7 +460,7 @@ textarea.form-control {
     }
 }
 
-/* Buttons */
+/* Bottoni */
 .btn-secondary {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);

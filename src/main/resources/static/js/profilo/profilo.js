@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Carica dati
     await loadUserProfile();
-
-    // Listener salvataggio
     const form = document.getElementById('profileForm');
     if (form) {
         form.addEventListener('submit', handleProfileUpdate);
@@ -15,9 +13,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 let tutteAbilita = [];
 let abilitaSelezionate = [];
 
-/**
- * Carica i dati dell'utente loggato
- */
+// Dati utente
 async function loadUserProfile() {
     try {
         const user = await getMyProfile();
@@ -28,12 +24,12 @@ async function loadUserProfile() {
 
         console.log("Utente caricato:", user);
 
-        // --- Aggiorna UI (Visualizzazione) ---
+        // --- Aggiorna UI ---
         setText('display-fullname', `${user.nome} ${user.cognome}`);
         setText('display-email', user.email);
         setText('display-phone', user.telefono || "N/D");
 
-        // --- Aggiorna UI (Campi Form) ---
+        // --- Aggiorna UI ---
         setValue('nome', user.nome);
         setValue('cognome', user.cognome);
         setValue('indirizzo', user.indirizzo || "");
@@ -60,14 +56,12 @@ async function loadUserProfile() {
         Swal.fire({
             icon: 'error',
             title: 'Errore',
-            text: 'Impossibile caricare i dati del profilo.'
+            text: 'Impossibile caricare i dati del profilo'
         });
     }
 }
 
-/**
- * Aggiorna i tag delle abilità nel form
- */
+// Tag abilità
 function aggiornaTagsAbilita() {
     const container = document.getElementById('abilita-tags');
     if (!container) return;
@@ -85,9 +79,6 @@ function aggiornaTagsAbilita() {
     `).join('');
 }
 
-/**
- * Aggiorna l'input nascosto con i nomi delle abilità
- */
 function aggiornaInputNascosto() {
     const input = document.getElementById('abilita');
     if (input) {
@@ -95,9 +86,6 @@ function aggiornaInputNascosto() {
     }
 }
 
-/**
- * Apre il modale per la gestione delle abilità
- */
 async function apriModaleAbilita() {
     const modal = document.getElementById('modal-abilita');
     if (!modal) return;
@@ -116,9 +104,7 @@ async function apriModaleAbilita() {
     }
 }
 
-/**
- * Chiude il modale delle abilità
- */
+// Chiusura modale delle abilità
 function chiudiModaleAbilita() {
     const modal = document.getElementById('modal-abilita');
     if (modal) {
@@ -126,9 +112,6 @@ function chiudiModaleAbilita() {
     }
 }
 
-/**
- * Renderizza le abilità disponibili nel modale
- */
 function renderAbilitaDisponibili() {
     const container = document.getElementById('abilita-disponibili');
     if (!container) return;
@@ -156,9 +139,6 @@ function renderAbilitaDisponibili() {
     `).join('');
 }
 
-/**
- * Renderizza le abilità selezionate nel modale
- */
 function renderAbilitaSelezionate() {
     const container = document.getElementById('abilita-selezionate');
     if (!container) return;
@@ -176,9 +156,6 @@ function renderAbilitaSelezionate() {
     `).join('');
 }
 
-/**
- * Aggiunge un'abilità alla selezione
- */
 function aggiungiAbilita(id) {
     const abilita = tutteAbilita.find(ab => ab.id === id);
     if (abilita && !abilitaSelezionate.some(s => s.id === id)) {
@@ -188,25 +165,17 @@ function aggiungiAbilita(id) {
     }
 }
 
-/**
- * Rimuove un'abilità dalla selezione
- */
 function rimuoviAbilita(id) {
     abilitaSelezionate = abilitaSelezionate.filter(ab => ab.id !== id);
     renderAbilitaDisponibili();
     renderAbilitaSelezionate();
 }
 
-/**
- * Filtra le abilità disponibili in base alla ricerca
- */
 function filtraAbilita() {
     renderAbilitaDisponibili();
 }
 
-/**
- * Crea una nuova abilità
- */
+// Creazione abil.
 async function creaNuovaAbilita() {
     const nomeInput = document.getElementById('nuova-abilita-nome');
     const descInput = document.getElementById('nuova-abilita-desc');
@@ -240,7 +209,7 @@ async function creaNuovaAbilita() {
             tutteAbilita.push(nuovaAbilita);
             abilitaSelezionate.push(nuovaAbilita);
 
-            // Pulisci i campi
+            // Pulisce i campi
             nomeInput.value = '';
             descInput.value = '';
 
@@ -265,9 +234,6 @@ async function creaNuovaAbilita() {
     }
 }
 
-/**
- * Salva le abilità selezionate e chiude il modale
- */
 function salvaAbilitaSelezionate() {
     aggiornaTagsAbilita();
     aggiornaInputNascosto();
@@ -282,9 +248,6 @@ function salvaAbilitaSelezionate() {
     });
 }
 
-/**
- * Gestisce il salvataggio del profilo
- */
 async function handleProfileUpdate(event) {
     event.preventDefault();
 
@@ -320,7 +283,6 @@ async function handleProfileUpdate(event) {
     }
 }
 
-// Utility
 function setText(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerText = text;

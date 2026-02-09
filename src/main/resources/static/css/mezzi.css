@@ -136,10 +136,14 @@
 .btn-action.details:hover { color: #3498db; border-color: #3498db; background: #f0f9ff; }
 .btn-action.delete:hover { color: #e74c3c; border-color: #e74c3c; background: #fff5f5; }
 
-/* NUOVO: Stile per il pulsante Swap */
+/* Pulsante Swap */
 .btn-action.swap:hover { color: #f59e0b; border-color: #f59e0b; background: #fffbeb; }
 
-/* NUOVO: Pulsante Moderno Header */
+/* Pulsante Matita */
+.btn-action.edit:hover { color: #d97706; border-color: #d97706; background: #fff8e1; }
+
+
+/* Pulsante Moderno Header */
 .btn-modern-add {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: white;
@@ -187,7 +191,7 @@
     to { transform: scale(1); opacity: 1; }
 }
 
-/* Header del Modale Colorato */
+/* Header del Modale Colorato  */
 .modal-header-fancy {
     background: linear-gradient(135deg, #0f4c81 0%, #083358 100%);
     padding: 20px 25px;
@@ -268,10 +272,40 @@ textarea.form-control-icon {
 .btn-submit-fancy:hover { background: #0b3d6b; transform: translateY(-1px); }
 
 /* TABELLA STORICO */
-.history-table-wrapper { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
-.history-table th { background: #f1f5f9; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #64748b; padding: 12px 16px; }
-.history-table td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+.history-table-wrapper { border: 1px solid #e2e8f0; border-radius: 8px; overflow-x: auto; }
+.history-table { width: 100%; border-collapse: collapse; }
+.history-table th {
+    background: #f1f5f9;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    padding: 12px 10px;
+    text-align: left;
+}
+.history-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 0.85rem;
+}
+
+.history-table tbody tr.row-active {
+    background-color: #f0f9ff;
+    border-left: 3px solid #3498db;
+}
+
+.text-muted { color: #94a3b8; }
+.pulse {
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
 .badge-status { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
 .badge-status.IN_CORSO { background: #e3f2fd; color: #1976d2; }
 .badge-status.CHIUSA { background: #e8f5e9; color: #2e7d32; }
-.btn-link { text-decoration: none; color: #3498db; font-weight: 500; font-size: 0.85rem; }
+.btn-link { text-decoration: none; color: #3498db; font-weight: 500; font-size: 1rem; }

@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     // 3. Caricamento dati dinamici
-    // Se siamo nella dashboard, carica i widget completi
     if (currentPath === '/admin' || currentPath === '/admin/') {
         await refreshDashboard();
     } else {
@@ -40,7 +39,7 @@ async function updateGlobalBadges() {
 
 async function refreshDashboard() {
     try {
-        // Chiamate API in parallelo
+        // Chiamate API
         const [missioni, operatori, mezzi, richieste] = await Promise.all([
             visualizzaTutteLeMissioni(),
             operatoriDisponibili('true'),
@@ -55,10 +54,7 @@ async function refreshDashboard() {
         if (document.getElementById('stat-operatori'))
             document.getElementById('stat-operatori').innerText = operatori ? operatori.length : 0;
 
-        // --- FIX QUI SOTTO ---
         if (document.getElementById('stat-mezzi')) {
-            // Controlla se la proprietà è 'disponibile' (boolean) o 'stato' (stringa)
-            // Usa un check robusto: true, 'true', 1 o 'DISPONIBILE'
             const mezziDisp = mezzi ? mezzi.filter(m =>
                 m.disponibile === true ||
                 m.disponibile === 'true' ||

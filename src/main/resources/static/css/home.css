@@ -1,7 +1,5 @@
-/* ===== IMPORT FONT ===== */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
-/* ===== CSS VARIABLES ===== */
 :root {
     --primary: #FF4B2B;
     --secondary: #FF416C;
@@ -16,7 +14,6 @@
     --error: #f44336;
 }
 
-/* ===== RESET ===== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -32,7 +29,6 @@ body {
     overflow-x: hidden;
 }
 
-/* ===== ANIMATED BACKGROUND ===== */
 .bg-circle {
     position: fixed;
     border-radius: 50%;
@@ -143,7 +139,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* ===== MAIN CONTAINER ===== */
 .main-container {
     display: flex;
     min-height: 100vh;
@@ -152,7 +147,6 @@ body {
     z-index: 1;
 }
 
-/* ===== LEFT: DESCRIPTION ===== */
 .description-section {
     flex: 1;
     display: flex;
@@ -230,7 +224,6 @@ body {
     margin-right: 10px;
 }
 
-/* ===== RIGHT: FORM ===== */
 .form-section {
     flex: 1;
     display: flex;
@@ -246,7 +239,7 @@ body {
     border-radius: 24px;
     padding: 40px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
 
@@ -266,7 +259,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* ===== FORM ELEMENTS ===== */
 .form-group {
     margin-bottom: 20px;
 }
@@ -349,7 +341,6 @@ textarea.form-control {
     text-align: right;
 }
 
-/* ===== LOCATION DISPLAY & MANUAL INPUT ===== */
 .location-display-group {
     margin-bottom: 25px;
 }
@@ -455,7 +446,6 @@ textarea.form-control {
     font-size: 1.2rem;
 }
 
-/* ===== CUSTOM CAPTCHA (SAFECHECK) - FIXED DEFINITIVO ===== */
 .captcha-group {
     margin-top: 25px;
 }
@@ -467,7 +457,7 @@ textarea.form-control {
     padding: 0 12px;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Separa sinistra (checkbox) e destra (logo) */
+    justify-content: space-between;
     width: 100%;
     max-width: 304px;
     height: 74px;
@@ -483,7 +473,7 @@ textarea.form-control {
     align-items: center;
     cursor: pointer;
     flex-grow: 1;
-    height: 100%; /* Occupa tutta l'altezza */
+    height: 100%;
 }
 
 .captcha-checkbox {
@@ -492,13 +482,9 @@ textarea.form-control {
     border: 2px solid #c1c1c1;
     border-radius: 2px;
     background: #fff;
-
-    /* --- FIXED SPACE --- */
-    margin-right: 15px; /* Spazio fisico a destra del quadrato */
+    margin-right: 15px;
     position: relative;
     flex-shrink: 0;
-    /* ------------------ */
-
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
@@ -527,7 +513,7 @@ textarea.form-control {
     font-weight: 500;
     color: #2d2d2d;
     font-family: 'Roboto', sans-serif;
-    white-space: nowrap; /* Evita a capo strani */
+    white-space: nowrap;
 }
 
 .captcha-logo {
@@ -573,7 +559,6 @@ textarea.form-control {
     padding-left: 2px;
 }
 
-/* ===== SUBMIT BUTTON ===== */
 .btn-submit {
     width: 100%;
     padding: 15px;
@@ -607,7 +592,6 @@ textarea.form-control {
     cursor: not-allowed;
 }
 
-/* ===== PRIVACY & NOTES ===== */
 .privacy-note {
     text-align: center;
     font-size: 0.8rem;
@@ -657,7 +641,6 @@ textarea.form-control {
     color: var(--secondary);
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .main-container {
         flex-direction: column;

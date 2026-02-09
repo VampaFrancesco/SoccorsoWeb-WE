@@ -5,10 +5,10 @@ let isCaptchaVerified = false;
 // ===== GEOLOCATION LOGIC =====
 function getLocation() {
     const locationStatus = document.getElementById('location-status');
-    const manualContainer = document.getElementById('manual-address-field');
+    const manualContainer = document.getElementById('manual-input');
     const latInput = document.getElementById('latitudine');
     const lngInput = document.getElementById('longitudine');
-    const indirizzoInput = document.getElementById('indirizzo'); // Aggiungi riferimento
+    const indirizzoInput = document.getElementById('indirizzo');
 
     if (!navigator.geolocation) {
         showManualEntry('Geolocalizzazione non supportata');
@@ -77,8 +77,6 @@ function getLocation() {
     }
 }
 
-// ===== NOMINATIM API (OpenStreetMap) =====
-
 // 1. Coordinate -> Indirizzo
 async function getAddressFromCoords(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
@@ -121,7 +119,6 @@ async function getCoordsFromAddress(addressQuery) {
     throw new Error('Indirizzo non trovato');
 }
 
-// ===== MANUAL ADDRESS HANDLER =====
 function setupManualAddress() {
     const btnVerify = document.getElementById('btn-verify-address');
     const inputAddress = document.getElementById('manual-address');
@@ -138,7 +135,7 @@ function setupManualAddress() {
             Swal.fire({
                 icon: 'warning',
                 title: 'Indirizzo troppo breve',
-                text: 'Inserisci almeno città e via.',
+                text: 'Inserisci almeno città e via',
                 background: '#1a1a2e',
                 color: '#fff'
             });
@@ -152,7 +149,7 @@ function setupManualAddress() {
         try {
             const result = await getCoordsFromAddress(query);
 
-            // Aggiorna coordinate E indirizzo
+            // Aggiorna coordinate/indirizzo
             latInput.value = result.lat;
             lngInput.value = result.lon;
 
@@ -182,7 +179,6 @@ function setupManualAddress() {
     });
 }
 
-// ===== FILE INPUT FEEDBACK =====
 function setupFileInput() {
     const fileInput = document.getElementById('foto');
     const fileName = document.getElementById('file-name');
@@ -200,7 +196,6 @@ function setupFileInput() {
     });
 }
 
-// ===== CUSTOM CAPTCHA LOGIC =====
 function setupCustomCaptcha() {
     const captchaContainer = document.getElementById('custom-captcha');
     const checkbox = document.getElementById('captcha-checkbox');
@@ -235,7 +230,6 @@ function setupCustomCaptcha() {
     });
 }
 
-/// ===== FORM SUBMIT =====
 function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
@@ -258,7 +252,7 @@ function setupFormSubmit() {
             return;
         }
 
-        // 2. Check Location
+        // 2. Check Posizione
         if (!locationObtained) {
             Swal.fire({
                 icon: 'warning',
@@ -271,16 +265,12 @@ function setupFormSubmit() {
             return;
         }
 
-        // Disable button
         const originalBtnHTML = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
         submitBtn.disabled = true;
 
-        // Prepara l'immagine in Base64 se presente
         let fotoBase64 = null;
         const fileInput = document.getElementById('foto');
-
-        // Helper per convertire file in Base64
         const toBase64 = file => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -291,14 +281,13 @@ function setupFormSubmit() {
         if (fileInput && fileInput.files && fileInput.files[0]) {
             try {
                 const base64String = await toBase64(fileInput.files[0]);
-                // Rimuovi il prefisso "data:image/xyz;base64," per mandare solo i byte
                 fotoBase64 = base64String.split(',')[1];
             } catch (err) {
                 console.error("Errore conversione immagine:", err);
                 Swal.fire({
                     icon: 'warning',
                     title: 'Errore Immagine',
-                    text: 'Impossibile elaborare l\'immagine selezionata. La richiesta verrà inviata senza foto.',
+                    text: 'Impossibile elaborare l\'immagine selezionata',
                 });
             }
         }
@@ -347,8 +336,6 @@ function setupFormSubmit() {
                     color: '#fff',
                     confirmButtonColor: '#4CAF50'
                 });
-
-                // RESET Form & UI
                 form.reset();
                 locationObtained = false;
 
@@ -358,8 +345,6 @@ function setupFormSubmit() {
                 document.getElementById('captcha-token').value = "";
                 const checkbox = document.getElementById('captcha-checkbox');
                 if (checkbox) checkbox.style.visibility = 'visible';
-
-                // Reset File Input
                 const fileNameElement = document.getElementById('file-name');
                 if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
                 getLocation();
@@ -381,7 +366,6 @@ function setupFormSubmit() {
             });
 
         } finally {
-            // Re-enable button
             submitBtn.innerHTML = originalBtnHTML;
             submitBtn.disabled = false;
         }

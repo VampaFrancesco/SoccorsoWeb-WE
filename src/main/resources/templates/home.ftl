@@ -66,7 +66,7 @@
                 Soccorso Web
             </h1>
             <p class="subtitle">
-                Il portale per le richieste di aiuto in caso di emergenza!
+                Il portale per le richieste di aiuto di carattere sanitario!
                 Compilando il modulo verrà inviata una richiesta agli operatori
                 che organizzeranno in breve tempo un intervento.
             </p>
@@ -274,21 +274,13 @@
     </div>
 
 </div>
-
-<!-- ============================================ -->
-<!-- FOOTER                                      -->
-<!-- ============================================ -->
 <footer class="footer">
     <div class="footer-content">
         <p>
             2026 SoccorsoWeb |
-            Sviluppato per emergenze
+            Sviluppato per emergenze sanitarie
     </div>
 </footer>
-
-<!-- ============================================ -->
-<!-- SCRIPTS                                     -->
-<!-- ============================================ -->
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

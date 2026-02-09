@@ -1,5 +1,4 @@
 :root {
-    /* Palette Tech Dark */
     --bg-body: #0f1015;
     --bg-sidebar: #16171d;
     --bg-card: #1e1f26;
@@ -10,10 +9,10 @@
     --text-primary: #ffffff;
     --text-secondary: #9495a0;
 
-    --accent-primary: #3b82f6; /* Blu Tech */
-    --accent-danger: #ef4444;  /* Rosso Emergenza */
-    --accent-success: #10b981; /* Verde OK */
-    --accent-warning: #f59e0b; /* Arancio Attenzione */
+    --accent-primary: #3b82f6;
+    --accent-danger: #ef4444;
+    --accent-success: #10b981;
+    --accent-warning: #f59e0b;
 
     --font-stack: 'Inter', sans-serif;
 }
@@ -106,7 +105,6 @@ body {
     gap: 25px;
 }
 
-/* Widget Styles */
 .widget {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -117,7 +115,7 @@ body {
 }
 .widget:hover { border-color: #4b4c5a; }
 
-/* Widget Richieste (Largo) */
+/* Widget Richieste */
 .widget-requests {
     grid-column: span 2;
     grid-row: span 2;
@@ -150,7 +148,7 @@ body {
     display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
 }
 
-/* Widget Statistiche (Piccoli) */
+/* Widget Statistiche */
 .widget-stat {
     display: flex; align-items: center; gap: 20px;
     position: relative; overflow: hidden;
@@ -179,7 +177,6 @@ body {
 .btn-quick:hover { background: #353640; }
 .btn-quick i { color: var(--accent-primary); width: 20px; }
 
-/* Responsive */
 @media (max-width: 1024px) {
     .dashboard-grid { grid-template-columns: 1fr 1fr; }
     .widget-requests { grid-column: span 2; }

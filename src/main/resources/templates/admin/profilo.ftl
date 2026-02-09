@@ -53,9 +53,8 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 Informazioni Personali
             </h3>
 
-            <!-- Setup data attributes for JS to use if needed -->
             <form id="profileForm" data-user-id="${(user.id)!}">
-                <!-- Dati Anagrafici (Read-Only) -->
+                <!-- Dati Anagrafici -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="nome">Nome</label>
@@ -68,6 +67,12 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 </div>
 
                 <div class="form-group">
+                    <label for="data_nascita">Data di Nascita</label>
+                    <input type="text" id="data_nascita" name="dataNascita" class="form-control readonly" readonly>
+                </div>
+
+
+                <div class="form-group">
                     <label for="indirizzo">Indirizzo</label>
                     <input type="text" id="indirizzo" name="indirizzo" class="form-control" value="${(user.indirizzo)!}">
                 </div>
@@ -75,11 +80,6 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 <div class="form-group">
                     <label for="telefono">Telefono</label>
                      <input type="text" id="telefono" name="telefono" class="form-control" value="${(user.telefono)!}">
-                </div>
-
-                <div class="form-group">
-                    <label for="data_nascita">Data di Nascita</label>
-                    <input type="date" id="data_nascita" name="dataNascita" class="form-control readonly" value="${(user.dataNascita)!}" readonly>
                 </div>
 
                 <hr class="divider">

@@ -229,6 +229,14 @@ async function eliminaMezzo(id) {
     return await apiCall(`/swa/api/mezzi/${id}`, 'DELETE', null, true);
 }
 
+async function aggiornaMezzo(id, datiAggiornati) {
+    return await apiCall(`/swa/api/mezzi/${id}`, 'PUT', datiAggiornati, true);
+}
+
+async function getMissioniMezzo(id) {
+    return await apiCall(`/swa/api/mezzi/${id}/missioni`, 'GET', null, true);
+}
+
 // API 21 - Materiali
 async function getTuttiMateriali() {
     return await apiCall('/swa/api/materiali', 'GET', null, true);
@@ -242,11 +250,6 @@ async function registraNuovoUtente(datiUtente) {
 // API 23
 async function eliminaUtente(id) {
     return await apiCall(`/swa/api/operatori/${id}`, 'DELETE', null, true);
-}
-
-// API 24 - Storico Missioni di un Mezzo
-async function getMissioniMezzo(id) {
-    return await apiCall(`/swa/api/mezzi/${id}/missioni`, 'GET', null, true);
 }
 
 // API 24 - Cambio Password
