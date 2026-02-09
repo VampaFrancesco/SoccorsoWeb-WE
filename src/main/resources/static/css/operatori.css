@@ -1,21 +1,23 @@
+/* ========================================
+   OPERATORI - DARK TECH THEME
+   ======================================== */
+
 /* Container principale */
 .operators-container {
     padding: 20px;
 }
 
-/* Filtri - Importati da richieste.css */
-/* .filter-bar e .filter-btn sono già definiti in richieste.css */
-
-/* Tabella Operatori - Ereditati da richieste.css */
+/* Tabella Operatori */
 .table-container {
-    background: #ffffff;
+    background: var(--bg-card);
     border-radius: 16px;
     margin-top: 25px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     overflow: hidden;
     min-height: 400px;
     display: flex;
     flex-direction: column;
+    border: 1px solid var(--border-color);
 }
 
 .modern-table {
@@ -25,36 +27,40 @@
 }
 
 .modern-table th {
-    background: #e0f2fe;
+    background: var(--bg-sidebar);
     padding: 18px;
     text-align: center;
     font-size: 0.8rem;
     text-transform: uppercase;
-    color: #0c4a6e;
-    border-bottom: 2px solid #0ea5e9;
+    color: var(--accent-primary);
+    border-bottom: 2px solid var(--accent-primary);
     font-weight: 700;
 }
 
 .modern-table td {
     padding: 18px;
-    border-bottom: 1px solid #e0f2fe;
+    border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
     font-size: 0.95rem;
-    color: #1e293b;
+    color: var(--text-primary);
     text-align: center;
 }
 
+.modern-table tbody tr {
+    background: var(--bg-card);
+    transition: background-color 0.2s;
+}
+
 .modern-table tbody tr:hover {
-    background: #dbeafe;
-    transition: 0.2s;
+    background: var(--bg-hover);
 }
 
 .modern-table tbody tr:nth-child(even) {
-    background: #f8fafc;
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .modern-table tbody tr:nth-child(even):hover {
-    background: #dbeafe;
+    background: var(--bg-hover);
 }
 
 /* Badge Status */
@@ -68,21 +74,21 @@
 }
 
 .status-disponibile {
-    background: #dcfce7;
-    color: #166534;
-    border: 1px solid #bbf7d0;
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-success);
+    border: 1px solid var(--accent-success);
 }
 
 .status-occupato {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fcd34d;
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--accent-warning);
+    border: 1px solid var(--accent-warning);
 }
 
 .status-non-attivo {
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+    background: rgba(148, 149, 160, 0.2);
+    color: var(--text-secondary);
+    border: 1px solid var(--text-secondary);
 }
 
 /* Informazioni Operatore */
@@ -96,13 +102,14 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #0f4c81;
-    color: white;
+    background: var(--accent-primary);
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 0.9rem;
+    box-shadow: 0 0 0 2px var(--border-color);
 }
 
 .operator-details {
@@ -113,12 +120,12 @@
 
 .operator-name {
     font-weight: 600;
-    color: #0f4c81;
+    color: var(--text-primary);
 }
 
 .operator-email {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 /* Missione Info */
@@ -130,18 +137,18 @@
 
 .mission-title {
     font-weight: 600;
-    color: #0f4c81;
+    color: var(--accent-primary);
     font-size: 0.95rem;
 }
 
 .mission-details {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 .mission-time {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 4px;
@@ -154,7 +161,7 @@
     align-items: center;
     justify-content: center;
     padding: 60px 20px;
-    color: #94a3b8;
+    color: var(--text-secondary);
     text-align: center;
 }
 
@@ -178,6 +185,7 @@
     text-align: center;
     padding: 40px 18px !important;
     vertical-align: middle;
+    color: var(--text-secondary);
 }
 
 .fa-spinner {
@@ -204,8 +212,8 @@
 }
 
 .btn-action {
-    background: #0f4c81;
-    color: white;
+    background: var(--accent-primary);
+    color: var(--text-primary);
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
@@ -220,9 +228,9 @@
 }
 
 .btn-action:hover {
-    background: #083358;
+    background: #2563eb;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .btn-action:active {
