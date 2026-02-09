@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadOperatori(filter) {
     try {
         // Carica lista operatori
-        const operatori = await apiCall('/swa/api/operatori', 'GET');
+        const operatori = await apiCall('/swa/api/operatori?disponibile=true', 'GET');
 
         // Carica missioni per ogni operatore per determinare se è occupato
         const operatoriConMissioni = await Promise.all(operatori.map(async (op) => {

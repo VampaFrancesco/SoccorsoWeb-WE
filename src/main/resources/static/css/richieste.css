@@ -1,8 +1,24 @@
+/* ========================================
+   RICHIESTE - DARK TECH THEME
+   ======================================== */
+
+/* Sposta filtro a destra */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+
+.top-header .filter-bar {
+    margin-left: auto;
+}
+
 /* Container e Filtri */
 .filter-bar {
     display: flex;
     gap: 8px;
-    background: #f1f5f9;
+    background: var(--bg-card);
     padding: 6px;
     border-radius: 14px;
 }
@@ -11,7 +27,7 @@
     padding: 10px 20px;
     border: none;
     background: transparent;
-    color: #64748b;
+    color: var(--text-secondary);
     font-weight: 600;
     cursor: pointer;
     border-radius: 10px;
@@ -19,27 +35,33 @@
 }
 
 .filter-btn.active {
-    background: white;
-    color: #0f4c81;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.filter-btn:hover:not(.active) {
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 /* Tabella */
 .table-container {
-    background: #ffffff;
+    background: var(--bg-card);
     border-radius: 16px;
     margin-top: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     overflow: hidden;
     min-height: 400px;
     display: flex;
     flex-direction: column;
+    border: 1px solid var(--border-color);
 }
 
 .card {
-    background: #f0f9ff; /* Azzurro molto chiaro */
+    background: var(--bg-card);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .modern-table {
@@ -53,44 +75,47 @@
 }
 
 .modern-table th {
-    background: #e0f2fe; /* Azzurro chiaro pastello */
+    background: var(--bg-sidebar);
     padding: 18px;
     text-align: center;
     font-size: 0.8rem;
     text-transform: uppercase;
-    color: #0c4a6e; /* Blu scuro per ottimo contrasto */
-    border-bottom: 2px solid #0ea5e9; /* Bordo azzurro vivace */
+    color: var(--accent-primary);
+    border-bottom: 2px solid var(--accent-primary);
     font-weight: 700;
 }
 
 .modern-table td {
     padding: 18px;
-    border-bottom: 1px solid #e0f2fe;
+    border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
     font-size: 0.95rem;
-    color: #1e293b; /* Grigio molto scuro */
+    color: var(--text-primary);
     text-align: center;
 }
 
+.modern-table tbody tr {
+    background: var(--bg-card);
+    transition: background-color 0.2s;
+}
+
 .modern-table tbody tr:hover {
-    background: #dbeafe; /* Azzurro pastello al hover */
-    transition: 0.2s;
+    background: var(--bg-hover);
 }
 
 .modern-table tbody tr:nth-child(even) {
-    background: #f8fafc; /* Grigio chiarissimo per righe alternate */
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .modern-table tbody tr:nth-child(even):hover {
-    background: #dbeafe;
+    background: var(--bg-hover);
 }
-
 
 /* Badge e Etichette */
 .targa-badge {
     display: inline-block;
-    background: #0f4c81;
-    color: white;
+    background: var(--accent-primary);
+    color: var(--text-primary);
     padding: 6px 12px;
     border-radius: 6px;
     font-weight: 700;
@@ -106,27 +131,27 @@
 }
 
 .status-ATTIVA {
-    background: #dcfce7;
-    color: #166534;
-    border: 1px solid #bbf7d0;
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-success);
+    border: 1px solid var(--accent-success);
 }
 
 .status-IN_CORSO {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #bfdbfe;
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
 }
 
 .status-CHIUSA {
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+    background: rgba(148, 149, 160, 0.2);
+    color: var(--text-secondary);
+    border: 1px solid var(--text-secondary);
 }
 
 .status-IGNORATA {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--accent-danger);
+    border: 1px solid var(--accent-danger);
 }
 
 /* Pulsanti Azione */
@@ -138,8 +163,8 @@
 }
 
 .btn-assign {
-    background: #0f4c81;
-    color: white;
+    background: var(--accent-primary);
+    color: var(--text-primary);
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
@@ -154,9 +179,9 @@
 }
 
 .btn-assign:hover {
-    background: #083358;
+    background: #2563eb;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .btn-assign:active {
@@ -164,9 +189,9 @@
 }
 
 .btn-ignore {
-    background: white;
-    color: #ef4444;
-    border: 1px solid #fecaca;
+    background: transparent;
+    color: var(--accent-danger);
+    border: 1px solid var(--accent-danger);
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -180,10 +205,10 @@
 }
 
 .btn-ignore:hover {
-    background: #fef2f2;
-    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #dc2626;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
 }
 
 .btn-ignore:active {
@@ -197,7 +222,7 @@
     align-items: center;
     justify-content: center;
     padding: 60px 20px;
-    color: #94a3b8;
+    color: var(--text-secondary);
     text-align: center;
 }
 
@@ -212,19 +237,6 @@
     font-size: 1.05rem;
 }
 
-/* Utilità */
-.text-right {
-    text-align: right;
-}
-
-.text-left {
-    text-align: left;
-}
-
-.text-center {
-    text-align: center;
-}
-
 /* Loading Spinner */
 .loading-row {
     display: table-row;
@@ -234,6 +246,7 @@
     text-align: center;
     padding: 40px 18px !important;
     vertical-align: middle;
+    color: var(--text-secondary);
 }
 
 .fa-spinner {

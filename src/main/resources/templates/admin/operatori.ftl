@@ -3,10 +3,6 @@
 <@layout.pagina_admin titolo="Gestione Operatori" nomeUtente=nomeUtente!"Admin" extraScripts='<script src="/js/admin/operatori.js"></<script>'>
     <main>
         <header class="top-header">
-            <div class="header-title">
-                <h1>Gestione Personale</h1>
-                <p>Monitoraggio operatori e assegnazione missioni</p>
-            </div>
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="tutti">
                     <i class="fas fa-users"></i> Tutti
