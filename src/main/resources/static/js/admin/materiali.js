@@ -69,11 +69,22 @@ function createMaterialCard(m) {
 }
 
 async function patchStatus(id) {
-    try {
-        await apiCall(`/swa/api/materiali/${id}/toggle-disponibilita`, 'PATCH');
-        await refreshInventory();
-    } catch (err) {
-        Swal.fire('Errore', 'Aggiornamento fallito', 'error');
+    const confirm = await Swal.fire({
+        title: 'Cambiare disponibilità?',
+        text: "Il materiale cambierà stato di disponibilità",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3b82f6'
+    });
+
+    if (confirm.isConfirmed) {
+        try {
+            await apiCall(`/swa/api/materiali/${id}/toggle-disponibilita`, 'PATCH');
+            await refreshInventory();
+            Swal.fire('Aggiornato', '', 'success');
+        } catch (err) {
+            Swal.fire('Errore', 'Aggiornamento fallito', 'error');
+        }
     }
 }
 
