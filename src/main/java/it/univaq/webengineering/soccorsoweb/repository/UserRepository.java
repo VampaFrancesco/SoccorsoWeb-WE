@@ -25,10 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "JOIN u.roles r " +
             "WHERE r.name = 'OPERATORE' " +
             "AND u.attivo = true " +
-            "AND ((u.attivo = true AND u.id NOT IN " +
-            "      (SELECT mo.operatore.id FROM MissioneOperatore mo WHERE mo.missione.stato = 'IN_CORSO')) " +
-            "   OR (u.attivo = false AND u.id IN " +
-            "      (SELECT mo.operatore.id FROM MissioneOperatore mo WHERE mo.missione.stato = 'IN_CORSO')))")
+            "AND (:disponibile = false OR u.id NOT IN " +
+            "      (SELECT mo.operatore.id FROM MissioneOperatore mo WHERE mo.missione.stato = 'IN_CORSO'))")
     List<User> findOperatoriByDisponibile(@Param("disponibile") boolean disponibile);
 
 }

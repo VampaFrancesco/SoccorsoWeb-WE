@@ -4,7 +4,6 @@ import it.univaq.webengineering.soccorsoweb.mapper.RichiestaSoccorsoMapper;
 import it.univaq.webengineering.soccorsoweb.model.dto.request.RichiestaSoccorsoRequest;
 import it.univaq.webengineering.soccorsoweb.model.dto.request.RichiestaSoccorsoUpdateRequest;
 import it.univaq.webengineering.soccorsoweb.model.dto.response.RichiestaSoccorsoResponse;
-import it.univaq.webengineering.soccorsoweb.model.entity.Missione;
 import it.univaq.webengineering.soccorsoweb.model.entity.RichiestaSoccorso;
 import it.univaq.webengineering.soccorsoweb.repository.MissioneRepository;
 import it.univaq.webengineering.soccorsoweb.repository.RichiestaSoccorsoRepository;
@@ -18,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,6 +29,14 @@ public class RichiestaService {
     private final EmailService emailService;
 
     private final String baseUrl = "http://localhost:8080";
+
+    /** Numero massimo di richieste per IP nella finestra temporale */
+    @Value("${soccorsoweb.rate-limit.max-requests:5}")
+    private int maxRequestsPerIp;
+
+    /** Finestra temporale in minuti per il rate limiting */
+    @Value("${soccorsoweb.rate-limit.window-minutes:60}")
+    private int rateLimitWindowMinutes;
 
     public RichiestaService(RichiestaSoccorsoMapper richiestaSoccorsoMapper,
             RichiestaSoccorsoRepository richiestaSoccorsoRepository,
@@ -46,11 +51,16 @@ public class RichiestaService {
     @Transactional
     public RichiestaSoccorsoResponse nuovaRichiesta(RichiestaSoccorsoRequest richiestaSoccorsoRequest,
             HttpServletRequest request) {
+
+        // 0. Rate limiting anti-spam per IP
+        String clientIp = getClientIp(request);
+        verificaRateLimitIp(clientIp);
+
         // 1. Crea e salva richiesta nel DB
         RichiestaSoccorso richiesta = richiestaSoccorsoMapper.toEntity(richiestaSoccorsoRequest);
-        richiesta.setIpOrigine(getClientIp(request));
+        richiesta.setIpOrigine(clientIp);
         richiesta.setTokenConvalida(UUID.randomUUID().toString());
-        richiesta.setStato(null); // ✅ Stato vuoto fino alla convalida email
+        richiesta.setStato(null); // Stato vuoto fino alla convalida email
 
         RichiestaSoccorso richiestaSalvata = richiestaSoccorsoRepository.save(richiesta);
 
@@ -80,12 +90,21 @@ public class RichiestaService {
         RichiestaSoccorso richiesta = richiestaSoccorsoRepository.findByTokenConvalida(token);
 
         if (richiesta == null) {
-            throw new EntityNotFoundException("Token di convalida non valido.");
+            throw new EntityNotFoundException("Token di convalida non valido o già utilizzato.");
+        }
+
+        // Verifica se già convalidata (doppia sicurezza)
+        if (richiesta.getConvalidataAt() != null) {
+            throw new IllegalStateException("Questa richiesta è già stata convalidata.");
         }
 
         richiesta.setStato(RichiestaSoccorso.StatoRichiesta.ATTIVA);
         richiesta.setConvalidataAt(LocalDateTime.now());
         richiesta.setUpdatedAt(LocalDateTime.now());
+
+        // Invalida il token → one-time use
+        richiesta.setTokenConvalida(null);
+
         richiestaSoccorsoRepository.save(richiesta);
     }
 
@@ -100,6 +119,24 @@ public class RichiestaService {
         }
 
         return richiesteEntity.map(richiestaSoccorsoMapper::toResponse);
+    }
+
+    /**
+     * Verifica che l'IP non abbia superato il limite di richieste nella finestra
+     * temporale.
+     * Lancia un'eccezione se il limite è stato raggiunto.
+     */
+    private void verificaRateLimitIp(String ip) {
+        LocalDateTime finestraInizio = LocalDateTime.now().minusMinutes(rateLimitWindowMinutes);
+        long count = richiestaSoccorsoRepository.countByIpOrigineAndCreatedAtAfter(ip, finestraInizio);
+
+        if (count >= maxRequestsPerIp) {
+            log.warn("⚠️ Rate limit raggiunto per IP: {} ({} richieste in {} minuti)", ip, count,
+                    rateLimitWindowMinutes);
+            throw new IllegalStateException(
+                    String.format("Hai raggiunto il limite massimo di %d richieste in %d minuti. Riprova più tardi.",
+                            maxRequestsPerIp, rateLimitWindowMinutes));
+        }
     }
 
     private String getClientIp(HttpServletRequest request) {

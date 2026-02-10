@@ -21,9 +21,9 @@ public class AdminController {
         return "admin/aggiungi-utente";
     }
 
-    @GetMapping("/admin/aggiungi-missione")
+    @GetMapping("/admin/missioni/nuova")
     public String nuovaMissione(Model model) {
-        return "admin/aggiungi-missione";
+        return "admin/nuova-missione";
     }
 
     @GetMapping("/admin/materiali")

@@ -23,6 +23,10 @@ public class MezzoService {
         return mezzoMapper.toResponseList(mezzoRepository.findAll());
     }
 
+    public List<MezzoResponse> getDisponibili() {
+        return mezzoMapper.toResponseList(mezzoRepository.findByDisponibileTrue());
+    }
+
     public MezzoResponse getById(Long id) {
         Mezzo mezzo = mezzoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Mezzo non trovato: " + id));

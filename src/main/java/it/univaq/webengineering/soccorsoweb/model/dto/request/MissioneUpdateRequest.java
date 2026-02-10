@@ -1,7 +1,6 @@
 package it.univaq.webengineering.soccorsoweb.model.dto.request;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -10,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,11 +20,11 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MissioneUpdateRequest {
 
     private String obiettivo;
 
+    @JsonProperty("caposquadra_id")
     private Long caposquadraId;
 
     private String posizione;
@@ -35,10 +35,23 @@ public class MissioneUpdateRequest {
 
     private String stato; // IN_CORSO, CHIUSA, FALLITA
 
-
+    @JsonProperty("commenti_finali")
     private String commentiFinali;
 
-    // IDs operatori da assegnare (sostituisce gli operatori esistenti se presente)
-    private Set<Long> operatoriIds;
-}
+    @JsonProperty("livello_successo")
+    @Min(0)
+    @Max(5)
+    private Integer livelloSuccesso;
 
+    @JsonProperty("operatori_ids")
+    private Set<Long> operatoriIds;
+
+    private List<AggiornamentoEntry> aggiornamenti;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AggiornamentoEntry {
+        private String descrizione;
+    }
+}

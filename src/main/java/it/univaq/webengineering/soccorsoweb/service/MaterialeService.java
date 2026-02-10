@@ -23,6 +23,10 @@ public class MaterialeService {
         return materialeMapper.toResponseList(materialeRepository.findAll());
     }
 
+    public List<MaterialeResponse> getDisponibili() {
+        return materialeMapper.toResponseList(materialeRepository.findByDisponibileTrue());
+    }
+
     public MaterialeResponse getById(Long id) {
         Materiale materiale = materialeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Materiale non trovato: " + id));

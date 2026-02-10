@@ -58,7 +58,7 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
             if (response.status === 500) {
                 errorMsg = `Errore del server: ${errorMsg}`;
             } else if (response.status === 404) {
-                errorMsg = 'Risorsa non trovata';
+                errorMsg = errorMsg !== 'Errore nella richiesta' ? errorMsg : 'Risorsa non trovata';
             } else if (response.status === 400) {
                 errorMsg = errorMsg || 'Richiesta non valida';
             }
@@ -162,7 +162,7 @@ async function inserimentoMissione(missione) {
 
 //API 8
 async function chiudiMissione(id) {
-    return await apiCall(`/swa/api/missioni/${id}/modifica-stato?nuovoStato=CHIUSA`, 'PATCH', null, true);
+    return await apiCall(`/swa/api/missioni/${id}/modifica-stato?nuovo_stato=CHIUSA`, 'PATCH', null, true);
 }
 
 //API 9
@@ -240,6 +240,14 @@ async function getMissioniMezzo(id) {
 // API 21 - Materiali
 async function getTuttiMateriali() {
     return await apiCall('/swa/api/materiali', 'GET', null, true);
+}
+
+async function getMezziDisponibili() {
+    return await apiCall('/swa/api/mezzi?disponibile=true', 'GET', null, true);
+}
+
+async function getMaterialiDisponibili() {
+    return await apiCall('/swa/api/materiali?disponibile=true', 'GET', null, true);
 }
 
 // API 22 - Gestione Utenti

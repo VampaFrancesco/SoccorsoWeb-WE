@@ -1,95 +1,54 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token_convalida'); // ✅ Parametro corretto dall'URL
+    const token = urlParams.get('token_convalida');
 
     if (!token) {
-        document.getElementById('loading').classList.remove('loading-visible');
-        document.getElementById('loading').classList.add('hidden');
-        document.getElementById('error-title').textContent = 'Link Non Valido';
-        document.getElementById('error-message').textContent = 'Il token di convalida è mancante dall\'URL. Verifica di aver copiato correttamente l\'intero link dalla email.';
-        document.getElementById('error').classList.remove('hidden');
+        mostraErrore('Link Non Valido',
+            'Il token di convalida è mancante dall\'URL. Verifica di aver copiato correttamente l\'intero link dalla email.');
         return;
     }
 
     try {
-        console.log('🔍 Tentativo convalida con token:', token);
         const result = await convalidaRichiesta(token);
 
-        console.log('📥 Risposta API:', result);
-        console.log('📥 Tipo di risposta:', typeof result);
-        console.log('📥 Contenuto JSON:', JSON.stringify(result, null, 2));
+        nascondiLoading();
 
-        document.getElementById('loading').classList.remove('loading-visible');
-        document.getElementById('loading').classList.add('hidden');
-
-        // Gestisci la risposta in base al formato dell'API
-        // Controlla vari formati possibili di successo
-        const isSuccess = result && (result.esito === 'successo' ||
-            result.status === 'success' ||
-            result.success === true ||
-            result.messaggio?.toLowerCase().includes('successo') ||
-            result.message?.toLowerCase().includes('success') ||
-            result.message?.toLowerCase().includes('convalidata') ||
-            // Se non ci sono errori espliciti e la risposta esiste, considera successo
-            (result.error === undefined && result.errore === undefined && Object.keys(result).length > 0) || false);
-
-        if (isSuccess) {
-            console.log('✅ Convalida riuscita!');
+        // Verifica successo (la risposta contiene "success" come chiave)
+        if (result && result.success) {
             document.getElementById('success').classList.remove('hidden');
-
         } else {
-            console.log('❌ Convalida fallita, mostro errore');
-            // Estrai il messaggio di errore dalla risposta
-            const errorTitle = result?.messaggio || result?.message || result?.error || 'Errore nella Convalida';
-            const errorDetail = result?.dettaglio || result?.detail || result?.description || 'Il link potrebbe essere scaduto o non valido.';
-
-            document.getElementById('error-title').textContent = errorTitle;
-            document.getElementById('error-message').textContent = errorDetail;
-            document.getElementById('error').classList.remove('hidden');
+            mostraErrore(
+                result?.error || 'Errore nella Convalida',
+                'Si è verificato un problema durante la convalida.'
+            );
         }
     } catch (error) {
-        console.error('❌ Errore validazione:', error);
+        const msg = (error.message || '').toLowerCase();
 
-        document.getElementById('loading').classList.remove('loading-visible');
-        document.getElementById('loading').classList.add('hidden');
-
-        // Estrai il messaggio di errore più specifico possibile
-        let errorTitle = 'Errore di Connessione';
-        let errorMessage = 'Impossibile completare la validazione. Verifica la tua connessione e riprova più tardi.';
-
-        if (error.message) {
-            const msg = error.message.toLowerCase();
-
-            // Gestisci errori specifici
-            if (msg.includes('token di convalida non valido') || msg.includes('token non valido')) {
-                errorTitle = 'Token Non Valido';
-                errorMessage = 'Il link di convalida è scaduto, non è valido o è già stato utilizzato. Potrebbe essere necessario richiedere un nuovo link di convalida.';
-            } else if (msg.includes('scaduto')) {
-                errorTitle = 'Token Scaduto';
-                errorMessage = 'Il link di convalida è scaduto. Richiedi un nuovo link dalla home page.';
-            } else if (msg.includes('già convalidata')) {
-                errorTitle = 'Già Convalidata';
-                errorMessage = 'Questa richiesta è già stata convalidata in precedenza.';
-            } else if (!msg.includes('errore nella richiesta') && !msg.includes('errore del server')) {
-                // Se c'è un messaggio specifico che non è generico, usalo
-                errorMessage = error.message;
-            } else if (msg.includes('errore del server:')) {
-                // Estrai il messaggio dopo "Errore del server:"
-                const specificMsg = error.message.split('Errore del server:')[1]?.trim();
-                if (specificMsg) {
-                    errorTitle = 'Errore di Validazione';
-                    errorMessage = specificMsg;
-                }
-            }
+        if (msg.includes('già') && msg.includes('convalidata')) {
+            mostraErrore('Già Convalidata',
+                'Questa richiesta è già stata convalidata in precedenza. Il link è utilizzabile una sola volta.');
+        } else if (msg.includes('token') && (msg.includes('non valido') || msg.includes('utilizzato'))) {
+            mostraErrore('Link Non Valido o Già Usato',
+                'Il link di convalida non è valido oppure è già stato utilizzato. Ogni link può essere usato una sola volta.');
+        } else {
+            mostraErrore('Errore di Connessione',
+                error.message || 'Impossibile completare la validazione. Verifica la tua connessione e riprova.');
         }
-
-        document.getElementById('error-title').textContent = errorTitle;
-        document.getElementById('error-message').textContent = errorMessage;
-        document.getElementById('error').classList.remove('hidden');
     }
 });
 
+/** Nasconde lo spinner e mostra un messaggio di errore */
+function mostraErrore(titolo, messaggio) {
+    nascondiLoading();
+    document.getElementById('error-title').textContent = titolo;
+    document.getElementById('error-message').textContent = messaggio;
+    document.getElementById('error').classList.remove('hidden');
+}
 
-
-
-
+/** Nasconde lo spinner di caricamento */
+function nascondiLoading() {
+    const el = document.getElementById('loading');
+    el.classList.remove('loading-visible');
+    el.classList.add('hidden');
+}

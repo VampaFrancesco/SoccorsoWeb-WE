@@ -1,5 +1,6 @@
 package it.univaq.webengineering.soccorsoweb.model.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
@@ -20,12 +21,14 @@ import java.util.Set;
 public class MissioneRequest {
 
     @NotNull(message = "L'ID della richiesta è obbligatorio")
+    @JsonProperty("richiesta_id")
     private Long richiestaId;
 
     @NotBlank(message = "L'obiettivo è obbligatorio")
     private String obiettivo;
 
     @NotNull(message = "Il caposquadra è obbligatorio")
+    @JsonProperty("caposquadra_id")
     private Long caposquadraId;
 
     // ID della squadra (opzionale)
@@ -36,9 +39,11 @@ public class MissioneRequest {
     private BigDecimal longitudine;
 
     // IDs operatori da assegnare
+    @JsonProperty("operatori_ids")
     private Set<Long> operatoriIds;
 
     // IDs mezzi da assegnare
+    @JsonProperty("mezzi_ids")
     private Set<Long> mezziIds;
 
     // IDs materiali da assegnare (con quantità)
@@ -48,8 +53,11 @@ public class MissioneRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class MissioneMaterialeAssignment {
+        @JsonProperty("materiale_id")
         private Long materialeId;
+        @JsonProperty("quantita_usata")
         private Integer quantitaUsata;
     }
 }

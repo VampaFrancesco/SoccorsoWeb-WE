@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    @Transactional(readOnly = true)//IMPORTANTE: garantisce accesso a user.getRoles()
+    @Transactional(readOnly = true) // IMPORTANTE: garantisce accesso a user.getRoles()
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("Loading user by email: {}", email);
 

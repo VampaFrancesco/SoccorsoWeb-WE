@@ -1,5 +1,7 @@
 package it.univaq.webengineering.soccorsoweb.service;
 
+import it.univaq.webengineering.soccorsoweb.model.entity.Missione;
+import it.univaq.webengineering.soccorsoweb.model.entity.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -152,5 +154,139 @@ public class EmailService {
         }
     }
 
-}
+    public void inviaNotificaMissione(User operatore, Missione missione) {
+        String htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background-color: #007bff; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+                        .content { background-color: #f8f9fa; padding: 30px; border-radius: 0 0 5px 5px; }
+                        .info-box { background-color: white; padding: 15px; border-left: 5px solid #007bff; margin: 20px 0; border-radius: 0 4px 4px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+                        .footer { margin-top: 20px; font-size: 12px; color: #666; text-align: center; }
+                        .badge { display: inline-block; padding: 4px 8px; background-color: #e7f1ff; color: #007bff; border-radius: 4px; font-weight: bold; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🚑 Nuova Missione Assegnata</h1>
+                        </div>
+                        <div class="content">
+                            <h2>Ciao %s,</h2>
+                            <p>Ti è stata assegnata una nuova missione di soccorso.</p>
 
+                            <div class="info-box">
+                                <p><strong>ID Missione:</strong> <span class="badge">#%d</span></p>
+                                <p><strong>Obiettivo:</strong> %s</p>
+                                <p><strong>Data Inizio:</strong> %s</p>
+                            </div>
+
+                            <p>Per maggiori dettagli e per iniziare le operazioni, accedi al portale.</p>
+
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="http://localhost:8080/operatore/missioni" style="display: inline-block; padding: 15px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Vai alla Missione</a>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <p>Questa è un'email automatica del sistema SoccorsoWeb.</p>
+                            <p>&copy; 2026 SoccorsoWeb</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                .formatted(
+                        operatore.getNome(),
+                        missione.getId(),
+                        missione.getObiettivo(),
+                        missione.getInizioAt() != null ? missione.getInizioAt().toString() : "N/D");
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(operatore.getEmail());
+            helper.setSubject("🚨 Nuova Missione Assegnata: #" + missione.getId());
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("✅ Notifica missione inviata a: {}", operatore.getEmail());
+        } catch (MessagingException e) {
+            log.error("❌ Errore invio notifica missione: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Invia una notifica di aggiornamento missione a un membro della squadra.
+     */
+    public void inviaNotificaAggiornamento(User membro, Missione missione, String testoAggiornamento) {
+        String htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background-color: #f59e0b; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+                        .content { background-color: #f8f9fa; padding: 30px; border-radius: 0 0 5px 5px; }
+                        .info-box { background-color: white; padding: 15px; border-left: 5px solid #f59e0b; margin: 20px 0; border-radius: 0 4px 4px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+                        .footer { margin-top: 20px; font-size: 12px; color: #666; text-align: center; }
+                        .badge { display: inline-block; padding: 4px 8px; background-color: #fef3c7; color: #92400e; border-radius: 4px; font-weight: bold; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>📋 Aggiornamento Missione</h1>
+                        </div>
+                        <div class="content">
+                            <h2>Ciao %s,</h2>
+                            <p>C'è un nuovo aggiornamento per la missione a cui sei assegnato.</p>
+
+                            <div class="info-box">
+                                <p><strong>Missione:</strong> <span class="badge">#%d</span></p>
+                                <p><strong>Obiettivo:</strong> %s</p>
+                                <p><strong>Aggiornamento:</strong></p>
+                                <p style="margin-top: 8px; padding: 10px; background: #f3f4f6; border-radius: 4px;">%s</p>
+                            </div>
+
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="http://localhost:8080/operatore/missioni" style="display: inline-block; padding: 15px 30px; background-color: #f59e0b; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Vedi Dettagli</a>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <p>Questa è un'email automatica del sistema SoccorsoWeb.</p>
+                            <p>&copy; 2026 SoccorsoWeb</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                .formatted(
+                        membro.getNome(),
+                        missione.getId(),
+                        missione.getObiettivo(),
+                        testoAggiornamento);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(membro.getEmail());
+            helper.setSubject("📋 Aggiornamento Missione #" + missione.getId());
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("✅ Notifica aggiornamento inviata a: {}", membro.getEmail());
+        } catch (MessagingException e) {
+            log.error("❌ Errore invio notifica aggiornamento: {}", e.getMessage());
+        }
+    }
+}

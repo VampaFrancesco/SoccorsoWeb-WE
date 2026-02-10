@@ -29,8 +29,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handlewrongCredentials(BadCredentialsException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.UNAUTHORIZED,
-                ex.getMessage()
-        );
+                ex.getMessage());
         problemDetail.setTitle("Credenziali Errate - Login Fallito!" + ex.getCause());
         return problemDetail;
     }
@@ -44,8 +43,7 @@ public class GlobalExceptionHandler {
         });
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
-                errors.toString()
-        );
+                errors.toString());
         problemDetail.setTitle("Errore nella validazione dei dati");
         return problemDetail;
     }
@@ -55,8 +53,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleGenericError(Exception ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Errore interno del server"
-        );
+                "Errore interno del server");
         problemDetail.setTitle("Problema interno al server, contattare l'amministratore" + ex.getCause().getMessage());
         return problemDetail;
     }
@@ -66,8 +63,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
-                "Messaggio HTTP non leggibile"
-        );
+                "Messaggio HTTP non leggibile");
         problemDetail.setTitle("Parsing HTTP non riuscito" + ex.getCause());
         return problemDetail;
     }
@@ -77,9 +73,8 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.UNPROCESSABLE_ENTITY,
-                "Non è stato possibile creare l'entità a causa di una violazione dell'integrità dei dati"
-        );
-        problemDetail.setTitle("Integrità dei dati violata"+ ex.getCause());
+                "Non è stato possibile creare l'entità a causa di una violazione dell'integrità dei dati");
+        problemDetail.setTitle("Integrità dei dati violata" + ex.getCause());
         return problemDetail;
     }
 
@@ -88,31 +83,38 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleEntityNotFound(EntityNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.NOT_FOUND,
-                ex.getMessage()
-        );
+                ex.getMessage());
         problemDetail.setTitle("Entità non presente nel database");
         return problemDetail;
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({MessagingException.class, MailException.class})
+    @ExceptionHandler({ MessagingException.class, MailException.class })
     public ProblemDetail handleEmailError(Exception ex) {
-                ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Impossibile completare l'operazione: errore nell'invio dell'email di convalida"
-        );
+                "Impossibile completare l'operazione: errore nell'invio dell'email di convalida");
         problemDetail.setTitle("Errore invio email" + ex.getCause());
         return problemDetail;
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
     @ExceptionHandler(TooManyRequests.class)
     public ProblemDetail handleTooManyRequest(TooManyRequests ex) {
-                ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Impossibile completare l'operazione: errore nell'invio dell'email di convalida"
-        );
-        problemDetail.setTitle("Errore invio email"+ ex.getCause());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.TOO_MANY_REQUESTS,
+                ex.getMessage());
+        problemDetail.setTitle("Troppe richieste");
+        return problemDetail;
+    }
+
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail handleIllegalState(IllegalStateException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.TOO_MANY_REQUESTS,
+                ex.getMessage());
+        problemDetail.setTitle("Operazione non consentita");
         return problemDetail;
     }
 
@@ -121,8 +123,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleIllegalArgumentException(IllegalArgumentException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
-                ex.getMessage()
-        );
+                ex.getMessage());
         problemDetail.setTitle("Argomento non valido per l'URL richiesto. Argomento non valido");
         return problemDetail;
     }
@@ -132,8 +133,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleRoleNotFound(RoleNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
-                ex.getMessage()
-        );
+                ex.getMessage());
         problemDetail.setTitle("Argomento non valido per l'URL richiesto. Ruolo non valido");
         return problemDetail;
     }
@@ -143,8 +143,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleAccessDenied(AuthorizationDeniedException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.FORBIDDEN,
-                "Non hai i permessi necessari per accedere a questa risorsa"
-        );
+                "Non hai i permessi necessari per accedere a questa risorsa");
         problemDetail.setTitle("Accesso Negato");
         return problemDetail;
     }
@@ -154,8 +153,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleAuthenticationError(AuthenticationException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.UNAUTHORIZED,
-                "Autenticazione richiesta o token non valido"
-        );
+                "Autenticazione richiesta o token non valido");
         problemDetail.setTitle("Autenticazione Fallita");
         return problemDetail;
     }
@@ -165,8 +163,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleConflict(Conflict ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.CONFLICT,
-                "Entity in conflitto, esiste già un'entità con lo stesso identificatore o attributi univoci"
-        );
+                "Entity in conflitto, esiste già un'entità con lo stesso identificatore o attributi univoci");
         problemDetail.setTitle("Autenticazione Fallita");
         return problemDetail;
     }

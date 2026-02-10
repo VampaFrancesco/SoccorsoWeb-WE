@@ -21,8 +21,11 @@ public class MaterialeController {
     private final MaterialeService materialeService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public List<MaterialeResponse> getAll() {
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATORE')")
+    public List<MaterialeResponse> getAll(@RequestParam(required = false) Boolean disponibile) {
+        if (Boolean.TRUE.equals(disponibile)) {
+            return materialeService.getDisponibili();
+        }
         return materialeService.getAll();
     }
 

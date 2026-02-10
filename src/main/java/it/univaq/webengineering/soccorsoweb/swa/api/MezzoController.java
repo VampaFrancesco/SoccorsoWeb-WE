@@ -21,7 +21,10 @@ public class MezzoController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'OPERATORE')")
-    public List<MezzoResponse> getAll() {
+    public List<MezzoResponse> getAll(@RequestParam(required = false) Boolean disponibile) {
+        if (Boolean.TRUE.equals(disponibile)) {
+            return mezzoService.getDisponibili();
+        }
         return mezzoService.getAll();
     }
 

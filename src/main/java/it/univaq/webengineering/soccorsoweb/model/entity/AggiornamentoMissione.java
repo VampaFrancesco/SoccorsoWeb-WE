@@ -28,7 +28,7 @@ public class AggiornamentoMissione {
     private Missione missione;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id", nullable = false)
+    @JoinColumn(name = "admin_id")
     private User admin;
 
     @Column(nullable = false, columnDefinition = "TEXT")

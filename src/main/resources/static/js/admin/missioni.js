@@ -6,7 +6,7 @@ let currentMissionId = null;
 let currentFilter = 'IN_CORSO';
 
 // Inizializzazione
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initFilterButtons();
     loadMissioni('IN_CORSO');
     initForms();
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initFilterButtons() {
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const stato = this.dataset.stato;
 
             // Aggiorna UI
@@ -71,8 +71,8 @@ async function loadMissioni(stato) {
             return;
         }
 
-        // Ordina per data
-        filtered.sort((a, b) => new Date(b.dataOraInizio) - new Date(a.dataOraInizio));
+        // Ordina per data (inizio_at)
+        filtered.sort((a, b) => new Date(b.inizio_at) - new Date(a.inizio_at));
 
         // Genera righe
         tbody.innerHTML = filtered.map(m => generateRow(m)).join('');
@@ -91,33 +91,33 @@ async function loadMissioni(stato) {
 }
 
 function generateRow(missione) {
-    const dataInizio = new Date(missione.dataOraInizio).toLocaleString('it-IT', {
+    const dataInizio = missione.inizio_at ? new Date(missione.inizio_at).toLocaleString('it-IT', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
-    });
+    }) : 'N/D';
 
-    const caposquadra = missione.operatori?.find(op => op.caposquadra);
-    const altriOp = (missione.operatori?.length || 0) - 1;
+    const caposquadra = missione.caposquadra;
+    const altriOp = (missione.operatori?.length || 0);
     const numMezzi = missione.mezzi?.length || 0;
     const isInCorso = missione.stato === 'IN_CORSO';
 
     return `
         <tr>
             <td><strong>#${missione.id}</strong></td>
-            <td><strong>#${missione.richiestaId || 'N/D'}</strong></td>
+            <td><strong>#${missione.richiesta_id || 'N/D'}</strong></td>
             <td>${caposquadra ? `${caposquadra.nome} ${caposquadra.cognome}` : 'N/D'}</td>
             <td>
                 ${altriOp > 0
-        ? `<span class="team-badge">${altriOp} operatori</span>`
-        : '<span style="color: #94a3b8;">Nessuno</span>'}
+            ? `<span class="team-badge">${altriOp} operatori</span>`
+            : '<span style="color: #94a3b8;">Nessuno</span>'}
             </td>
             <td>
                 ${numMezzi > 0
-        ? missione.mezzi.map(m => `<span class="mezzo-badge">${m.targa || m.nome}</span>`).join('')
-        : '<span style="color: #94a3b8;">Nessuno</span>'}
+            ? missione.mezzi.map(m => `<span class="mezzo-badge">${m.targa || m.nome}</span>`).join('')
+            : '<span style="color: #94a3b8;">Nessuno</span>'}
             </td>
             <td>${dataInizio}</td>
             <td>
@@ -157,9 +157,9 @@ async function viewDettaglio(id) {
 
         // Carica richiesta
         let richiesta = null;
-        if (missione.richiestaId) {
+        if (missione.richiesta_id) {
             try {
-                richiesta = await dettagliRichiestaSoccorso(missione.richiestaId);
+                richiesta = await dettagliRichiestaSoccorso(missione.richiesta_id);
             } catch (e) {
                 console.warn('Richiesta non disponibile');
             }
@@ -175,11 +175,11 @@ async function viewDettaglio(id) {
 }
 
 function generateDettaglioHTML(missione, richiesta) {
-    const dataInizio = new Date(missione.dataOraInizio).toLocaleString('it-IT');
-    const dataFine = missione.dataOraFine ? new Date(missione.dataOraFine).toLocaleString('it-IT') : 'In corso';
+    const dataInizio = missione.inizio_at ? new Date(missione.inizio_at).toLocaleString('it-IT') : 'N/D';
+    const dataFine = missione.fine_at ? new Date(missione.fine_at).toLocaleString('it-IT') : 'In corso';
 
-    const caposquadra = missione.operatori?.find(op => op.caposquadra);
-    const altriOp = missione.operatori?.filter(op => !op.caposquadra) || [];
+    const caposquadra = missione.caposquadra;
+    const altriOp = missione.operatori?.filter(op => op.id !== caposquadra?.id) || [];
 
     let html = `
         <div class="detail-section">
@@ -221,11 +221,11 @@ function generateDettaglioHTML(missione, richiesta) {
                 <div class="detail-grid">
                     <div class="detail-item">
                         <label>Segnalante</label>
-                        <span>${richiesta.nomeSegnalante || 'N/D'}</span>
+                        <span>${richiesta.nome_segnalante || 'N/D'}</span>
                     </div>
                     <div class="detail-item">
                         <label>Email</label>
-                        <span>${richiesta.emailSegnalante || 'N/D'}</span>
+                        <span>${richiesta.email_segnalante || 'N/D'}</span>
                     </div>
                     <div class="detail-item" style="grid-column: 1 / -1;">
                         <label>Indirizzo</label>
@@ -251,8 +251,8 @@ function generateDettaglioHTML(missione, richiesta) {
             <div class="detail-item">
                 <label>Altri Operatori</label>
                 ${altriOp.length > 0
-        ? `<div class="operatori-list">${altriOp.map(op => `<span class="team-badge">${op.nome} ${op.cognome}</span>`).join('')}</div>`
-        : '<span style="color: #94a3b8;">Nessuno</span>'}
+            ? `<div class="operatori-list">${altriOp.map(op => `<span class="team-badge">${op.nome} ${op.cognome}</span>`).join('')}</div>`
+            : '<span style="color: #94a3b8;">Nessuno</span>'}
             </div>
         </div>
     `;
@@ -262,8 +262,8 @@ function generateDettaglioHTML(missione, richiesta) {
         <div class="detail-section">
             <h3><i class="fas fa-ambulance"></i> Mezzi</h3>
             ${missione.mezzi?.length > 0
-        ? `<div class="mezzi-list">${missione.mezzi.map(m => `<span class="mezzo-badge">${m.targa || m.nome}</span>`).join('')}</div>`
-        : '<p style="color: #94a3b8;">Nessun mezzo assegnato</p>'}
+            ? `<div class="mezzi-list">${missione.mezzi.map(m => `<span class="mezzo-badge">${m.targa || m.nome}</span>`).join('')}</div>`
+            : '<p style="color: #94a3b8;">Nessun mezzo assegnato</p>'}
         </div>
     `;
 
@@ -272,8 +272,8 @@ function generateDettaglioHTML(missione, richiesta) {
         <div class="detail-section">
             <h3><i class="fas fa-box-open"></i> Materiali</h3>
             ${missione.materiali?.length > 0
-        ? `<div class="materiali-list">${missione.materiali.map(m => `<span class="team-badge" style="background: #7c3aed;">${m.nome}</span>`).join('')}</div>`
-        : '<p style="color: #94a3b8;">Nessun materiale assegnato</p>'}
+            ? `<div class="materiali-list">${missione.materiali.map(m => `<span class="team-badge" style="background: #7c3aed;">${m.nome}</span>`).join('')}</div>`
+            : '<p style="color: #94a3b8;">Nessun materiale assegnato</p>'}
         </div>
     `;
 
@@ -286,9 +286,9 @@ function generateDettaglioHTML(missione, richiesta) {
                     ${missione.aggiornamenti.map(agg => `
                         <div class="aggiornamento-item">
                             <div class="aggiornamento-time">
-                                <i class="fas fa-clock"></i> ${new Date(agg.timestamp).toLocaleString('it-IT')}
+                                <i class="fas fa-clock"></i> ${new Date(agg.created_at).toLocaleString('it-IT')}
                             </div>
-                            <div class="aggiornamento-text">${agg.testo}</div>
+                            <div class="aggiornamento-text">${agg.descrizione}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -304,11 +304,11 @@ function generateDettaglioHTML(missione, richiesta) {
                 <div class="detail-grid">
                     <div class="detail-item">
                         <label>Livello Successo</label>
-                        <span>${missione.livelloSuccesso !== null ? missione.livelloSuccesso + '/5' : 'N/D'}</span>
+                        <span>${missione.livello_successo !== null ? missione.livello_successo + '/5' : 'N/D'}</span>
                     </div>
                     <div class="detail-item" style="grid-column: 1 / -1;">
                         <label>Commenti</label>
-                        <span>${missione.commentoFinale || 'Nessun commento'}</span>
+                        <span>${missione.commenti_finali || 'Nessun commento'}</span>
                     </div>
                 </div>
             </div>
@@ -330,7 +330,7 @@ function openAggiorna(id) {
 
 function initForms() {
     // Form aggiorna
-    document.getElementById('form-aggiorna').addEventListener('submit', async function(e) {
+    document.getElementById('form-aggiorna').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const testo = document.getElementById('testo-aggiornamento').value.trim();
@@ -343,8 +343,8 @@ function initForms() {
         try {
             await aggiornaMissione(currentMissionId, {
                 aggiornamenti: [{
-                    testo: testo,
-                    timestamp: new Date().toISOString()
+                    descrizione: testo,
+                    created_at: new Date().toISOString()
                 }]
             });
 
@@ -366,7 +366,7 @@ function initForms() {
     });
 
     // Form chiudi
-    document.getElementById('form-chiudi').addEventListener('submit', async function(e) {
+    document.getElementById('form-chiudi').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const dataFine = document.getElementById('data-fine').value;
@@ -377,6 +377,10 @@ function initForms() {
             Swal.fire('Attenzione', 'Compila tutti i campi obbligatori', 'warning');
             return;
         }
+
+        // Salva l'id localmente e chiudi il modal PRIMA della conferma SweetAlert
+        const missioneIdDaChiudere = currentMissionId;
+        closeModal('modal-chiudi');
 
         const conferma = await Swal.fire({
             title: 'Conferma Chiusura',
@@ -392,11 +396,11 @@ function initForms() {
         if (!conferma.isConfirmed) return;
 
         try {
-            await aggiornaMissione(currentMissionId, {
+            await aggiornaMissione(missioneIdDaChiudere, {
                 stato: 'CHIUSA',
-                dataOraFine: new Date(dataFine).toISOString(),
-                livelloSuccesso: livelloSuccesso,
-                commentoFinale: commenti || null
+                fine_at: new Date(dataFine).toISOString(),
+                livello_successo: livelloSuccesso,
+                commenti_finali: commenti || null
             });
 
             Swal.fire({
@@ -407,7 +411,6 @@ function initForms() {
                 showConfirmButton: false
             });
 
-            closeModal('modal-chiudi');
             loadMissioni(currentFilter);
 
         } catch (error) {
@@ -454,14 +457,14 @@ function closeModal(modalId) {
 }
 
 // Click fuori dal modal
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (e.target.classList.contains('modal-overlay')) {
         closeModal(e.target.id);
     }
 });
 
 // ESC per chiudere
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.active').forEach(modal => {
             closeModal(modal.id);
