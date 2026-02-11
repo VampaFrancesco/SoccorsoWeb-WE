@@ -1,26 +1,27 @@
 /* ========================================
    MISSIONI - DARK TECH THEME
+   Stile coerente con richieste.css e admin.css
    ======================================== */
 
+/* ── FILTRI ── */
 .missioni-container {
     width: 100%;
 }
 
-/* ========================================
-   FILTRI
-   ======================================== */
-
-.filter-bar {
+.missioni-container .filter-bar {
     display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 8px;
+    background: var(--bg-card);
+    padding: 6px;
+    border-radius: 14px;
+    margin-bottom: 28px;
     flex-wrap: wrap;
 }
 
-.filter-btn {
-    padding: 12px 24px;
-    border: 2px solid var(--border-color);
-    background: var(--bg-card);
+.missioni-container .filter-btn {
+    padding: 10px 22px;
+    border: none;
+    background: transparent;
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.95rem;
@@ -32,48 +33,46 @@
     gap: 8px;
 }
 
-.filter-btn:hover:not(.active) {
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-    transform: translateY(-2px);
+.missioni-container .filter-btn:hover:not(.active) {
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
-.filter-btn.active {
+.missioni-container .filter-btn.active {
     background: var(--accent-primary);
     color: var(--text-primary);
-    border-color: var(--accent-primary);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* ========================================
-   TABELLA
-   ======================================== */
-
-.table-container {
+/* ── TABELLA ── */
+.missioni-container .table-container {
     background: var(--bg-card);
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--border-color);
 }
 
-.card {
+.missioni-container .card {
     padding: 0;
 }
 
-.modern-table {
+.missioni-container .modern-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.modern-table thead {
+.missioni-container .modern-table thead {
     background: var(--bg-sidebar);
 }
 
-.modern-table th {
-    padding: 16px 12px;
-    text-align: left;
-    font-size: 0.85rem;
+.missioni-container .modern-table th {
+    padding: 18px 14px;
+    text-align: center;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--accent-primary);
     text-transform: uppercase;
@@ -81,46 +80,62 @@
     border-bottom: 2px solid var(--accent-primary);
 }
 
-.modern-table td {
-    padding: 16px 12px;
+.missioni-container .modern-table td {
+    padding: 16px 14px;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
     font-size: 0.95rem;
+    vertical-align: middle;
+    text-align: center;
 }
 
-.modern-table tbody tr {
+.missioni-container .modern-table tbody tr {
     background: var(--bg-card);
     transition: background-color 0.2s;
 }
 
-.modern-table tbody tr:hover {
+.missioni-container .modern-table tbody tr:hover {
     background: var(--bg-hover);
 }
 
-.modern-table tbody tr:last-child td {
+.missioni-container .modern-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.missioni-container .modern-table tbody tr:nth-child(even):hover {
+    background: var(--bg-hover);
+}
+
+.missioni-container .modern-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* Badge */
+/* ── BADGE & PILL ── */
 .status-pill {
     display: inline-block;
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
     white-space: nowrap;
 }
 
 .status-IN_CORSO {
-    background: rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.15);
     color: var(--accent-warning);
     border: 1px solid var(--accent-warning);
 }
 
 .status-CHIUSA {
-    background: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.15);
     color: var(--accent-success);
     border: 1px solid var(--accent-success);
+}
+
+.status-FALLITA {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--accent-danger);
+    border: 1px solid var(--accent-danger);
 }
 
 .team-badge,
@@ -135,32 +150,51 @@
 }
 
 .team-badge {
-    background: var(--accent-primary);
-    color: var(--text-primary);
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--accent-primary);
+    border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .mezzo-badge {
-    background: var(--accent-danger);
-    color: var(--text-primary);
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--accent-danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* Azioni */
+.materiale-badge {
+    background: rgba(124, 58, 237, 0.2);
+    color: #a78bfa;
+    border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.targa-badge {
+    display: inline-block;
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+/* ── AZIONI ── */
 .action-group {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .btn-view,
 .btn-update,
 .btn-close-mission {
-    padding: 8px 12px;
+    padding: 8px 14px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -174,27 +208,32 @@
 
 .btn-view:hover {
     background: #2563eb;
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .btn-update {
-    background: #0891b2;
-    color: var(--text-primary);
+    background: rgba(8, 145, 178, 0.2);
+    color: #06b6d4;
+    border: 1px solid rgba(8, 145, 178, 0.3);
 }
 
 .btn-update:hover:not(:disabled) {
-    background: #0e7490;
-    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.4);
+    background: rgba(8, 145, 178, 0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
 }
 
 .btn-close-mission {
-    background: var(--accent-success);
-    color: var(--text-primary);
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .btn-close-mission:hover:not(:disabled) {
-    background: #059669;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .btn-update:disabled,
@@ -202,10 +241,11 @@
     background: var(--bg-hover);
     color: var(--text-secondary);
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.4;
+    border: 1px solid transparent;
 }
 
-/* Empty State */
+/* ── EMPTY & LOADING ── */
 .empty-state {
     display: flex;
     flex-direction: column;
@@ -213,39 +253,27 @@
     justify-content: center;
     padding: 60px 20px;
     color: var(--text-secondary);
+    text-align: center;
 }
 
 .empty-state i {
-    font-size: 4rem;
+    font-size: 3rem;
     margin-bottom: 16px;
     opacity: 0.4;
 }
 
 .empty-state p {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     margin: 0;
 }
 
-/* Loading */
 .loading-row td {
     text-align: center;
-    padding: 40px !important;
+    padding: 40px 18px !important;
     color: var(--text-secondary);
 }
 
-.fa-spinner.fa-spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* ========================================
-   MODAL SYSTEM
-   ======================================== */
-
+/* ── MODAL ── */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -253,13 +281,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.8);
     z-index: 10000;
     padding: 20px;
     overflow-y: auto;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(6px);
 }
 
 .modal-overlay.active {
@@ -269,11 +297,11 @@
 .modal-dialog {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 16px;
     width: 100%;
     max-width: 600px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-    animation: modalFadeIn 0.3s ease-out;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.3s ease-out;
     margin: auto;
 }
 
@@ -281,21 +309,22 @@
     max-width: 900px;
 }
 
-@keyframes modalFadeIn {
+@keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: translateY(-30px);
+        transform: translateY(-20px) scale(0.98);
     }
+
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
 .modal-header {
     background: linear-gradient(135deg, var(--accent-primary) 0%, #0891b2 100%);
     padding: 20px 24px;
-    border-radius: 12px 12px 0 0;
+    border-radius: 16px 16px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -303,8 +332,8 @@
 
 .modal-header h2 {
     margin: 0;
-    color: var(--text-primary);
-    font-size: 1.4rem;
+    color: #fff;
+    font-size: 1.3rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -312,11 +341,10 @@
 }
 
 .modal-close {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     border: none;
-    color: var(--text-primary);
-    font-size: 28px;
-    line-height: 1;
+    color: #fff;
+    font-size: 24px;
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -325,11 +353,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
 }
 
 .modal-close:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
     transform: rotate(90deg);
 }
 
@@ -339,10 +366,7 @@
     overflow-y: auto;
 }
 
-/* ========================================
-   FORM STYLES
-   ======================================== */
-
+/* ── FORM ── */
 .form-group {
     margin-bottom: 20px;
 }
@@ -352,7 +376,9 @@
     font-weight: 600;
     margin-bottom: 8px;
     color: var(--accent-primary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .form-group input,
@@ -361,7 +387,7 @@
     width: 100%;
     padding: 12px;
     border: 2px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 0.95rem;
     font-family: var(--font-stack);
     transition: all 0.2s;
@@ -375,7 +401,7 @@
 .form-group textarea:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .form-group textarea {
@@ -385,7 +411,7 @@
 .form-text {
     display: block;
     margin-top: 6px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-secondary);
     font-style: italic;
 }
@@ -402,7 +428,7 @@
 .btn {
     padding: 12px 24px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
@@ -414,7 +440,7 @@
 
 .btn-primary {
     background: var(--accent-primary);
-    color: var(--text-primary);
+    color: #fff;
 }
 
 .btn-primary:hover {
@@ -425,7 +451,7 @@
 
 .btn-success {
     background: var(--accent-success);
-    color: var(--text-primary);
+    color: #fff;
 }
 
 .btn-success:hover {
@@ -437,7 +463,7 @@
 .btn-secondary {
     background: var(--bg-hover);
     color: var(--text-secondary);
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
@@ -445,12 +471,9 @@
     color: var(--text-primary);
 }
 
-/* ========================================
-   DETTAGLI MISSIONE
-   ======================================== */
-
+/* ── DETTAGLI MISSIONE ── */
 .detail-section {
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 }
 
 .detail-section:last-child {
@@ -459,10 +482,10 @@
 
 .detail-section h3 {
     color: var(--accent-primary);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -470,31 +493,31 @@
 
 .detail-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
 }
 
 .detail-item {
     background: var(--bg-sidebar);
-    padding: 16px;
-    border-radius: 8px;
-    border-left: 4px solid var(--accent-primary);
+    padding: 14px 16px;
+    border-radius: 10px;
+    border-left: 3px solid var(--accent-primary);
 }
 
 .detail-item label {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .detail-item span {
     display: block;
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.5;
 }
 
@@ -503,11 +526,27 @@
 .materiali-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+/* ── MAPPA ── */
+.map-container {
+    width: 100%;
+    height: 280px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
     margin-top: 12px;
 }
 
-/* Timeline Aggiornamenti */
+.map-container .leaflet-container {
+    height: 100%;
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* ── TIMELINE AGGIORNAMENTI ── */
 .aggiornamenti-timeline {
     position: relative;
     padding-left: 32px;
@@ -526,10 +565,10 @@
 
 .aggiornamento-item {
     position: relative;
-    margin-bottom: 24px;
-    padding: 16px;
+    margin-bottom: 20px;
+    padding: 14px 16px;
     background: var(--bg-sidebar);
-    border-radius: 8px;
+    border-radius: 10px;
     border-left: 3px solid var(--accent-primary);
 }
 
@@ -537,9 +576,9 @@
     content: '';
     position: absolute;
     left: -38px;
-    top: 20px;
-    width: 14px;
-    height: 14px;
+    top: 18px;
+    width: 12px;
+    height: 12px;
     background: var(--accent-primary);
     border-radius: 50%;
     border: 3px solid var(--bg-card);
@@ -547,10 +586,10 @@
 }
 
 .aggiornamento-time {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-secondary);
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -559,29 +598,27 @@
 .aggiornamento-text {
     color: var(--text-primary);
     line-height: 1.6;
+    font-size: 0.95rem;
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-    .filter-bar {
-        gap: 8px;
+    .missioni-container .filter-bar {
+        gap: 6px;
     }
 
-    .filter-btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
+    .missioni-container .filter-btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
     }
 
-    .modern-table {
+    .missioni-container .modern-table {
         display: block;
         overflow-x: auto;
     }
 
-    .modern-table th,
-    .modern-table td {
+    .missioni-container .modern-table th,
+    .missioni-container .modern-table td {
         padding: 12px 8px;
         font-size: 0.85rem;
     }
@@ -621,5 +658,9 @@
     .form-actions .btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .map-container {
+        height: 200px;
     }
 }

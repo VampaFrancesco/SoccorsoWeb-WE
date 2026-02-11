@@ -53,9 +53,8 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 Informazioni Personali
             </h3>
 
-            <!-- Setup data attributes for JS to use if needed -->
             <form id="profileForm" data-user-id="${(user.id)!}">
-                <!-- Dati Anagrafici (Read-Only) -->
+                <!-- Dati Anagrafici -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="nome">Nome</label>
@@ -68,18 +67,18 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 </div>
 
                 <div class="form-group">
+                    <label for="data_nascita">Data di Nascita</label>
+                    <input type="text" id="data_nascita" name="dataNascita" class="form-control readonly" readonly>
+                </div>
+
+                <div class="form-group">
                     <label for="indirizzo">Indirizzo</label>
                     <input type="text" id="indirizzo" name="indirizzo" class="form-control" value="${(user.indirizzo)!}">
                 </div>
 
                 <div class="form-group">
                     <label for="telefono">Telefono</label>
-                     <input type="text" id="telefono" name="telefono" class="form-control" value="${(user.telefono)!}">
-                </div>
-
-                <div class="form-group">
-                    <label for="data_nascita">Data di Nascita</label>
-                    <input type="date" id="data_nascita" name="dataNascita" class="form-control readonly" value="${(user.dataNascita)!}" readonly>
+                    <input type="text" id="telefono" name="telefono" class="form-control" value="${(user.telefono)!}">
                 </div>
 
                 <hr class="divider">
@@ -91,15 +90,54 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 </h3>
 
                 <div class="form-group">
-                    <label for="abilita">Abilità e Competenze</label>
-                    <p class="help-text">Clicca per gestire le tue abilità</p>
-                    <div id="abilita-tags" class="abilita-tags-container">
-                        <#-- Le abilità vengono caricate via JS -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label for="abilita" style="margin-bottom: 0;">Abilità e Competenze</label>
+                        <button type="button" class="btn-secondary btn-sm" onclick="apriModaleAbilita()">
+                            <i class="fas fa-plus"></i> Aggiungi
+                        </button>
                     </div>
-                    <button type="button" class="btn-secondary" id="btn-gestisci-abilita" onclick="apriModaleAbilita()">
-                        <i class="fas fa-plus"></i> Gestisci Abilità
-                    </button>
+                    <div class="table-responsive">
+                        <table class="table-custom" id="tabella-abilita">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Descrizione</th>
+                                    <th>Livello</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="abilita-tbody">
+                                <!-- Le righe vengono caricate via JS -->
+                            </tbody>
+                        </table>
+                    </div>
                     <input type="hidden" id="abilita" name="abilita" value="">
+                </div>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label for="patenti" style="margin-bottom: 0;">Patenti e Certificazioni</label>
+                        <button type="button" class="btn-secondary btn-sm" onclick="apriModalePatenti()">
+                            <i class="fas fa-plus"></i> Aggiungi
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                       <table class="table-custom" id="tabella-patenti">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Descrizione</th>
+                                    <th>Conseguita Il</th>
+                                    <th>Rilasciata Da</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="patenti-tbody">
+                                <!-- Le righe vengono caricate via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <input type="hidden" id="patenti" name="patenti" value="">
                 </div>
 
                 <!-- Pulsante Salva -->
@@ -115,7 +153,6 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
     </div>
 
-    <!-- Modal Gestione Abilità -->
     <div id="modal-abilita" class="modal-overlay">
         <div class="modal-content modal-lg">
             <div class="modal-header">
@@ -132,9 +169,9 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                         <p class="text-muted">Nessuna abilità selezionata</p>
                     </div>
                 </div>
-                
+
                 <hr class="divider">
-                
+
                 <!-- Abilità Disponibili -->
                 <div class="abilita-section">
                     <h4>Abilità disponibili</h4>
@@ -146,9 +183,9 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                         <p class="text-muted">Caricamento...</p>
                     </div>
                 </div>
-                
+
                 <hr class="divider">
-                
+
                 <!-- Crea Nuova Abilità -->
                 <div class="abilita-section">
                     <h4>Crea nuova abilità</h4>
@@ -164,6 +201,61 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="chiudiModaleAbilita()">Chiudi</button>
                 <button type="button" class="btn-primary" onclick="salvaAbilitaSelezionate()">
+                    <i class="fas fa-check"></i> Conferma Selezione
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gestione Patenti -->
+    <div id="modal-patenti" class="modal-overlay">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-id-card"></i> Gestisci Patenti</h3>
+                <button class="modal-close" onclick="chiudiModalePatenti()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Patenti Selezionate (con dettagli) -->
+                <div class="abilita-section">
+                    <h4>Le tue patenti selezionate</h4>
+                    <div id="patenti-selezionate-dettagli" class="patenti-list-details">
+                        <!-- Qui verranno iniettati i form per i dettagli di ogni patente selezionata -->
+                        <p class="text-muted">Nessuna patente selezionata</p>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Patenti Disponibili -->
+                <div class="abilita-section">
+                    <h4>Aggiungi patente da elenco</h4>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-patenti" placeholder="Cerca tipo patente..." oninput="filtraPatenti()">
+                    </div>
+                    <div id="patenti-disponibili" class="abilita-list">
+                        <p class="text-muted">Caricamento...</p>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Crea Nuova Patente -->
+                <div class="abilita-section">
+                    <h4>Crea nuova tipologia patente</h4>
+                    <div class="new-abilita-form">
+                        <input type="text" id="nuova-patente-tipo" placeholder="Tipo patente (es. B, C, Nautica)" class="form-control">
+                        <button type="button" class="btn-primary" onclick="creaNuovaPatente()">
+                            <i class="fas fa-plus"></i> Crea
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="chiudiModalePatenti()">Chiudi</button>
+                <button type="button" class="btn-primary" onclick="salvaPatentiSelezionate()">
                     <i class="fas fa-check"></i> Conferma Selezione
                 </button>
             </div>

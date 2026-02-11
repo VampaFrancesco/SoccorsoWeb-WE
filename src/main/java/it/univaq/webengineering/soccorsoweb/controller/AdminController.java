@@ -61,6 +61,6 @@ public class AdminController {
         model.addAttribute("basePath", "/admin");
         model.addAttribute("ruolo", "ADMIN");
 
-        return "admin/profilo";
+        return "admin/profilo_admin";
     }
 }

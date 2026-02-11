@@ -1,4 +1,4 @@
-package it.univaq.webengineering.soccorsoweb.model.dto.response;
+package it.univaq.webengineering.soccorsoweb.model.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,15 +7,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PatenteResponse {
-    private Long id;
+public class UserPatenteDto {
     private String tipo;
-    private String descrizione;
-    private String conseguitaIl; // Data conseguimento (formattata stringa)
+    private LocalDate conseguitaIl;
     private String rilasciataDa;
+    private String descrizione;
 }

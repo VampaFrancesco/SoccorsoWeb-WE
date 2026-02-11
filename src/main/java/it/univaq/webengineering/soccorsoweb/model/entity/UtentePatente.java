@@ -33,6 +33,9 @@ public class UtentePatente {
     @Column(name = "conseguita_il")
     private LocalDate conseguitaIl;
 
+    @Column(name = "rilasciata_da", length = 100)
+    private String rilasciataDa;
+
     @Embeddable
     @Getter
     @Setter

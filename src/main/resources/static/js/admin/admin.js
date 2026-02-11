@@ -1,45 +1,55 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log("Admin Interface Initialized");
+// ── INIT ──
 
-    // 1. Gestione data corrente
-    const dateEl = document.getElementById('current-date');
-    if (dateEl) {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        dateEl.textContent = new Date().toLocaleDateString('it-IT', options);
-    }
+document.addEventListener('DOMContentLoaded', async function () {
+    setCurrentDate();
+    highlightActiveNav();
 
-    // 2. Evidenzia automaticamente il link attivo nella sidebar
     const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.parentElement.classList.add('active');
-        } else {
-            link.parentElement.classList.remove('active');
-        }
-    });
-
-    // 3. Caricamento dati dinamici
     if (currentPath === '/admin' || currentPath === '/admin/') {
         await refreshDashboard();
     } else {
-        // In altre pagine aggiorna solo i badge globali
-        updateGlobalBadges();
+        await updateGlobalBadges();
     }
 });
 
+// ── UI HELPERS ──
+
+function setCurrentDate() {
+    const dateEl = document.getElementById('current-date');
+    if (!dateEl) return;
+    dateEl.textContent = new Date().toLocaleDateString('it-IT', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+}
+
+function highlightActiveNav() {
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        const isActive = link.getAttribute('href') === currentPath;
+        link.parentElement.classList.toggle('active', isActive);
+    });
+}
+
+// ── BADGE SIDEBAR ──
+
 async function updateGlobalBadges() {
     try {
-        // Aggiorna il badge delle richieste nella sidebar
         const richieste = await visualizzaRichiesteFiltrate('ATTIVA', 0, 1);
-        updateSidebarBadge(richieste ? richieste.totalElements : 0);
+        const count = richieste?.totalElements || 0;
+        const badge = document.getElementById('sidebar-badge');
+        if (badge) {
+            badge.innerText = count > 99 ? '99+' : count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
     } catch (error) {
-        console.error("Errore nell'aggiornamento badge globali:", error);
+        // Silenzioso
     }
 }
 
+// ── DASHBOARD ──
+
 async function refreshDashboard() {
     try {
-        // Chiamate API
         const [missioni, operatori, mezzi, richieste] = await Promise.all([
             visualizzaTutteLeMissioni(),
             operatoriDisponibili('true'),
@@ -47,69 +57,54 @@ async function refreshDashboard() {
             visualizzaRichiesteFiltrate('ATTIVA', 0, 5)
         ]);
 
-        // Aggiornamento contatori widget
-        if (document.getElementById('stat-missioni'))
-            document.getElementById('stat-missioni').innerText = missioni ? missioni.filter(m => m.stato === 'IN_CORSO').length : 0;
+        const setStatText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = value;
+        };
 
-        if (document.getElementById('stat-operatori'))
-            document.getElementById('stat-operatori').innerText = operatori ? operatori.length : 0;
+        // Missioni attive
+        const missioniAttive = missioni ? missioni.filter(m => m.stato === 'IN_CORSO').length : 0;
+        setStatText('stat-missioni', missioniAttive);
 
+        // Operatori disponibili
+        setStatText('stat-operatori', operatori ? operatori.length : 0);
+
+        // Mezzi disponibili
         if (document.getElementById('stat-mezzi')) {
             const mezziDisp = mezzi ? mezzi.filter(m =>
-                m.disponibile === true ||
-                m.disponibile === 'true' ||
-                m.disponibile === 1 ||
-                m.stato === 'DISPONIBILE'
+                m.disponibile === true || m.disponibile === 'true' || m.disponibile === 1 || m.stato === 'DISPONIBILE'
             ).length : 0;
-
-            document.getElementById('stat-mezzi').innerText = `${mezziDisp}/${mezzi ? mezzi.length : 0}`;
+            setStatText('stat-mezzi', `${mezziDisp}/${mezzi ? mezzi.length : 0}`);
         }
-        // ---------------------
 
-        // Renderizza feed richieste
-        renderRichiesteFeed(richieste ? richieste.content : []);
-
-        // Aggiorna badge sidebar
-        updateSidebarBadge(richieste ? richieste.totalElements : 0);
-
+        renderRichiesteFeed(richieste?.content || []);
+        await updateGlobalBadges();
     } catch (error) {
-        console.error("Errore nel caricamento dati dashboard:", error);
+        // Silenzioso
     }
 }
 
-
-function updateSidebarBadge(count) {
-    const badge = document.getElementById('sidebar-badge');
-    if (badge) {
-        badge.innerText = count > 99 ? '99+' : count;
-        badge.style.display = count > 0 ? 'inline-block' : 'none';
-    }
-}
-
-function renderRichiesteFeed(listaRichieste) {
+function renderRichiesteFeed(lista) {
     const container = document.getElementById('requests-feed');
     if (!container) return;
+
     container.innerHTML = '';
 
-    if (!listaRichieste || listaRichieste.length === 0) {
-        container.innerHTML = '<div style="padding:10px; color:#888;">Nessuna richiesta in attesa</div>';
+    if (!lista || lista.length === 0) {
+        container.innerHTML = '<div style="padding: 20px; color: var(--text-secondary); text-align: center;">Nessuna richiesta in attesa</div>';
         return;
     }
 
-    listaRichieste.slice(0, 3).forEach(r => {
+    lista.slice(0, 3).forEach(r => {
         const div = document.createElement('div');
-        div.className = "feed-item";
-        div.style.cssText = "display:flex; gap:10px; padding:10px; border-bottom:1px solid #eee; align-items:center;";
-
-        let colorClass = r.codiceGravita === 'ROSSO' ? 'text-danger' : (r.codiceGravita === 'GIALLO' ? 'text-warning' : 'text-gray');
-
+        div.className = 'req-row status-new';
         div.innerHTML = `
-            <div class="${colorClass}" style="font-size:1.2rem;"><i class="fas fa-heart-pulse"></i></div>
-            <div style="flex:1;">
-                <div style="font-weight:600; font-size:0.95rem;">${r.nomeRichiedente || 'Anonimo'}</div>
-                <div style="font-size:0.85rem; color:#666;">${r.descrizione || 'Nessun dettaglio'}</div>
+            <span class="req-time"><i class="fas fa-clock"></i></span>
+            <div class="req-info">
+                <span class="req-desc">${r.nome_segnalante || r.nomeRichiedente || 'Anonimo'}</span>
+                <span class="req-loc">${r.descrizione || 'Nessun dettaglio'}</span>
             </div>
-            <a href="/admin/richieste/${r.id}" class="btn-small">Vedi</a>
+            <a href="/admin/richieste" class="req-action"><i class="fas fa-chevron-right"></i></a>
         `;
         container.appendChild(div);
     });

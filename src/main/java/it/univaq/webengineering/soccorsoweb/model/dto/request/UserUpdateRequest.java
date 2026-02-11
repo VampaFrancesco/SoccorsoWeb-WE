@@ -30,8 +30,14 @@ public class UserUpdateRequest {
 
     private String indirizzo;
 
-    // Elenco di abilità separate da virgola
+    // Per semplificare, manteniamo la stringa separata da virgola per
+    // retrocompatibilità in questa fase
+    // ma la logica nel service verrà adattata per gestire meglio l'aggiornamento
+    // In un refactoring completo, qui useremmo List<Long> o List<AbilitaDto>
     private String abilita;
 
     private Boolean disponibile;
+
+    // Elenco strutturato di patenti
+    private java.util.List<UserPatenteDto> patenti;
 }

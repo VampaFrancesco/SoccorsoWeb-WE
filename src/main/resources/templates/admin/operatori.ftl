@@ -1,6 +1,6 @@
 <#import "layout.ftl" as layout>
 
-<@layout.pagina_admin titolo="Gestione Operatori" nomeUtente=nomeUtente!"Admin" extraScripts='<script src="/js/admin/operatori.js"></<script>'>
+<@layout.pagina_admin titolo="Gestione Operatori" nomeUtente=nomeUtente!"Admin" extraScripts='<script src="/js/admin/operatori.js"></script>'>
     <main>
         <header class="top-header">
             <div class="filter-bar">

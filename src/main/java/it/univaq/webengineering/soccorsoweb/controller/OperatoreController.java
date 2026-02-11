@@ -50,7 +50,7 @@ public class OperatoreController {
         }
         model.addAttribute("nomeUtente", username);
         model.addAttribute("basePath", "/operatore");
-        return "operatore/profilo";
+        return "operatore/profilo_operatore";
     }
 
 }

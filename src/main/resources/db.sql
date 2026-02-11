@@ -68,6 +68,7 @@ CREATE TABLE `user_patenti` (
     `user_id` BIGINT NOT NULL,
     `patente_id` BIGINT NOT NULL,
     `conseguita_il` DATE NULL,
+    `rilasciata_da` VARCHAR(100) NULL,
     PRIMARY KEY (`user_id`, `patente_id`),
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`patente_id`) REFERENCES `patente`(`id`) ON DELETE CASCADE,

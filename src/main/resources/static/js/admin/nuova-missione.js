@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('richiestaId').value = richiestaId;
     document.getElementById('form-missione').addEventListener('submit', invioMissione);
 
-    // Carica tutte le risorse in parallelo
     await Promise.all([
         caricaDettagliRichiesta(richiestaId),
         caricaOperatoriDisponibili(),
@@ -23,12 +22,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     ]);
 });
 
-
-// ========================================
-// CARICAMENTO RISORSE
-// ========================================
-
-/** Mostra i dettagli della richiesta nella sidebar */
 async function caricaDettagliRichiesta(id) {
     try {
         const req = await dettagliRichiestaSoccorso(id);
@@ -60,11 +53,10 @@ async function caricaDettagliRichiesta(id) {
             </div>
         `;
     } catch (error) {
-        console.error('Errore caricamento richiesta:', error);
+        // Silent error
     }
 }
 
-/** Carica caposquadra (select) e operatori (checkbox) */
 async function caricaOperatoriDisponibili() {
     const selectCapo = document.getElementById('caposquadraId');
     const listOperatori = document.getElementById('operatori-list');
@@ -82,24 +74,28 @@ async function caricaOperatoriDisponibili() {
         operatori.forEach(op => {
             const nome = `${op.nome} ${op.cognome}`;
 
-            // Option nel select caposquadra
             const opt = document.createElement('option');
             opt.value = op.id;
             opt.textContent = nome;
             selectCapo.appendChild(opt);
 
-            // Checkbox operatore
             const div = document.createElement('div');
             div.className = 'resource-selection-item';
-            div.style.cssText = 'display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);';
+            div.style.cssText = 'display:flex; align-items:start; gap:10px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);';
+
+            const abilitaBadges = (op.abilita || []).map(a => `<span style="background:rgba(59,130,246,0.2); color:#60a5fa; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:4px; display:inline-block; margin-bottom:2px;">${a.nome}</span>`).join('');
+            const patentiBadges = (op.patenti || []).map(p => `<span style="background:rgba(245, 158, 11, 0.2); color:#fbbf24; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:4px; display:inline-block; margin-bottom:2px;">${p.tipo}</span>`).join('');
+
             div.innerHTML = `
-                <input type="checkbox" name="operatoriIds" value="${op.id}" id="op-${op.id}" class="op-checkbox" style="cursor:pointer; width:18px; height:18px;">
-                <label for="op-${op.id}" style="color:white; font-size:0.85rem; cursor:pointer; flex:1;">${nome}</label>
+                <input type="checkbox" name="operatoriIds" value="${op.id}" id="op-${op.id}" class="op-checkbox" style="cursor:pointer; width:18px; height:18px; margin-top:3px;">
+                <div style="flex:1;">
+                    <label for="op-${op.id}" style="color:white; font-size:0.9rem; cursor:pointer; font-weight:500;">${nome}</label>
+                    ${patentiBadges || abilitaBadges ? `<div style="margin-top:6px; line-height:1.4;">${patentiBadges}${abilitaBadges}</div>` : ''}
+                </div>
             `;
             listOperatori.appendChild(div);
         });
 
-        // Il caposquadra selezionato non può essere anche operatore
         selectCapo.addEventListener('change', function () {
             const capoId = this.value;
             document.querySelectorAll('.op-checkbox').forEach(cb => {
@@ -112,11 +108,10 @@ async function caricaOperatoriDisponibili() {
         });
 
     } catch (error) {
-        console.error('Errore caricamento operatori:', error);
+        // Silent error
     }
 }
 
-/** Carica la lista dei mezzi selezionabili */
 async function caricaMezziDisponibili() {
     const list = document.getElementById('mezzi-list');
     try {
@@ -142,11 +137,10 @@ async function caricaMezziDisponibili() {
             list.appendChild(div);
         });
     } catch (error) {
-        console.error('Errore caricamento mezzi:', error);
+        // Silent error
     }
 }
 
-/** Carica materiali con input quantità */
 async function caricaMaterialiDisponibili() {
     const list = document.getElementById('materiali-list');
     try {
@@ -171,7 +165,6 @@ async function caricaMaterialiDisponibili() {
                     style="width:65px; background:var(--bg-app); border:1px solid var(--border-color); color:white; border-radius:6px; padding:6px; font-size:0.85rem;">
             `;
 
-            // Abilita/disabilita input quantità
             const checkbox = div.querySelector('.material-checkbox');
             const qtyInput = div.querySelector('input[type="number"]');
             checkbox.addEventListener('change', () => {
@@ -182,22 +175,15 @@ async function caricaMaterialiDisponibili() {
             list.appendChild(div);
         });
     } catch (error) {
-        console.error('Errore caricamento materiali:', error);
+        // Silent error
     }
 }
 
-
-// ========================================
-// INVIO MISSIONE
-// ========================================
-
-/** Converte un valore in intero, restituisce null se non valido */
 function toInt(val) {
     const n = parseInt(val);
     return isNaN(n) ? null : n;
 }
 
-/** Raccoglie i materiali selezionati con le rispettive quantità */
 function raccogliMateriali() {
     const materiali = [];
     document.querySelectorAll('.material-checkbox:checked').forEach(cb => {
@@ -210,20 +196,17 @@ function raccogliMateriali() {
     return materiali;
 }
 
-/** Gestisce l'invio del form di creazione */
 async function invioMissione(e) {
     e.preventDefault();
 
     const form = new FormData(e.target);
     const caposquadraId = form.get('caposquadraId');
 
-    // Validazione
     if (!caposquadraId) {
         Swal.fire('Attenzione', 'È obbligatorio assegnare un caposquadra.', 'warning');
         return;
     }
 
-    // Costruzione payload
     const payload = {
         richiesta_id: toInt(form.get('richiestaId')),
         obiettivo: form.get('obiettivo'),
@@ -234,7 +217,6 @@ async function invioMissione(e) {
         materiali: raccogliMateriali()
     };
 
-    // Invio
     try {
         Swal.fire({ title: 'Avvio missione...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
@@ -249,7 +231,6 @@ async function invioMissione(e) {
             window.location.href = '/admin/richieste';
         }
     } catch (error) {
-        console.error('Errore creazione missione:', error);
         Swal.fire('Errore', 'Impossibile avviare la missione: ' + error.message, 'error');
     }
 }

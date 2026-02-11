@@ -40,8 +40,8 @@ public interface UserMapper {
 
     // ========== Entity → Response ==========
     @Mapping(target = "token", ignore = true)
-    @Mapping(target = "patenti", ignore = true)
-    @Mapping(target = "abilita", ignore = true)
+    @Mapping(target = "patenti", source = "patenti")
+    @Mapping(target = "abilita", source = "abilita")
     UserResponse toResponse(User user);
 
     // ========== List mapping ==========

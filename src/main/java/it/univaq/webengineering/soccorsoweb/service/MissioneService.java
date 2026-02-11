@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,6 +53,11 @@ public class MissioneService {
         RichiestaSoccorso richiesta = richiestaSoccorsoRepository.findById(request.getRichiestaId())
                 .orElseThrow(() -> new EntityNotFoundException("Richiesta non trovata: " + request.getRichiestaId()));
 
+        // 0. Verifica robusta: esiste già una missione legata a questa richiesta?
+        if (richiesta.getMissione() != null) {
+            throw new IllegalArgumentException("Esiste già una missione per la richiesta #" + request.getRichiestaId());
+        }
+
         // 2. Crea la missione
         Missione missione = missioneMapper.toEntity(request);
         missione.setCaposquadra(caposquadra);
@@ -74,7 +80,14 @@ public class MissioneService {
         assegnaMateriali(missione, request.getMateriali());
 
         // 7. Salva e aggiorna stato richiesta
-        Missione salvata = missioneRepository.save(missione);
+        // 7. Salva e aggiorna stato richiesta
+        Missione salvata;
+        try {
+            salvata = missioneRepository.save(missione);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException(
+                    "Impossibile creare la missione: esiste già una missione per questa richiesta.");
+        }
         richiesta.setStato(RichiestaSoccorso.StatoRichiesta.IN_CORSO);
         richiestaSoccorsoRepository.save(richiesta);
 
@@ -415,6 +428,13 @@ public class MissioneService {
                     stato == Missione.StatoMissione.CHIUSA
                             ? RichiestaSoccorso.StatoRichiesta.CHIUSA
                             : RichiestaSoccorso.StatoRichiesta.IGNORATA);
+        }
+
+        // Notifica chiusura
+        if (stato == Missione.StatoMissione.CHIUSA) {
+            notificaAggiornamentoATuttiIMembri(missione, "La missione è stata ufficialmente CHIUSA.");
+        } else if (stato == Missione.StatoMissione.FALLITA) {
+            notificaAggiornamentoATuttiIMembri(missione, "La missione è terminata con esito: FALLITA.");
         }
     }
 

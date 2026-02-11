@@ -4,10 +4,18 @@
     <main>
         <header class="top-header">
             <div class="filter-bar">
-                <button class="filter-btn active" onclick="loadRichieste('ATTIVA')">Nuove (Attive)</button>
-                <button class="filter-btn" onclick="loadRichieste('IN_CORSO')">In Corso</button>
-                <button class="filter-btn" onclick="loadRichieste('CHIUSA')">Concluse</button>
-                <button class="filter-btn" onclick="loadRichieste('IGNORATA')">Ignorate</button>
+                <button class="filter-btn active" data-filter="ATTIVA">
+                    <i class="fas fa-bell"></i> Nuove
+                </button>
+                <button class="filter-btn" data-filter="IN_CORSO">
+                    <i class="fas fa-clock"></i> In Corso
+                </button>
+                <button class="filter-btn" data-filter="CHIUSA">
+                    <i class="fas fa-check-circle"></i> Concluse
+                </button>
+                <button class="filter-btn" data-filter="IGNORATA">
+                    <i class="fas fa-ban"></i> Ignorate
+                </button>
             </div>
         </header>
 
@@ -20,7 +28,7 @@
                     <th>Data Convalida</th>
                     <th>Indirizzo</th>
                     <th>Descrizione</th>
-                    <th>Stato</th>
+                    <th>Azioni</th>
                 </tr>
                 </thead>
                 <tbody id="requests-body">
@@ -32,4 +40,16 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal Dettagli Richiesta -->
+    <div id="modal-dettagli-richiesta" class="modal-overlay">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> Dettagli Richiesta</h2>
+                <button class="modal-close" onclick="closeRichiestaModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="richiesta-dettagli-content">
+            </div>
+        </div>
+    </div>
 </@layout.pagina_admin>
