@@ -98,7 +98,7 @@ async function viewRichiestaDettaglio(id) {
 
         let html = `
             <div class="detail-section">
-                <h3><i class="fas fa-info-circle"></i> Informazioni Richiesta</h3>
+                <h2><i class="fas fa-info-circle"></i> Informazioni Richiesta</h2>
                 <div class="detail-grid">
                     <div class="detail-item">
                         <label>ID</label>
@@ -136,10 +136,28 @@ async function viewRichiestaDettaglio(id) {
             </div>
         `;
 
+        // Sezione Foto
+        const fotoSrc = req.foto ? `data:image/jpeg;base64,${req.foto}` : null;
+
+        html += `
+            <div class="detail-section">
+                <h2><i class="fas fa-camera"></i> Foto Segnalazione</h2>
+                <div style="text-align: center; padding: 10px;">
+                    ${fotoSrc
+                ? `<img src="${fotoSrc}" alt="Foto segnalazione" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.3);">`
+                : `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px dashed var(--border-color);">
+                               <i class="fas fa-image" style="font-size: 3rem; color: var(--text-secondary); opacity: 0.5; margin-bottom: 12px;"></i>
+                               <p style="color: var(--text-secondary); font-size: 0.9rem;">Nessuna foto disponibile</p>
+                           </div>`
+            }
+                </div>
+            </div>
+        `;
+
         if (lat && lon) {
             html += `
                 <div class="detail-section">
-                    <h3><i class="fas fa-map-location-dot"></i> Posizione sulla Mappa</h3>
+                    <h2><i class="fas fa-map-location-dot"></i> Posizione sulla Mappa</h2>
                     <div class="map-container" id="richiesta-detail-map"></div>
                 </div>
             `;
@@ -148,7 +166,7 @@ async function viewRichiestaDettaglio(id) {
         if (req.missione_id) {
             html += `
                 <div class="detail-section">
-                    <h3><i class="fas fa-map-location-dot"></i> Missione Associata</h3>
+                    <h2><i class="fas fa-map-location-dot"></i> Missione Associata</h2>
                     <div class="detail-item">
                         <label>ID Missione</label>
                         <span><strong>#${req.missione_id}</strong></span>

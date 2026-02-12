@@ -5,17 +5,19 @@ extraHead='<link rel="stylesheet" href="/css/missioni.css">'
 extraScripts='<script src="/js/admin/missioni.js"></script>'>
 
     <div class="missioni-container">
-        <div class="filter-bar">
-            <button class="filter-btn active" data-stato="IN_CORSO">
-                <i class="fas fa-clock"></i> In Corso
-            </button>
-            <button class="filter-btn" data-stato="CHIUSA">
-                <i class="fas fa-check-circle"></i> Concluse
-            </button>
-            <button class="filter-btn" data-stato="ALL">
-                <i class="fas fa-list"></i> Tutte
-            </button>
-        </div>
+        <header class="top-header">
+            <div class="filter-bar">
+                <button class="filter-btn active" data-stato="IN_CORSO">
+                    <i class="fas fa-clock"></i> In Corso
+                </button>
+                <button class="filter-btn" data-stato="CHIUSA">
+                    <i class="fas fa-check-circle"></i> Concluse
+                </button>
+                <button class="filter-btn" data-stato="ALL">
+                    <i class="fas fa-list"></i> Tutte
+                </button>
+            </div>
+        </header>
 
         <div class="table-container card">
             <table class="modern-table">

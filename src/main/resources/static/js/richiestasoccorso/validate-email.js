@@ -1,11 +1,31 @@
+/**
+ * validate-email.js — Progressive Enhancement
+ *
+ * Se JS è abilitato:
+ *   - Nasconde il form POST (no-JS fallback)
+ *   - Mostra lo spinner e invia la convalida via AJAX
+ *
+ * Se JS è disabilitato:
+ *   - Il form POST è visibile e permette la convalida tradizionale
+ */
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token_convalida');
 
+    // Nascondi il form no-JS (il JS gestirà tutto)
+    const nojsForm = document.getElementById('nojs-form');
+    if (nojsForm) nojsForm.style.display = 'none';
+
     if (!token) {
-        mostraErrore('Link Non Valido',
-            'Il token di convalida è mancante dall\'URL. Verifica di aver copiato correttamente l\'intero link dalla email.');
+        // Se non c'è token, non fare nulla (il template FreeMarker gestisce già questo caso)
         return;
+    }
+
+    // Mostra lo spinner
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) {
+        loadingEl.classList.remove('hidden');
+        loadingEl.style.display = 'block';
     }
 
     try {
@@ -13,9 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         nascondiLoading();
 
-        // Verifica successo (la risposta contiene "success" come chiave)
         if (result && result.success) {
             document.getElementById('success').classList.remove('hidden');
+            document.getElementById('success').style.display = 'block';
         } else {
             mostraErrore(
                 result?.error || 'Errore nella Convalida',
@@ -43,12 +63,17 @@ function mostraErrore(titolo, messaggio) {
     nascondiLoading();
     document.getElementById('error-title').textContent = titolo;
     document.getElementById('error-message').textContent = messaggio;
-    document.getElementById('error').classList.remove('hidden');
+    const errorEl = document.getElementById('error');
+    errorEl.classList.remove('hidden');
+    errorEl.style.display = 'block';
 }
 
 /** Nasconde lo spinner di caricamento */
 function nascondiLoading() {
     const el = document.getElementById('loading');
-    el.classList.remove('loading-visible');
-    el.classList.add('hidden');
+    if (el) {
+        el.classList.remove('loading-visible');
+        el.classList.add('hidden');
+        el.style.display = 'none';
+    }
 }

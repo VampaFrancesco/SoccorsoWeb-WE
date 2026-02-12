@@ -1,7 +1,22 @@
+/**
+ * home.js — Progressive Enhancement
+ *
+ * Se JS è abilitato:
+ *   - Mostra il bottone GPS e il bottone verifica indirizzo
+ *   - Nasconde il captcha no-JS e mostra quello interattivo
+ *   - Override del form submit con AJAX
+ *
+ * Se JS è disabilitato:
+ *   - Il form funziona con action="/richiesta-soccorso" (POST standard)
+ *   - Campo indirizzo manuale sempre visibile
+ *   - Captcha = domanda di sicurezza server-side
+ */
+
 let locationObtained = false;
 let isCaptchaVerified = false;
 
-function getLocation() {
+// ===== GEOLOCALIZZAZIONE =====
+function getLocationViaGPS() {
     const locationStatus = document.getElementById('location-status');
     const manualContainer = document.getElementById('manual-input');
     const latInput = document.getElementById('latitudine');
@@ -9,73 +24,75 @@ function getLocation() {
     const indirizzoInput = document.getElementById('indirizzo');
 
     if (!navigator.geolocation) {
-        showManualEntry('Geolocalizzazione non supportata');
+        showGPSError('Geolocalizzazione non supportata dal browser');
         return;
     }
 
-    locationStatus.className = 'location-status loading';
+    // Mostra status bar
+    locationStatus.style.display = 'flex';
+    locationStatus.className = 'location-status js-only-block loading';
+    locationStatus.style.display = 'flex';
     locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Rilevamento GPS in corso...</span>';
 
     navigator.geolocation.getCurrentPosition(
-        // 1. Successo GPS
+        // Successo GPS
         async (position) => {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
 
-            // Salva coordinate (nascoste)
             latInput.value = lat;
             lngInput.value = lng;
             locationObtained = true;
 
-            // 2. Converti in Indirizzo (Reverse Geocoding)
             locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Recupero indirizzo...</span>';
 
             try {
                 const address = await getAddressFromCoords(lat, lng);
 
-                // Salva indirizzo nel campo hidden
-                if (indirizzoInput) {
-                    indirizzoInput.value = address;
-                }
+                if (indirizzoInput) indirizzoInput.value = address;
 
                 locationStatus.className = 'location-status success';
+                locationStatus.style.display = 'flex';
                 locationStatus.innerHTML = `<i class="fas fa-map-location-dot"></i><span>${address}</span>`;
 
+                // Nasconde il campo manuale se GPS ha funzionato
                 if (manualContainer) manualContainer.style.display = 'none';
 
             } catch (error) {
-                // Fallback: mostra coordinate se reverse geocoding fallisce
                 console.warn("Reverse geocoding fallito:", error);
-
                 const fallbackAddress = `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
-
-                // Salva coordinate come indirizzo
-                if (indirizzoInput) {
-                    indirizzoInput.value = fallbackAddress;
-                }
+                if (indirizzoInput) indirizzoInput.value = fallbackAddress;
 
                 locationStatus.className = 'location-status success';
+                locationStatus.style.display = 'flex';
                 locationStatus.innerHTML = `<i class="fas fa-location-crosshairs"></i><span>${fallbackAddress}</span>`;
+
+                if (manualContainer) manualContainer.style.display = 'none';
             }
         },
         // Errore GPS
         (error) => {
             let errorMsg = 'Impossibile rilevare posizione';
             if (error.code === error.PERMISSION_DENIED) errorMsg = 'Permesso GPS negato';
-            showManualEntry(errorMsg);
+            showGPSError(errorMsg);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
-
-    function showManualEntry(msg) {
-        console.warn('GPS Fallito:', msg);
-        locationStatus.className = 'location-status error';
-        locationStatus.innerHTML = `<i class="fas fa-circle-exclamation"></i><span>${msg}</span>`;
-        if (manualContainer) manualContainer.style.display = 'block';
-    }
 }
 
-// 1. Coordinate -> Indirizzo
+function showGPSError(msg) {
+    const locationStatus = document.getElementById('location-status');
+    const manualContainer = document.getElementById('manual-input');
+
+    console.warn('GPS Fallito:', msg);
+    locationStatus.className = 'location-status error';
+    locationStatus.style.display = 'flex';
+    locationStatus.innerHTML = `<i class="fas fa-circle-exclamation"></i><span>${msg}. Inserisci l'indirizzo manualmente.</span>`;
+
+    if (manualContainer) manualContainer.style.display = 'block';
+}
+
+// ===== GEOCODING =====
 async function getAddressFromCoords(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
 
@@ -86,8 +103,6 @@ async function getAddressFromCoords(lat, lon) {
     if (!response.ok) throw new Error('Network response was not ok');
 
     const data = await response.json();
-
-    // Formattazione Indirizzo
     const addr = data.address;
     const street = addr.road || addr.pedestrian || addr.street || '';
     const number = addr.house_number ? `, ${addr.house_number}` : '';
@@ -98,7 +113,6 @@ async function getAddressFromCoords(lat, lon) {
     return `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
 }
 
-// 2. Indirizzo -> Coordinate (Per input manuale)
 async function getCoordsFromAddress(addressQuery) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=1`;
 
@@ -116,13 +130,24 @@ async function getCoordsFromAddress(addressQuery) {
     }
     throw new Error('Indirizzo non trovato');
 }
+
+// ===== SETUP BOTTONI POSIZIONE =====
+
+function setupGPSButton() {
+    const btnGps = document.getElementById('btn-gps');
+    if (!btnGps) return;
+
+    btnGps.addEventListener('click', () => {
+        getLocationViaGPS();
+    });
+}
+
 function setupManualAddress() {
     const btnVerify = document.getElementById('btn-verify-address');
-    const inputAddress = document.getElementById('manual-address');
+    const inputAddress = document.getElementById('indirizzo');
     const locationStatus = document.getElementById('location-status');
     const latInput = document.getElementById('latitudine');
     const lngInput = document.getElementById('longitudine');
-    const indirizzoInput = document.getElementById('indirizzo');
 
     if (!btnVerify) return;
 
@@ -146,18 +171,16 @@ function setupManualAddress() {
         try {
             const result = await getCoordsFromAddress(query);
 
-            // Aggiorna coordinate e indirizzo
             latInput.value = result.lat;
             lngInput.value = result.lon;
 
             const shortAddress = result.displayName.split(',').slice(0, 3).join(',');
-            if (indirizzoInput) {
-                indirizzoInput.value = shortAddress;
-            }
+            inputAddress.value = shortAddress;
 
             locationObtained = true;
 
             locationStatus.className = 'location-status success';
+            locationStatus.style.display = 'flex';
             locationStatus.innerHTML = `<i class="fas fa-check-circle"></i><span>Trovato: ${result.displayName.split(',').slice(0, 2).join(',')}</span>`;
 
         } catch (error) {
@@ -194,6 +217,7 @@ function setupFileInput() {
     });
 }
 
+// ===== CAPTCHA JS =====
 function setupCustomCaptcha() {
     const captchaContainer = document.getElementById('custom-captcha');
     const checkbox = document.getElementById('captcha-checkbox');
@@ -202,6 +226,10 @@ function setupCustomCaptcha() {
     const errorMsg = document.getElementById('captcha-error-msg');
 
     if (!checkbox) return;
+
+    // Disabilita il campo captcha no-JS (non serve più con JS)
+    const captchaRisposta = document.getElementById('captchaRisposta');
+    if (captchaRisposta) captchaRisposta.removeAttribute('required');
 
     checkbox.addEventListener('click', function () {
         if (isCaptchaVerified) return;
@@ -222,26 +250,22 @@ function setupCustomCaptcha() {
             tokenInput.value = fakeToken;
 
             isCaptchaVerified = true;
-            console.log("Captcha verificato localmente. Token:", fakeToken);
-
         }, randomDelay);
     });
 }
 
+// ===== FORM SUBMIT (AJAX override) =====
 function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
     const errorMsg = document.getElementById('captcha-error-msg');
 
-    if (!form || !submitBtn) {
-        console.error('Form o submit button non trovato');
-        return;
-    }
+    if (!form || !submitBtn) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        // 1. Check Captcha
+        // 1. Check Captcha JS
         if (!isCaptchaVerified) {
             if (errorMsg) errorMsg.style.display = 'block';
             const captchaContainer = document.getElementById('custom-captcha');
@@ -250,12 +274,13 @@ function setupFormSubmit() {
             return;
         }
 
-        // 2. Check Location
-        if (!locationObtained) {
+        // 2. Check indirizzo
+        const indirizzoValue = document.getElementById('indirizzo')?.value;
+        if (!indirizzoValue || indirizzoValue.trim() === '') {
             Swal.fire({
                 icon: 'warning',
                 title: 'Posizione Mancante',
-                text: 'Attendi il GPS oppure cerca il tuo indirizzo manualmente',
+                text: 'Usa il GPS oppure inserisci un indirizzo manualmente.',
                 background: '#1a1a2e',
                 color: '#fff',
                 confirmButtonColor: '#FF4B2B'
@@ -267,6 +292,7 @@ function setupFormSubmit() {
         const originalBtnHTML = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
         submitBtn.disabled = true;
+
         let fotoBase64 = null;
         const fileInput = document.getElementById('foto');
         const toBase64 = file => new Promise((resolve, reject) => {
@@ -282,19 +308,13 @@ function setupFormSubmit() {
                 fotoBase64 = base64String.split(',')[1];
             } catch (err) {
                 console.error("Errore conversione immagine:", err);
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Errore Immagine',
-                    text: 'Impossibile elaborare l\'immagine selezionata. La richiesta verrà inviata senza foto',
-                });
             }
         }
 
         try {
-            // Raccolta dati
             const richiestaData = {
                 descrizione: document.getElementById('descrizione')?.value || '',
-                indirizzo: document.getElementById('indirizzo')?.value || '',
+                indirizzo: indirizzoValue,
                 latitudine: parseFloat(document.getElementById('latitudine')?.value) || null,
                 longitudine: parseFloat(document.getElementById('longitudine')?.value) || null,
                 nome_segnalante: document.getElementById('nomesegnalante')?.value || '',
@@ -303,24 +323,13 @@ function setupFormSubmit() {
                 foto: fotoBase64
             };
 
-            console.log('📤 Invio richiesta:', richiestaData);
-
             // Verifica campi obbligatori
-            if (!richiestaData.nome_segnalante) {
-                throw new Error('Nome segnalante mancante');
-            }
-            if (!richiestaData.email_segnalante) {
-                throw new Error('Email segnalante mancante');
-            }
-            if (!richiestaData.indirizzo) {
-                throw new Error('Indirizzo mancante');
-            }
+            if (!richiestaData.nome_segnalante) throw new Error('Nome segnalante mancante');
+            if (!richiestaData.email_segnalante) throw new Error('Email segnalante mancante');
+            if (!richiestaData.indirizzo) throw new Error('Indirizzo mancante');
 
             const response = await inserisciRichiestaSoccorso(richiestaData);
 
-            console.log('📥 Risposta:', response);
-
-            // Verifica risposta
             if (response && response.id) {
                 await Swal.fire({
                     icon: 'success',
@@ -337,8 +346,6 @@ function setupFormSubmit() {
                 // RESET Form & UI
                 form.reset();
                 locationObtained = false;
-
-                // Reset Captcha
                 isCaptchaVerified = false;
                 document.getElementById('custom-captcha').classList.remove('verified');
                 document.getElementById('captcha-token').value = "";
@@ -346,7 +353,9 @@ function setupFormSubmit() {
                 if (checkbox) checkbox.style.visibility = 'visible';
                 const fileNameElement = document.getElementById('file-name');
                 if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
-                getLocation();
+
+                // Re-tenta GPS
+                getLocationViaGPS();
 
             } else {
                 throw new Error('Risposta non valida dal server');
@@ -354,7 +363,6 @@ function setupFormSubmit() {
 
         } catch (error) {
             console.error('Submit error:', error);
-
             Swal.fire({
                 icon: 'error',
                 title: 'Errore Invio',
@@ -363,7 +371,6 @@ function setupFormSubmit() {
                 color: '#fff',
                 confirmButtonColor: '#FF4B2B'
             });
-
         } finally {
             submitBtn.innerHTML = originalBtnHTML;
             submitBtn.disabled = false;
@@ -374,11 +381,20 @@ function setupFormSubmit() {
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('🚀 SoccorsoWeb Index inizializzato');
-    getLocation();
+    console.log('🚀 SoccorsoWeb Home — JS abilitato (Progressive Enhancement)');
+
+    // Mostra campo manuale e poi tenta GPS automaticamente
+    const manualContainer = document.getElementById('manual-input');
+    if (manualContainer) manualContainer.style.display = 'block';
+
+    // Tenta geolocalizzazione automatica
+    getLocationViaGPS();
+
+    // Setup vari
+    setupGPSButton();
+    setupManualAddress();
     setupFileInput();
     setupCustomCaptcha();
-    setupManualAddress();
     setupFormSubmit();
 
     // ===== SMART NAVIGATION BAR =====
@@ -388,7 +404,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('scroll', function () {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        // Se siamo all'inizio della pagina, mostra sempre la nav
         if (scrollTop <= 0) {
             topNav.classList.remove('nav-hidden');
             lastScrollTop = 0;
@@ -396,10 +411,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (scrollTop > lastScrollTop) {
-            // SCROLL VERSO IL BASSO -> Nascondi
             topNav.classList.add('nav-hidden');
         } else {
-            // SCROLL VERSO L'ALTO -> Mostra
             topNav.classList.remove('nav-hidden');
         }
 

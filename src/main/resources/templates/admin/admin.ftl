@@ -5,7 +5,7 @@
 
         <div class="widget widget-requests">
             <div class="widget-header">
-                <h3><i class="fas fa-exclamation-circle text-danger"></i> Richieste in arrivo</h3>
+                <h2><i class="fas fa-exclamation-circle text-danger"></i> Richieste in arrivo</h2>
                 <a href="/admin/richieste" class="btn-text">Vedi tutte</a>
             </div>
             <div class="requests-feed" id="requests-feed">
@@ -43,7 +43,7 @@
 
         <!-- WIDGET 5: AZIONI RAPIDE -->
         <div class="widget widget-actions">
-            <h3>Azioni Rapide</h3>
+            <h2>Azioni Rapide</h2>
             <div class="action-buttons">
                 <a href="/admin/aggiungi-utente" class="btn-quick"><i class="fas fa-user-plus"></i> Registra Operatore</a>
                 <a href="/admin/materiali" class="btn-quick"><i class="fas fa-notes-medical"></i> Check Materiali</a>

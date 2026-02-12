@@ -48,10 +48,10 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
         <!-- Card Destra: Form Modifica -->
         <div class="profile-details-card">
 
-            <h3 class="section-title">
+            <h2 class="section-title">
                 <i class="fas fa-user text-accent"></i>
                 Informazioni Personali
-            </h3>
+            </h2>
 
             <form id="profileForm" data-user-id="${(user.id)!}">
                 <!-- Dati Anagrafici -->
@@ -68,7 +68,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
                 <div class="form-group">
                     <label for="data_nascita">Data di Nascita</label>
-                    <input type="text" id="data_nascita" name="dataNascita" class="form-control readonly" readonly>
+                    <input type="date" id="data_nascita" name="dataNascita" class="form-control">
                 </div>
 
 
@@ -85,13 +85,13 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 <hr class="divider">
 
                 <!-- Campi Modificabili -->
-                <h3 class="section-title">
+                <h2 class="section-title">
                     <i class="fas fa-edit text-accent"></i>
                     Informazioni Extra
-                </h3>
+                </h2>
 
                 <div class="form-group">
-                    <label for="abilita">Abilità e Competenze</label>
+                    <label>Abilità e Competenze</label>
                     <p class="help-text">Clicca per gestire le tue abilità</p>
                     <div id="abilita-tags" class="abilita-tags-container">
                         <#-- Le abilità vengono caricate via JS -->
@@ -119,7 +119,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
     <div id="modal-abilita" class="modal-overlay">
         <div class="modal-content modal-lg">
             <div class="modal-header">
-                <h3><i class="fas fa-tools"></i> Gestisci Abilità</h3>
+                <h2><i class="fas fa-tools"></i> Gestisci Abilità</h2>
                 <button class="modal-close" onclick="chiudiModaleAbilita()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -127,7 +127,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
             <div class="modal-body">
                 <!-- Abilità Selezionate -->
                 <div class="abilita-section">
-                    <h4>Le tue abilità</h4>
+                    <h3>Le tue abilità</h3>
                     <div id="abilita-selezionate" class="abilita-chips">
                         <p class="text-muted">Nessuna abilità selezionata</p>
                     </div>
@@ -137,27 +137,13 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 
                 <!-- Abilità Disponibili -->
                 <div class="abilita-section">
-                    <h4>Abilità disponibili</h4>
+                    <h3>Abilità disponibili</h3>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="search-abilita" placeholder="Cerca abilità..." oninput="filtraAbilita()">
                     </div>
                     <div id="abilita-disponibili" class="abilita-list">
                         <p class="text-muted">Caricamento...</p>
-                    </div>
-                </div>
-                
-                <hr class="divider">
-                
-                <!-- Crea Nuova Abilità -->
-                <div class="abilita-section">
-                    <h4>Crea nuova abilità</h4>
-                    <div class="new-abilita-form">
-                        <input type="text" id="nuova-abilita-nome" placeholder="Nome abilità" class="form-control">
-                        <input type="text" id="nuova-abilita-desc" placeholder="Descrizione (opzionale)" class="form-control">
-                        <button type="button" class="btn-primary" onclick="creaNuovaAbilita()">
-                            <i class="fas fa-plus"></i> Aggiungi
-                        </button>
                     </div>
                 </div>
             </div>

@@ -8,13 +8,19 @@
     width: 100%;
 }
 
+.missioni-container .top-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
 .missioni-container .filter-bar {
     display: flex;
     gap: 8px;
     background: var(--bg-card);
     padding: 6px;
     border-radius: 14px;
-    margin-bottom: 28px;
     flex-wrap: wrap;
 }
 

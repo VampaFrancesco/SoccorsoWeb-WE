@@ -51,30 +51,36 @@ document.addEventListener("DOMContentLoaded", async function () {
             const descrizione = m.richiesta ? m.richiesta.descrizione : 'Nessuna descrizione';
 
             return `
-            <div class="menu-card mission-item" style="height: auto; flex-direction: column; align-items: flex-start; padding: 20px; cursor: default; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 10px;">
-                    <span class="status-pill status-${m.stato}" style="font-size: 0.8rem;">${statoLabel}</span>
-                    <span style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">#${m.id}</span>
+            <div class="mission-card status-${m.stato.toLowerCase()}">
+                <div class="mission-header">
+                    <span class="status-pill status-${m.stato.toLowerCase()}">${statoLabel}</span>
+                    <span class="mission-id">#${m.id}</span>
                 </div>
                 
-                <h3 style="margin: 0 0 5px 0; font-size: 1.1rem; color: #e2e8f0;">
-                    <i class="fas fa-map-marker-alt" style="color: #ef4444; margin-right: 8px;"></i>${indirizzo}
-                </h3>
+                <div class="mission-address">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${indirizzo}</span>
+                </div>
                 
-                <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 15px; line-height: 1.5;">
+                <div class="mission-desc">
                     ${descrizione}
-                </p>
-
-                <div style="display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.85rem; color: #cbd5e1;">
-                    <span><i class="far fa-calendar"></i> ${dataInizio}</span>
-                    <span><i class="fas fa-users"></i> ${m.operatori ? m.operatori.length : 0} operatori</span>
                 </div>
 
-                <div style="width: 100%; border-top: 1px solid #334155; padding-top: 15px;">
-                    <button onclick="uploadFoto(${m.id})" class="btn-primary" style="width: 100%; justify-content: center;">
+                <div class="mission-meta">
+                    <div class="meta-item">
+                        <i class="far fa-calendar"></i> 
+                        <span>${dataInizio}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-users"></i> 
+                        <span>${m.operatori ? m.operatori.length : 0} operatori</span>
+                    </div>
+                </div>
+
+                <div class="mission-actions">
+                    <button onclick="uploadFoto(${m.id})" class="btn-mission primary">
                         <i class="fas fa-camera"></i> Carica Foto / Report
                     </button>
-                    <!-- Future implementation: Dettagli button -->
                 </div>
             </div>
         `}).join('');

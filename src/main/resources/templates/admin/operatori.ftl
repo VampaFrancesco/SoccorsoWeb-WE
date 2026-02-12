@@ -1,7 +1,7 @@
 <#import "layout.ftl" as layout>
 
 <@layout.pagina_admin titolo="Gestione Operatori" nomeUtente=nomeUtente!"Admin" extraScripts='<script src="/js/admin/operatori.js"></script>'>
-    <main>
+    <div>
         <header class="top-header">
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="tutti">
@@ -35,6 +35,6 @@
                 </tbody>
             </table>
         </div>
-    </main>
+    </div>
 </@layout.pagina_admin>
 

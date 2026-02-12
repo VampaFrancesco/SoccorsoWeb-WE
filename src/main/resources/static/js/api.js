@@ -88,7 +88,17 @@ async function registraNuovoUtente(datiUtente) {
     return await apiCall('/swa/api/auth/registrazione', 'POST', datiUtente, true);
 }
 
-// ── RICHIESTE ──
+// ── RICHIESTE (OPEN / Pubbliche) ──
+
+async function inserisciRichiestaSoccorso(datiRichiesta) {
+    return await apiCall('/swa/open/richieste', 'POST', datiRichiesta, false);
+}
+
+async function convalidaRichiesta(token) {
+    return await apiCall('/swa/open/richieste/conferma-convalida', 'POST', { token_convalida: token }, false);
+}
+
+// ── RICHIESTE (Autenticate) ──
 
 async function dettagliRichiestaSoccorso(id) {
     return await apiCall(`/swa/api/richieste/${id}`, 'GET', null, true);
@@ -123,7 +133,7 @@ async function dettagliMissione(id) {
 }
 
 async function aggiornaMissione(id, data) {
-    return await apiCall(`/swa/api/missioni/${id}`, 'POST', data, true);
+    return await apiCall(`/swa/api/missioni/${id}`, 'PATCH', data, true);
 }
 
 async function operatoInMissioni(operatorId) {
@@ -212,7 +222,18 @@ async function creaPatente(tipo, descrizione = '') {
     return await apiCall('/swa/api/patenti', 'POST', { tipo, descrizione }, true);
 }
 
-// ── UTILS ──
+// Alias per compatibilità con il nuovo codice profilo modale
+async function getPatenti() {
+    return await getTuttePatenti();
+}
+
+async function creaNuovaAbilitaApi(data) {
+    return await creaAbilita(data.nome, data.descrizione);
+}
+
+async function creaNuovaPatenteApi(data) {
+    return await creaPatente(data.tipo, data.descrizione || '');
+}
 
 function formatDate(dateInput) {
     if (!dateInput) return 'N/D';

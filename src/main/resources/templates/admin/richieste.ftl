@@ -1,7 +1,7 @@
 <#import "layout.ftl" as layout>
 
 <@layout.pagina_admin titolo="Gestione Richieste" nomeUtente=nomeUtente!"Admin" extraScripts='<script src="/js/admin/richieste.js"></script>'>
-    <main>
+    <div>
         <header class="top-header">
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="ATTIVA">
@@ -39,7 +39,7 @@
                 <p>Nessuna richiesta trovata per questo stato.</p>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Modal Dettagli Richiesta -->
     <div id="modal-dettagli-richiesta" class="modal-overlay">

@@ -15,7 +15,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
         <!-- DISPONIBILI -->
         <div class="fleet-column">
             <div class="section-header">
-                <h3 class="text-success"><i class="fas fa-check-circle"></i> Operativi</h3>
+                <h2 class="text-success"><i class="fas fa-check-circle"></i> Operativi</h2>
                 <span class="badge" id="count-available">0</span>
             </div>
             <div id="list-available">

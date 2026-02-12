@@ -273,33 +273,42 @@ function renderDettaglioMissione(m) {
     // Informazioni dalla richiesta
     const tipo = m.obiettivo || (m.richiesta ? m.richiesta.descrizione : 'N/D');
     const luogo = m.posizione || (m.richiesta ? m.richiesta.indirizzo : 'N/D');
-    const latitudine = m.latitudine || (m.richiesta ? m.richiesta.latitudine : 'N/D');
-    const longitudine = m.longitudine || (m.richiesta ? m.richiesta.longitudine : 'N/D');
+    const latitude = m.latitudine || (m.richiesta ? m.richiesta.latitudine : 'N/D');
+    const longitude = m.longitudine || (m.richiesta ? m.richiesta.longitudine : 'N/D');
+
+    // Foto Richiesta
+    const fotoSrc = (m.richiesta && m.richiesta.foto) ? 'data:image/jpeg;base64,' + m.richiesta.foto : null;
+    const fotoHtml = '<div class="dettaglio-section"><h2><i class="fas fa-camera"></i> Foto Segnalazione</h2><div style="text-align: center; padding: 10px;">' +
+        (fotoSrc
+            ? '<img src="' + fotoSrc + '" alt="Foto segnalazione" style="max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.3);">'
+            : '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px dashed var(--border-color);"><i class="fas fa-image" style="font-size: 2rem; color: var(--text-secondary); opacity: 0.5; margin-bottom: 8px;"></i><p style="color: var(--text-secondary); font-size: 0.85rem; margin:0;">Nessuna foto disponibile</p></div>') +
+        '</div></div>';
 
     const html = '<div class="dettaglio-grid">' +
         '<div class="dettaglio-section">' +
-        '<h3><i class="fas fa-info-circle"></i> Informazioni Generali</h3>' +
+        '<h2><i class="fas fa-info-circle"></i> Informazioni Generali</h2>' +
         '<div class="dettaglio-row"><span class="dettaglio-label">ID Missione</span><span class="dettaglio-value">#' + m.id + '</span></div>' +
         '<div class="dettaglio-row"><span class="dettaglio-label">Obiettivo</span><span class="dettaglio-value">' + escapeHtml(m.obiettivo || 'N/D') + '</span></div>' +
         '<div class="dettaglio-row"><span class="dettaglio-label">Stato</span><span class="dettaglio-value"><span class="missione-card-badge badge-' + stato + '"><i class="fas fa-circle"></i> ' + formatStato(stato) + '</span></span></div>' +
         '<div class="dettaglio-row"><span class="dettaglio-label">Luogo</span><span class="dettaglio-value">' + escapeHtml(luogo) + '</span></div>' +
-        '<div class="dettaglio-row"><span class="dettaglio-label">Coordinate</span><span class="dettaglio-value">' + latitudine + ', ' + longitudine + '</span></div>' +
+        '<div class="dettaglio-row"><span class="dettaglio-label">Coordinate</span><span class="dettaglio-value">' + latitude + ', ' + longitude + '</span></div>' +
         '</div>' +
         '<div class="dettaglio-section">' +
-        '<h3><i class="fas fa-clock"></i> Tempistiche</h3>' +
+        '<h2><i class="fas fa-clock"></i> Tempistiche</h2>' +
         '<div class="dettaglio-row"><span class="dettaglio-label">Inizio</span><span class="dettaglio-value">' + formatDataOra(m.inizioAt) + '</span></div>' +
         '<div class="dettaglio-row"><span class="dettaglio-label">Fine</span><span class="dettaglio-value">' + (m.fineAt ? formatDataOra(m.fineAt) : 'In corso') + '</span></div>' +
         '<div class="dettaglio-row"><span class="dettaglio-label">Creazione</span><span class="dettaglio-value">' + formatDataOra(m.createdAt) + '</span></div>' +
         '</div>' +
+        fotoHtml +
         '</div>' +
         '<div class="dettaglio-section">' +
-        '<h3><i class="fas fa-users"></i> Team Operatori (' + operatori.length + ')</h3>' +
+        '<h2><i class="fas fa-users"></i> Team Operatori (' + operatori.length + ')</h2>' +
         '<div class="operatori-list">' +
         generaListaOperatori(operatori) +
         '</div>' +
         '</div>' +
-        (mezzi.length > 0 ? '<div class="dettaglio-section"><h3><i class="fas fa-truck-medical"></i> Mezzi (' + mezzi.length + ')</h3>' + generaListaMezzi(mezzi) + '</div>' : '') +
-        (materiali.length > 0 ? '<div class="dettaglio-section"><h3><i class="fas fa-kit-medical"></i> Materiali (' + materiali.length + ')</h3>' + generaListaMateriali(materiali) + '</div>' : '');
+        (mezzi.length > 0 ? '<div class="dettaglio-section"><h2><i class="fas fa-truck-medical"></i> Mezzi (' + mezzi.length + ')</h2>' + generaListaMezzi(mezzi) + '</div>' : '') +
+        (materiali.length > 0 ? '<div class="dettaglio-section"><h2><i class="fas fa-kit-medical"></i> Materiali (' + materiali.length + ')</h2>' + generaListaMateriali(materiali) + '</div>' : '');
 
     content.innerHTML = html;
 }

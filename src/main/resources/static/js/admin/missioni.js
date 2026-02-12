@@ -146,7 +146,7 @@ function buildDettaglioHTML(missione, richiesta) {
 
     let html = `
         <div class="detail-section">
-            <h3><i class="fas fa-info-circle"></i> Informazioni Generali</h3>
+            <h2><i class="fas fa-info-circle"></i> Informazioni Generali</h2>
             <div class="detail-grid">
                 <div class="detail-item">
                     <label>ID Missione</label>
@@ -180,7 +180,7 @@ function buildDettaglioHTML(missione, richiesta) {
     if (lat && lon) {
         html += `
             <div class="detail-section">
-                <h3><i class="fas fa-map-location-dot"></i> Mappa</h3>
+                <h2><i class="fas fa-map-location-dot"></i> Mappa</h2>
                 <div class="map-container" id="detail-map"></div>
             </div>
         `;
@@ -190,7 +190,7 @@ function buildDettaglioHTML(missione, richiesta) {
     if (richiesta) {
         html += `
             <div class="detail-section">
-                <h3><i class="fas fa-bell"></i> Richiesta Associata</h3>
+                <h2><i class="fas fa-bell"></i> Richiesta Associata</h2>
                 <div class="detail-grid">
                     <div class="detail-item">
                         <label>Segnalante</label>
@@ -211,12 +211,30 @@ function buildDettaglioHTML(missione, richiesta) {
                 </div>
             </div>
         `;
+
+        // Foto Richiesta
+        const fotoSrc = richiesta.foto ? `data:image/jpeg;base64,${richiesta.foto}` : null;
+
+        html += `
+            <div class="detail-section">
+                <h2><i class="fas fa-camera"></i> Foto Segnalazione</h2>
+                <div style="text-align: center; padding: 10px;">
+                    ${fotoSrc
+                ? `<img src="${fotoSrc}" alt="Foto segnalazione" style="max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color);">`
+                : `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px dashed var(--border-color);">
+                               <i class="fas fa-image" style="font-size: 2rem; color: var(--text-secondary); opacity: 0.5; margin-bottom: 8px;"></i>
+                               <p style="color: var(--text-secondary); font-size: 0.85rem; margin:0;">Nessuna foto disponibile</p>
+                           </div>`
+            }
+                </div>
+            </div>
+        `;
     }
 
     // Squadra
     html += `
         <div class="detail-section">
-            <h3><i class="fas fa-users"></i> Squadra</h3>
+            <h2><i class="fas fa-users"></i> Squadra</h2>
             <div class="detail-item">
                 <label>Caposquadra</label>
                 <span><strong>${capo ? `${capo.nome} ${capo.cognome}` : 'N/D'}</strong></span>
@@ -233,7 +251,7 @@ function buildDettaglioHTML(missione, richiesta) {
     // Mezzi
     html += `
         <div class="detail-section">
-            <h3><i class="fas fa-ambulance"></i> Mezzi</h3>
+            <h2><i class="fas fa-ambulance"></i> Mezzi</h2>
             ${missione.mezzi?.length > 0
             ? `<div class="mezzi-list">${missione.mezzi.map(m => `<span class="mezzo-badge">${m.targa || m.nome}</span>`).join('')}</div>`
             : '<p style="color: var(--text-secondary);">Nessun mezzo assegnato</p>'}
@@ -243,7 +261,7 @@ function buildDettaglioHTML(missione, richiesta) {
     // Materiali
     html += `
         <div class="detail-section">
-            <h3><i class="fas fa-box-open"></i> Materiali</h3>
+            <h2><i class="fas fa-box-open"></i> Materiali</h2>
             ${missione.materiali?.length > 0
             ? `<div class="materiali-list">${missione.materiali.map(m => `<span class="materiale-badge">${m.nome}</span>`).join('')}</div>`
             : '<p style="color: var(--text-secondary);">Nessun materiale assegnato</p>'}
@@ -260,7 +278,7 @@ function buildDettaglioHTML(missione, richiesta) {
 
         html += `
             <div class="detail-section">
-                <h3><i class="fas fa-history"></i> Aggiornamenti</h3>
+                <h2><i class="fas fa-history"></i> Aggiornamenti</h2>
                 <div class="aggiornamenti-timeline">
                     ${sortedAgg.map(agg => `
                         <div class="aggiornamento-item">
@@ -279,7 +297,7 @@ function buildDettaglioHTML(missione, richiesta) {
     if (missione.stato === 'CHIUSA') {
         html += `
             <div class="detail-section">
-                <h3><i class="fas fa-flag-checkered"></i> Chiusura</h3>
+                <h2><i class="fas fa-flag-checkered"></i> Chiusura</h2>
                 <div class="detail-grid">
                     <div class="detail-item">
                         <label>Livello Successo</label>

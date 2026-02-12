@@ -1,16 +1,16 @@
 <#import "layout.ftl" as layout>
 
-<@layout.pagina_admin 
-    titolo="Gestione Staff"
-    nomeUtente=nomeUtente!"Admin"
-    extraHead='<link rel="stylesheet" href="/css/aggiungi-utente.css"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>'
-    extraScripts='<script src="/js/admin/aggiungi-utente.js"></script>'
-    headerContent='<div class="header-status"><span class="status-indicator"><i class="fas fa-shield-halved"></i> Area Protetta</span></div>'>
+<@layout.pagina_admin
+titolo="Gestione Staff"
+nomeUtente=nomeUtente!"Admin"
+extraHead='<link rel="stylesheet" href="/css/aggiungi-utente.css"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>'
+extraScripts='<script src="/js/admin/aggiungi-utente.js"></script>'
+headerContent='<div class="header-status"><span class="status-indicator"><i class="fas fa-shield-halved"></i> Area Protetta</span></div>'>
 
     <div class="form-container">
         <div class="widget">
             <div class="widget-header">
-                <h3><i class="fas fa-id-card"></i> Dati Nuovo Operatore</h3>
+                <h2><i class="fas fa-id-card"></i> Dati Nuovo Operatore</h2>
             </div>
 
             <form id="formAggiungiUtente" class="tech-form">
@@ -43,6 +43,7 @@
                     <div class="input-group">
                         <label>Ruolo Sistema</label>
                         <select name="ruolo" required>
+                            <option value="" disabled selected>-- Seleziona un ruolo --</option>
                             <option value="OPERATORE">Operatore (Standard)</option>
                             <option value="ADMIN">Amministratore (Full Access)</option>
                         </select>

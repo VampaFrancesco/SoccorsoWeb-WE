@@ -48,10 +48,10 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
         <!-- Card Destra: Form Modifica -->
         <div class="profile-details-card">
 
-            <h3 class="section-title">
+            <h2 class="section-title">
                 <i class="fas fa-user text-accent"></i>
                 Informazioni Personali
-            </h3>
+            </h2>
 
             <form id="profileForm" data-user-id="${(user.id)!}">
                 <!-- Dati Anagrafici -->
@@ -68,7 +68,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
                 <div class="form-group">
                     <label for="data_nascita">Data di Nascita</label>
-                    <input type="text" id="data_nascita" name="dataNascita" class="form-control readonly" readonly>
+                    <input type="date" id="data_nascita" name="dataNascita" class="form-control">
                 </div>
 
                 <div class="form-group">
@@ -84,14 +84,14 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 <hr class="divider">
 
                 <!-- Campi Modificabili -->
-                <h3 class="section-title">
+                <h2 class="section-title">
                     <i class="fas fa-edit text-accent"></i>
                     Informazioni Extra
-                </h3>
+                </h2>
 
                 <div class="form-group">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <label for="abilita" style="margin-bottom: 0;">Abilità e Competenze</label>
+                        <label style="margin-bottom: 0;">Abilità e Competenze</label>
                         <button type="button" class="btn-secondary btn-sm" onclick="apriModaleAbilita()">
                             <i class="fas fa-plus"></i> Aggiungi
                         </button>
@@ -116,7 +116,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
                 <div class="form-group" style="margin-top: 30px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <label for="patenti" style="margin-bottom: 0;">Patenti e Certificazioni</label>
+                        <label style="margin-bottom: 0;">Patenti e Certificazioni</label>
                         <button type="button" class="btn-secondary btn-sm" onclick="apriModalePatenti()">
                             <i class="fas fa-plus"></i> Aggiungi
                         </button>
@@ -156,7 +156,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
     <div id="modal-abilita" class="modal-overlay">
         <div class="modal-content modal-lg">
             <div class="modal-header">
-                <h3><i class="fas fa-tools"></i> Gestisci Abilità</h3>
+                <h2><i class="fas fa-tools"></i> Gestisci Abilità</h2>
                 <button class="modal-close" onclick="chiudiModaleAbilita()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -164,7 +164,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
             <div class="modal-body">
                 <!-- Abilità Selezionate -->
                 <div class="abilita-section">
-                    <h4>Le tue abilità</h4>
+                    <h3>Le tue abilità</h3>
                     <div id="abilita-selezionate" class="abilita-chips">
                         <p class="text-muted">Nessuna abilità selezionata</p>
                     </div>
@@ -174,7 +174,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
                 <!-- Abilità Disponibili -->
                 <div class="abilita-section">
-                    <h4>Abilità disponibili</h4>
+                    <h3>Abilità disponibili</h3>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="search-abilita" placeholder="Cerca abilità..." oninput="filtraAbilita()">
@@ -184,19 +184,6 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                     </div>
                 </div>
 
-                <hr class="divider">
-
-                <!-- Crea Nuova Abilità -->
-                <div class="abilita-section">
-                    <h4>Crea nuova abilità</h4>
-                    <div class="new-abilita-form">
-                        <input type="text" id="nuova-abilita-nome" placeholder="Nome abilità" class="form-control">
-                        <input type="text" id="nuova-abilita-desc" placeholder="Descrizione (opzionale)" class="form-control">
-                        <button type="button" class="btn-primary" onclick="creaNuovaAbilita()">
-                            <i class="fas fa-plus"></i> Aggiungi
-                        </button>
-                    </div>
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="chiudiModaleAbilita()">Chiudi</button>
@@ -211,7 +198,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
     <div id="modal-patenti" class="modal-overlay">
         <div class="modal-content modal-lg">
             <div class="modal-header">
-                <h3><i class="fas fa-id-card"></i> Gestisci Patenti</h3>
+                <h2><i class="fas fa-id-card"></i> Gestisci Patenti</h2>
                 <button class="modal-close" onclick="chiudiModalePatenti()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -219,7 +206,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
             <div class="modal-body">
                 <!-- Patenti Selezionate (con dettagli) -->
                 <div class="abilita-section">
-                    <h4>Le tue patenti selezionate</h4>
+                    <h3>Le tue patenti selezionate</h3>
                     <div id="patenti-selezionate-dettagli" class="patenti-list-details">
                         <!-- Qui verranno iniettati i form per i dettagli di ogni patente selezionata -->
                         <p class="text-muted">Nessuna patente selezionata</p>
@@ -230,7 +217,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
 
                 <!-- Patenti Disponibili -->
                 <div class="abilita-section">
-                    <h4>Aggiungi patente da elenco</h4>
+                    <h3>Aggiungi patente da elenco</h3>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="search-patenti" placeholder="Cerca tipo patente..." oninput="filtraPatenti()">
@@ -240,18 +227,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                     </div>
                 </div>
 
-                <hr class="divider">
 
-                <!-- Crea Nuova Patente -->
-                <div class="abilita-section">
-                    <h4>Crea nuova tipologia patente</h4>
-                    <div class="new-abilita-form">
-                        <input type="text" id="nuova-patente-tipo" placeholder="Tipo patente (es. B, C, Nautica)" class="form-control">
-                        <button type="button" class="btn-primary" onclick="creaNuovaPatente()">
-                            <i class="fas fa-plus"></i> Crea
-                        </button>
-                    </div>
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="chiudiModalePatenti()">Chiudi</button>

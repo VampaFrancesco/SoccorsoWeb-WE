@@ -65,6 +65,7 @@ public class SecurityConfig {
                                                 // ✅ Pagine pubbliche (senza autenticazione)
                                                 .requestMatchers(
                                                                 "/home",
+                                                                "/richiesta-soccorso",
                                                                 "/convalida",
                                                                 "/auth/**",
                                                                 "/error")
