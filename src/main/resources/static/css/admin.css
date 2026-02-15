@@ -168,7 +168,6 @@ body {
     color: var(--accent-danger);
 }
 
-/* ===== MAIN CONTENT ===== */
 .main-content {
     margin-left: 260px;
     flex-grow: 1;

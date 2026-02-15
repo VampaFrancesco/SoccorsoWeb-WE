@@ -15,7 +15,7 @@ public class MezziController {
         model.addAttribute("basePath", "/admin");
         model.addAttribute("ruolo", "ADMIN");
 
-        // Ritorna il template specifico per l'admin (src/main/resources/templates/admin/mezzi.ftl)
+        // Ritorna il template specifico per l'admin
         return "admin/mezzi";
     }
 
@@ -26,7 +26,7 @@ public class MezziController {
         model.addAttribute("basePath", "/operatore");
         model.addAttribute("ruolo", "OPERATORE");
 
-        // Ritorna un template diverso (che creerai in futuro)
+        // Ritorna un template diverso
         return "operatore/mezzi";
     }
 

@@ -16,20 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Random;
 
-/**
- * Controller per la home page.
- * <p>
- * Supporta Progressive Enhancement:
- * - GET /: mostra la pagina con form + captcha generato server-side
- * - POST /richiesta-soccorso: gestisce il submit del form senza JS
- * (form-urlencoded / multipart)
- * - Se JS è attivo, il form viene intercettato dal JS e inviato via AJAX
- * al RichiestaOpenController (/swa/open/richieste)
- * <p>
- * Il captcha no-JS usa un approccio HMAC: il risultato è firmato
- * e codificato nel campo hidden captchaId, così non serve la sessione
- * (compatibile con SessionCreationPolicy.STATELESS).
- */
 @Controller("homeWebController")
 public class HomeController {
 
@@ -43,9 +29,6 @@ public class HomeController {
         this.richiestaService = richiestaService;
     }
 
-    /**
-     * Mostra la pagina home con form di richiesta soccorso
-     */
     @GetMapping({ "/", "/home" })
     public String home(Model model) {
         model.addAttribute("titolo", "Home Page");
@@ -59,10 +42,6 @@ public class HomeController {
         return "home";
     }
 
-    /**
-     * Gestisce il submit del form senza JavaScript (POST standard).
-     * Riceve i dati come form-urlencoded / multipart.
-     */
     @PostMapping("/richiesta-soccorso")
     public String inviaSoccorso(
             @RequestParam("nomeSegnalante") String nomeSegnalante,
@@ -85,7 +64,6 @@ public class HomeController {
         try {
             // 1. Verifica captcha (se non c'è token JS, verifica la risposta matematica)
             if (captchaToken == null || captchaToken.isBlank()) {
-                // No-JS: verifica la risposta alla domanda matematica con HMAC
                 verificaCaptchaMatematica(captchaRisposta, captchaId);
             }
             // Se c'è captchaToken, il captcha JS è stato completato (fiducia lato client)
@@ -123,13 +101,13 @@ public class HomeController {
             // 4. Successo → mostra messaggio
             model.addAttribute("successMessage",
                     "La tua richiesta è stata registrata. Controlla la tua email (" +
-                            emailSegnalante + ") per confermare la richiesta.");
+                            emailSegnalante + ") per confermare la richiesta");
 
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             model.addAttribute("errorMessage",
-                    "Si è verificato un errore durante l'invio della richiesta. Riprova più tardi.");
+                    "Si è verificato un errore durante l'invio della richiesta");
         }
 
         // Rigenera captcha per il prossimo tentativo
@@ -138,12 +116,6 @@ public class HomeController {
         return "home";
     }
 
-    // ===== CAPTCHA HELPER (HMAC-based, stateless) =====
-
-    /**
-     * Genera una domanda matematica e firma la risposta con HMAC.
-     * Il captchaId contiene: "risultato:timestamp:hmac" codificato in Base64.
-     */
     private void generaCaptcha(Model model) {
         int a = random.nextInt(10) + 1; // 1-10
         int b = random.nextInt(10) + 1; // 1-10
@@ -162,16 +134,14 @@ public class HomeController {
         model.addAttribute("captchaId", captchaId);
     }
 
-    /**
-     * Verifica la risposta alla domanda matematica (no-JS captcha) usando HMAC.
-     */
+   // Verifica risposta matematica
     private void verificaCaptchaMatematica(String risposta, String captchaId) {
         if (captchaId == null || captchaId.isBlank()) {
-            throw new IllegalStateException("Captcha non valido. Ricarica la pagina e riprova.");
+            throw new IllegalStateException("Captcha non valido. Ricarica la pagina e riprova");
         }
 
         if (risposta == null || risposta.isBlank()) {
-            throw new IllegalStateException("Devi rispondere alla domanda di sicurezza.");
+            throw new IllegalStateException("Devi rispondere alla domanda di sicurezza");
         }
 
         try {
@@ -195,25 +165,22 @@ public class HomeController {
 
             // Verifica scadenza (5 minuti)
             if (System.currentTimeMillis() - timestamp > 5 * 60 * 1000) {
-                throw new IllegalStateException("Il captcha è scaduto. Ricarica la pagina e riprova.");
+                throw new IllegalStateException("Il captcha è scaduto. Ricarica la pagina e riprova");
             }
 
             // Verifica risposta
             int userAnswer = Integer.parseInt(risposta.trim());
             if (userAnswer != risultatoCorretto) {
-                throw new IllegalStateException("Risposta alla domanda di sicurezza errata. Riprova.");
+                throw new IllegalStateException("Risposta alla domanda di sicurezza errata. Riprova");
             }
 
         } catch (NumberFormatException e) {
-            throw new IllegalStateException("La risposta deve essere un numero.");
+            throw new IllegalStateException("La risposta deve essere un numero");
         } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("Captcha non valido. Ricarica la pagina.");
+            throw new IllegalStateException("Captcha non valido. Ricarica la pagina");
         }
     }
 
-    /**
-     * Calcola HMAC-SHA256 di un messaggio.
-     */
     private String hmacSha256(String message) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");

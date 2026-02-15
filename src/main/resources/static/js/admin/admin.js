@@ -1,4 +1,3 @@
-// ── INIT ──
 
 document.addEventListener('DOMContentLoaded', async function () {
     setCurrentDate();
@@ -11,8 +10,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         await updateGlobalBadges();
     }
 });
-
-// ── UI HELPERS ──
 
 function setCurrentDate() {
     const dateEl = document.getElementById('current-date');
@@ -30,7 +27,7 @@ function highlightActiveNav() {
     });
 }
 
-// ── BADGE SIDEBAR ──
+// SIDEBAR
 
 async function updateGlobalBadges() {
     try {
@@ -46,7 +43,7 @@ async function updateGlobalBadges() {
     }
 }
 
-// ── DASHBOARD ──
+//DASHBOARD
 
 async function refreshDashboard() {
     try {
@@ -80,7 +77,6 @@ async function refreshDashboard() {
         renderRichiesteFeed(richieste?.content || []);
         await updateGlobalBadges();
     } catch (error) {
-        // Silenzioso
     }
 }
 

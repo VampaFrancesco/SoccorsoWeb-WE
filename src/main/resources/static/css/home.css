@@ -27,8 +27,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ===== PROGRESSIVE ENHANCEMENT: JS DETECTION ===== */
-/* Elementi visibili SOLO con JS (.js-only-*) */
+/* Elementi visibili SOLO con JS  */
 .js-only-block {
     display: none;
 }
@@ -45,7 +44,7 @@ body {
     display: inline-flex;
 }
 
-/* Elementi visibili SOLO senza JS (.no-js-*) */
+/* Elementi visibili SOLO senza JS */
 .js-enabled .no-js-block {
     display: none;
 }
@@ -54,7 +53,6 @@ body {
     display: none;
 }
 
-/* Senza JS: campo indirizzo sempre visibile */
 .no-js .manual-input-container {
     display: block !important;
 }
@@ -63,7 +61,6 @@ body {
     display: block;
 }
 
-/* Con JS: il container manuale è gestito dal JS */
 .js-enabled .manual-input-container {
     display: none;
 }
@@ -86,7 +83,6 @@ body {
 }
 
 
-/* ===== BG CIRCLES ===== */
 .bg-circle {
     position: fixed;
     border-radius: 50%;
@@ -282,7 +278,6 @@ body {
     font-size: 1.5rem;
 }
 
-/* ===== FORM ===== */
 .form-section {
     flex: 1;
     display: flex;
@@ -318,7 +313,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* ===== SERVER MESSAGES (no-JS fallback) ===== */
 .server-message {
     display: flex;
     align-items: flex-start;
@@ -365,7 +359,6 @@ body {
     color: #f44336;
 }
 
-/* ===== FORM GROUPS ===== */
 .form-group {
     margin-bottom: 20px;
 }
@@ -551,7 +544,6 @@ textarea.form-control {
     margin-top: 5px;
 }
 
-/* ===== FILE INPUT ===== */
 .file-input-wrapper {
     position: relative;
 }
@@ -593,7 +585,7 @@ textarea.form-control {
     font-size: 1.2rem;
 }
 
-/* ===== CAPTCHA NO-JS: domanda matematica ===== */
+/* ===== CAPTCHA domanda matematica ===== */
 .captcha-question {
     background: var(--input-bg);
     border: 1px solid var(--glass-border);
@@ -624,7 +616,7 @@ textarea.form-control {
     letter-spacing: 2px;
 }
 
-/* ===== CAPTCHA JS: Custom interattivo ===== */
+/* ===== CAPTCHA  ===== */
 .captcha-group {
     margin-top: 25px;
 }
@@ -744,7 +736,6 @@ textarea.form-control {
     padding-left: 2px;
 }
 
-/* ===== SUBMIT BUTTON ===== */
 .btn-submit {
     width: 100%;
     padding: 15px;
