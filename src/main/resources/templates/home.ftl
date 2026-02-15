@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="/css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
 
-    <!-- JS detection: rimuove no-js e aggiunge js-enabled -->
     <script>
         document.documentElement.classList.remove('no-js');
         document.documentElement.classList.add('js-enabled');
@@ -84,7 +83,7 @@
                 <p>Compila il modulo per inviare una richiesta</p>
             </div>
 
-            <!-- Messaggi di successo/errore dal server (no-JS fallback) -->
+            <!-- Messaggi di successo/errore dal server -->
             <#if successMessage??>
                 <div class="server-message server-success">
                     <i class="fas fa-check-circle"></i>
@@ -104,12 +103,6 @@
                 </div>
             </#if>
 
-            <!--
-                Progressive Enhancement:
-                - action="/richiesta-soccorso" → funziona senza JS (POST standard)
-                - enctype="multipart/form-data" → per upload foto senza JS
-                - Il JS sovrascriverà il submit con AJAX quando disponibile
-            -->
             <form id="richiestaForm" method="POST" action="/richiesta-soccorso" enctype="multipart/form-data">
 
                 <!-- NOME E COGNOME -->
@@ -190,19 +183,12 @@
                         <span class="required">*</span>
                     </label>
 
-                    <!--
-                        Status Bar GPS: visibile SOLO con JS (nascosta via CSS con .no-js)
-                        JS la usa per mostrare stato geolocalizzazione
-                    -->
                     <div id="location-status" class="location-status js-only-block">
                         <i class="fas fa-spinner fa-spin"></i>
                         <span>Rilevamento posizione in corso...</span>
                     </div>
 
-                    <!--
-                        Campo indirizzo manuale: SEMPRE VISIBILE senza JS.
-                        Con JS, viene nascosto se GPS ha successo.
-                    -->
+
                     <div class="manual-input-container" id="manual-input">
                         <label for="indirizzo" class="sub-label">
                             Indirizzo completo (Via, Città, CAP)
@@ -236,7 +222,7 @@
                     </div>
                 </div>
 
-                <!-- PHOTO UPLOAD -->
+
                 <div class="form-group">
                     <label for="foto">
                         <i class="fas fa-camera"></i> Allega Foto
@@ -257,14 +243,9 @@
                     <small class="form-hint">Dimensione massima: 5MB. Formati: JPG, PNG, WEBP</small>
                 </div>
 
-                <!--
-                    ======= CAPTCHA =======
-                    Doppio sistema:
-                    1. NO-JS: Domanda matematica generata server-side (visibile senza JS)
-                    2. JS: Captcha custom interattivo (visibile solo con JS)
-                -->
 
-                <!-- CAPTCHA NO-JS: Domanda di sicurezza server-side -->
+
+                <!-- CAPTCHA NO-JS -->
                 <div class="form-group captcha-group no-js-block" id="captcha-nojs">
                     <label for="captchaRisposta">
                         <i class="fas fa-shield-halved"></i> Verifica di Sicurezza
@@ -281,11 +262,10 @@
                                 autocomplete="off"
                                 inputmode="numeric">
                     </div>
-                    <!-- Token nascosto per verificare server-side quale domanda era -->
                     <input type="hidden" name="captchaId" value="${captchaId!}">
                 </div>
 
-                <!-- CAPTCHA JS: Custom interattivo (nascosto senza JS via CSS) -->
+                <!-- CAPTCHA JS: Custom interattivo -->
                 <div class="form-group captcha-group js-only-block" id="captcha-js-wrapper">
                     <label>
                         <i class="fas fa-shield-halved"></i> Verifica di Sicurezza
@@ -340,10 +320,7 @@
     </div>
 </footer>
 
-<!-- SweetAlert2 (solo per JS) -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-
-<!-- Custom JS -->
 <script src="/js/api.js" defer></script>
 <script src="/js/home.js" defer></script>
 

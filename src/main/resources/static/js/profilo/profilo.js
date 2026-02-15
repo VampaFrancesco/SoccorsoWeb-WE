@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
     const profileForm = document.getElementById("profileForm");
-    // Se non siamo nella pagina profilo (o non c'è il form), non fare nulla per evitare errori o chiamate inutili.
     if (!profileForm) {
         return;
     }
@@ -32,8 +31,6 @@ async function loadUserProfile() {
         setVal("telefono", user.telefono);
         setVal("indirizzo", user.indirizzo);
 
-        // data_nascita: Jackson può serializzare LocalDate come array [YYYY,MM,DD] o stringa "YYYY-MM-DD"
-        // Il campo type="date" richiede formato "YYYY-MM-DD"
         if (user.data_nascita) {
             let dateStr;
             if (Array.isArray(user.data_nascita)) {
@@ -46,8 +43,6 @@ async function loadUserProfile() {
             }
             setVal("data_nascita", dateStr);
         }
-
-        // Update display text elements if they verify existence
         const setText = (id, val) => {
             const el = document.getElementById(id);
             if (el) el.innerText = val || "";
@@ -77,7 +72,6 @@ async function loadUserProfile() {
         renderAbilitaTabella(user.abilita || []);
         // Popola tabella patenti
         renderPatentiTabella(user.patenti || []);
-        // Aggiorna campi hidden per il form submit
         sincronizzaHiddenFields();
 
     } catch (error) {
@@ -225,7 +219,7 @@ async function saveProfile() {
     }
 }
 
-// MANAGEMENT SKILLS
+// SKILLS
 async function openSkillModal() {
     const modal = document.getElementById('skill-modal');
     if (modal) modal.classList.add('active');
@@ -296,7 +290,7 @@ function removeSkill(name) {
     currentUserData.abilita = currentUserData.abilita.filter(s => s.nome !== name);
     renderSkills(currentUserData.abilita);
 }
-// MANAGEMENT PATENTI
+// PATENTI
 function openPatenteModal() {
     const modal = document.getElementById('patente-modal');
     if (modal) {
@@ -354,9 +348,7 @@ function removePatente(index) {
     renderPatenti(currentUserData.patenti);
 }
 
-// =====================================================
-// MODAL ABILITÀ (nuovo template)
-// =====================================================
+// MODAL ABILITÀ
 
 let tutteLeAbilitaDisponibili = [];
 let abilitaSelezionateTemp = [];
@@ -486,9 +478,7 @@ function rimuoviAbilitaDaTabella(index) {
     }
 }
 
-// =====================================================
-// MODAL PATENTI (nuovo template)
-// =====================================================
+// MODAL PATENTI
 
 let tutteLePatentiDisponibili = [];
 let patentiSelezionateTemp = [];

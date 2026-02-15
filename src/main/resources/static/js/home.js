@@ -1,16 +1,4 @@
-/**
- * home.js — Progressive Enhancement
- *
- * Se JS è abilitato:
- *   - Mostra il bottone GPS e il bottone verifica indirizzo
- *   - Nasconde il captcha no-JS e mostra quello interattivo
- *   - Override del form submit con AJAX
- *
- * Se JS è disabilitato:
- *   - Il form funziona con action="/richiesta-soccorso" (POST standard)
- *   - Campo indirizzo manuale sempre visibile
- *   - Captcha = domanda di sicurezza server-side
- */
+
 
 let locationObtained = false;
 let isCaptchaVerified = false;
@@ -199,7 +187,6 @@ function setupManualAddress() {
     });
 }
 
-// ===== FILE INPUT FEEDBACK =====
 function setupFileInput() {
     const fileInput = document.getElementById('foto');
     const fileName = document.getElementById('file-name');
@@ -227,7 +214,7 @@ function setupCustomCaptcha() {
 
     if (!checkbox) return;
 
-    // Disabilita il campo captcha no-JS (non serve più con JS)
+    // Disabilita il campo captcha no-JS
     const captchaRisposta = document.getElementById('captchaRisposta');
     if (captchaRisposta) captchaRisposta.removeAttribute('required');
 
@@ -254,7 +241,6 @@ function setupCustomCaptcha() {
     });
 }
 
-// ===== FORM SUBMIT (AJAX override) =====
 function setupFormSubmit() {
     const form = document.getElementById('richiestaForm');
     const submitBtn = document.querySelector('.btn-submit');
@@ -288,7 +274,6 @@ function setupFormSubmit() {
             return;
         }
 
-        // Disable button
         const originalBtnHTML = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
         submitBtn.disabled = true;
@@ -343,7 +328,6 @@ function setupFormSubmit() {
                     confirmButtonColor: '#4CAF50'
                 });
 
-                // RESET Form & UI
                 form.reset();
                 locationObtained = false;
                 isCaptchaVerified = false;
@@ -379,7 +363,6 @@ function setupFormSubmit() {
 }
 
 
-// ===== INIT =====
 document.addEventListener('DOMContentLoaded', function () {
     console.log('🚀 SoccorsoWeb Home — JS abilitato (Progressive Enhancement)');
 
@@ -397,7 +380,6 @@ document.addEventListener('DOMContentLoaded', function () {
     setupCustomCaptcha();
     setupFormSubmit();
 
-    // ===== SMART NAVIGATION BAR =====
     let lastScrollTop = 0;
     const topNav = document.querySelector('.top-nav');
 
