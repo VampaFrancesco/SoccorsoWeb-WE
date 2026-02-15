@@ -36,6 +36,10 @@ public class MissioneOperatore {
     @Column(name = "assegnato_at")
     private LocalDateTime assegnatoAt;
 
+    @Builder.Default
+    @Column(length = 20)
+    private String ruolo = "OPERATORE";
+
     // Classe per la chiave composta
     @Embeddable
     @Getter

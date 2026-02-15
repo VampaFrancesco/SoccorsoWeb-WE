@@ -58,15 +58,16 @@ async function caricaDettagliRichiesta(id) {
 }
 
 async function caricaOperatoriDisponibili() {
-    const selectCapo = document.getElementById('caposquadraId');
+    const listCapo = document.getElementById('caposquadra-list');
     const listOperatori = document.getElementById('operatori-list');
 
     try {
         const operatori = await operatoriDisponibili(true);
-        selectCapo.innerHTML = '<option value="">Seleziona un caposquadra...</option>';
+        listCapo.innerHTML = '';
         listOperatori.innerHTML = '';
 
         if (!operatori?.length) {
+            listCapo.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-muted);">Nessun operatore disponibile.</p>';
             listOperatori.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-muted);">Nessun operatore disponibile.</p>';
             return;
         }
@@ -74,36 +75,52 @@ async function caricaOperatoriDisponibili() {
         operatori.forEach(op => {
             const nome = `${op.nome} ${op.cognome}`;
 
-            const opt = document.createElement('option');
-            opt.value = op.id;
-            opt.textContent = nome;
-            selectCapo.appendChild(opt);
-
-            const div = document.createElement('div');
-            div.className = 'resource-selection-item';
-            div.style.cssText = 'display:flex; align-items:start; gap:10px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);';
-
             const abilitaBadges = (op.abilita || []).map(a => `<span style="background:rgba(59,130,246,0.2); color:#60a5fa; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:4px; display:inline-block; margin-bottom:2px;">${a.nome}</span>`).join('');
             const patentiBadges = (op.patenti || []).map(p => `<span style="background:rgba(245, 158, 11, 0.2); color:#fbbf24; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:4px; display:inline-block; margin-bottom:2px;">${p.tipo}</span>`).join('');
 
-            div.innerHTML = `
+            // Caposquadra checkbox
+            const capoDiv = document.createElement('div');
+            capoDiv.className = 'resource-selection-item capo-item';
+            capoDiv.dataset.opId = op.id;
+            capoDiv.style.cssText = 'display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);';
+            capoDiv.innerHTML = `
+                <input type="checkbox" name="caposquadraIds" value="${op.id}" id="capo-${op.id}" class="capo-checkbox" style="cursor:pointer; width:18px; height:18px;">
+                <label for="capo-${op.id}" style="color:white; font-size:0.9rem; cursor:pointer; font-weight:500; flex:1;">${nome}</label>
+            `;
+            listCapo.appendChild(capoDiv);
+
+            // Operatore checkbox
+            const opDiv = document.createElement('div');
+            opDiv.className = 'resource-selection-item op-item';
+            opDiv.dataset.opId = op.id;
+            opDiv.style.cssText = 'display:flex; align-items:start; gap:10px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);';
+            opDiv.innerHTML = `
                 <input type="checkbox" name="operatoriIds" value="${op.id}" id="op-${op.id}" class="op-checkbox" style="cursor:pointer; width:18px; height:18px; margin-top:3px;">
                 <div style="flex:1;">
                     <label for="op-${op.id}" style="color:white; font-size:0.9rem; cursor:pointer; font-weight:500;">${nome}</label>
                     ${patentiBadges || abilitaBadges ? `<div style="margin-top:6px; line-height:1.4;">${patentiBadges}${abilitaBadges}</div>` : ''}
                 </div>
             `;
-            listOperatori.appendChild(div);
+            listOperatori.appendChild(opDiv);
         });
 
-        selectCapo.addEventListener('change', function () {
-            const capoId = this.value;
-            document.querySelectorAll('.op-checkbox').forEach(cb => {
-                const item = cb.closest('.resource-selection-item');
-                const isCapo = cb.value === capoId;
-                cb.checked = isCapo ? false : cb.checked;
-                cb.disabled = isCapo;
-                item.style.opacity = isCapo ? '0.3' : '1';
+        // Quando si seleziona un caposquadra, disabilitalo nella lista operatori
+        document.querySelectorAll('.capo-checkbox').forEach(cb => {
+            cb.addEventListener('change', function () {
+                const opId = this.value;
+                const opCheckbox = document.getElementById(`op-${opId}`);
+                const opItem = opCheckbox?.closest('.op-item');
+
+                if (this.checked) {
+                    if (opCheckbox) {
+                        opCheckbox.checked = false;
+                        opCheckbox.disabled = true;
+                    }
+                    if (opItem) opItem.style.opacity = '0.3';
+                } else {
+                    if (opCheckbox) opCheckbox.disabled = false;
+                    if (opItem) opItem.style.opacity = '1';
+                }
             });
         });
 
@@ -200,10 +217,12 @@ async function invioMissione(e) {
     e.preventDefault();
 
     const form = new FormData(e.target);
-    const caposquadraId = form.get('caposquadraId');
 
-    if (!caposquadraId) {
-        Swal.fire('Attenzione', 'È obbligatorio assegnare un caposquadra.', 'warning');
+    // Raccogli caposquadra selezionati (multipli)
+    const caposquadraIds = form.getAll('caposquadraIds').map(toInt).filter(Boolean);
+
+    if (!caposquadraIds.length) {
+        Swal.fire('Attenzione', 'È obbligatorio assegnare almeno un caposquadra.', 'warning');
         return;
     }
 
@@ -211,7 +230,7 @@ async function invioMissione(e) {
         richiesta_id: toInt(form.get('richiestaId')),
         obiettivo: form.get('obiettivo'),
         posizione: form.get('posizione'),
-        caposquadra_id: toInt(caposquadraId),
+        caposquadra_ids: caposquadraIds,
         operatori_ids: form.getAll('operatoriIds').map(toInt).filter(Boolean),
         mezzi_ids: form.getAll('mezziIds').map(toInt).filter(Boolean),
         materiali: raccogliMateriali()

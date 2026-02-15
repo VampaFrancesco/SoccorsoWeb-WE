@@ -2,7 +2,9 @@ package it.univaq.webengineering.soccorsoweb.swa.api;
 
 import it.univaq.webengineering.soccorsoweb.model.dto.request.MezzoRequest;
 import it.univaq.webengineering.soccorsoweb.model.dto.response.MezzoResponse;
+import it.univaq.webengineering.soccorsoweb.model.dto.response.MissioneResponse;
 import it.univaq.webengineering.soccorsoweb.service.MezzoService;
+import it.univaq.webengineering.soccorsoweb.service.MissioneService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 public class MezzoController {
 
     private final MezzoService mezzoService;
+    private final MissioneService missioneService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'OPERATORE')")
@@ -41,6 +44,12 @@ public class MezzoController {
         return ResponseEntity.created(URI.create("/swa/api/mezzi/" + created.getId())).body(created);
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATORE')")
+    public MezzoResponse update(@PathVariable Long id, @Valid @RequestBody MezzoRequest request) {
+        return mezzoService.update(id, request);
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -52,5 +61,11 @@ public class MezzoController {
     @PreAuthorize("hasAnyRole('ADMIN', 'OPERATORE')")
     public MezzoResponse toggleDisponibilita(@PathVariable Long id) {
         return mezzoService.toggleDisponibilita(id);
+    }
+
+    @GetMapping("/{id}/missioni")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATORE')")
+    public List<MissioneResponse> getMissioniMezzo(@PathVariable Long id) {
+        return missioneService.missioniMezzo(id);
     }
 }

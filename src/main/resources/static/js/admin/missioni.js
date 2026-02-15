@@ -138,8 +138,11 @@ async function viewDettaglio(id) {
 function buildDettaglioHTML(missione, richiesta) {
     const dataInizio = formatDate(missione.inizio_at);
     const dataFine = missione.fine_at ? formatDate(missione.fine_at) : 'In corso';
-    const capo = missione.caposquadra;
-    const altriOp = missione.operatori?.filter(op => op.id !== capo?.id) || [];
+    const allOperatori = missione.operatori || [];
+    const capiSquadra = allOperatori.filter(op => op.ruolo_missione === 'CAPOSQUADRA');
+    const altriOp = allOperatori.filter(op => op.ruolo_missione !== 'CAPOSQUADRA');
+    // Fallback: se nessuno ha ruolo_missione, usa il vecchio campo caposquadra
+    const capoFallback = missione.caposquadra;
 
     const lat = missione.latitudine || richiesta?.latitudine;
     const lon = missione.longitudine || richiesta?.longitudine;
@@ -231,13 +234,17 @@ function buildDettaglioHTML(missione, richiesta) {
         `;
     }
 
-    // Squadra
+    // Squadra - con supporto multipli caposquadra
+    const capiHtml = capiSquadra.length > 0
+        ? capiSquadra.map(c => `<span class="team-badge" style="background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3);"><i class="fas fa-crown" style="margin-right:4px;"></i>${c.nome} ${c.cognome}</span>`).join('')
+        : (capoFallback ? `<span class="team-badge" style="background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3);"><i class="fas fa-crown" style="margin-right:4px;"></i>${capoFallback.nome} ${capoFallback.cognome}</span>` : '<span style="color: var(--text-secondary);">N/D</span>');
+
     html += `
         <div class="detail-section">
             <h2><i class="fas fa-users"></i> Squadra</h2>
             <div class="detail-item">
                 <label>Caposquadra</label>
-                <span><strong>${capo ? `${capo.nome} ${capo.cognome}` : 'N/D'}</strong></span>
+                <div class="operatori-list">${capiHtml}</div>
             </div>
             <div class="detail-item" style="margin-top: 10px;">
                 <label>Operatori</label>
@@ -258,12 +265,12 @@ function buildDettaglioHTML(missione, richiesta) {
         </div>
     `;
 
-    // Materiali
+    // Materiali (con quantità assegnata)
     html += `
         <div class="detail-section">
             <h2><i class="fas fa-box-open"></i> Materiali</h2>
             ${missione.materiali?.length > 0
-            ? `<div class="materiali-list">${missione.materiali.map(m => `<span class="materiale-badge">${m.nome}</span>`).join('')}</div>`
+            ? `<div class="materiali-list">${missione.materiali.map(m => `<span class="materiale-badge">${m.nome} <span style="background:rgba(59,130,246,0.3); padding:2px 6px; border-radius:4px; font-size:0.75rem; margin-left:4px;">×${m.quantita}</span></span>`).join('')}</div>`
             : '<p style="color: var(--text-secondary);">Nessun materiale assegnato</p>'}
         </div>
     `;

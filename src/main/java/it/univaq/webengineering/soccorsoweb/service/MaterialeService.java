@@ -66,7 +66,13 @@ public class MaterialeService {
         Materiale materiale = materialeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Materiale non trovato: " + id));
 
-        materiale.setDisponibile(!materiale.getDisponibile());
+        boolean nuovaDisp = !materiale.getDisponibile();
+        materiale.setDisponibile(nuovaDisp);
+        // Se si rende non disponibile, quantità va a 0
+        if (!nuovaDisp) {
+            materiale.setQuantita(0);
+        }
+
         materiale = materialeRepository.save(materiale);
         return materialeMapper.toResponse(materiale);
     }

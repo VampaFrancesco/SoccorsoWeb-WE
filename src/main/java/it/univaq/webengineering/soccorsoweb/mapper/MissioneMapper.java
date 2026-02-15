@@ -71,6 +71,7 @@ public interface MissioneMapper {
                     response.setCreatedAt(mo.getOperatore().getCreatedAt());
                     response.setUpdatedAt(mo.getOperatore().getUpdatedAt());
                     response.setRoles(new HashSet<>());
+                    response.setRuoloMissione(mo.getRuolo() != null ? mo.getRuolo() : "OPERATORE");
                     return response;
                 })
                 .collect(Collectors.toSet());

@@ -40,8 +40,8 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <h1>Email Convalidata!</h1>
-                <p>✅ La tua richiesta di soccorso è stata attivata con successo.</p>
-                <p>Le squadre di soccorso sono state allertate e interverranno il prima possibile.</p>
+                <p>✅ La tua email è stata verificata e la richiesta di soccorso è stata inoltrata agli operatori.</p>
+                <p>Le squadre di soccorso sono state allertate e verrai contattato il prima possibile.</p>
                 <div class="error-actions">
                     <a href="/home" class="btn-home">
                         <i class="fas fa-home"></i> Torna alla Home
@@ -92,8 +92,8 @@
                     <div class="icon">
                         <i class="fas fa-envelope-circle-check"></i>
                     </div>
-                    <h1>Conferma la tua Email</h1>
-                    <p>Clicca il pulsante qui sotto per confermare la tua richiesta di soccorso.</p>
+                    <h1>Conferma la tua Richiesta di Soccorso</h1>
+                    <p>Clicca il pulsante qui sotto per confermare il tuo indirizzo email e attivare la segnalazione.</p>
 
                     <form method="POST" action="/convalida">
                         <input type="hidden" name="token_convalida" value="${token_convalida}">

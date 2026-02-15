@@ -49,6 +49,20 @@ public class MezzoService {
     }
 
     @Transactional
+    public MezzoResponse update(Long id, MezzoRequest request) {
+        Mezzo mezzo = mezzoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Mezzo non trovato: " + id));
+
+        mezzo.setNome(request.getNome());
+        mezzo.setTarga(request.getTarga());
+        mezzo.setTipo(request.getTipo());
+        mezzo.setDescrizione(request.getDescrizione());
+
+        mezzo = mezzoRepository.save(mezzo);
+        return mezzoMapper.toResponse(mezzo);
+    }
+
+    @Transactional
     public MezzoResponse toggleDisponibilita(Long id) {
         Mezzo mezzo = mezzoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Mezzo non trovato: " + id));

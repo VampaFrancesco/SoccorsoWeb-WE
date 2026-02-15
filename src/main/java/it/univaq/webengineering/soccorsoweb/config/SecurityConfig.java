@@ -51,7 +51,7 @@ public class SecurityConfig {
                                 .cors(Customizer.withDefaults())
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(auth -> auth
-                                                // ✅ File statici (CSS, JS, immagini)
+                                                //File statici (CSS, JS, immagini)
                                                 .requestMatchers(
                                                                 "/",
                                                                 "/index.html",
@@ -62,7 +62,7 @@ public class SecurityConfig {
                                                                 "/favicon.ico")
                                                 .permitAll()
 
-                                                // ✅ Pagine pubbliche (senza autenticazione)
+                                                //Pagine pubbliche (senza autenticazione)
                                                 .requestMatchers(
                                                                 "/home",
                                                                 "/richiesta-soccorso",
@@ -71,10 +71,10 @@ public class SecurityConfig {
                                                                 "/error")
                                                 .permitAll()
 
-                                                // ✅ API pubbliche (senza JWT)
+                                                //API pubbliche (senza JWT)
                                                 .requestMatchers("/swa/open/**").permitAll()
 
-                                                // ✅ Swagger/OpenAPI
+                                                //Swagger/OpenAPI
                                                 .requestMatchers(
                                                                 "/api-docs/**",
                                                                 "/api-docs.yaml",
@@ -82,14 +82,14 @@ public class SecurityConfig {
                                                                 "/swagger-ui.html")
                                                 .permitAll()
 
-                                                // 🔒 Sezioni protette per ruolo
+                                                //Sezioni protette per ruolo
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                                 .requestMatchers("/operatore/**").hasRole("OPERATORE")
 
-                                                // 🔒 API protette (richiedono JWT)
+                                                //API protette (richiedono JWT)
                                                 .requestMatchers("/swa/api/**").authenticated()
 
-                                                // 🔒 Tutto il resto richiede autenticazione
+                                                //Tutto il resto richiede autenticazione
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

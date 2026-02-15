@@ -73,87 +73,65 @@ async function loadUserProfile() {
             if (ruoloVisual) ruoloVisual.innerText = "Volontario";
         }
 
-        renderSkills(user.abilita || []);
-        renderPatenti(user.patenti || []);
-        renderDisponibilita(user.disponibile);
+        // Popola tabella abilità
+        renderAbilitaTabella(user.abilita || []);
+        // Popola tabella patenti
+        renderPatentiTabella(user.patenti || []);
+        // Aggiorna campi hidden per il form submit
+        sincronizzaHiddenFields();
 
     } catch (error) {
         Swal.fire("Errore", "Impossibile caricare il profilo.", "error");
     }
 }
 
-function renderSkills(skills) {
-    const container = document.getElementById("skills-container");
-    if (!container) return; // Exit if container doesn't exist
+function renderAbilitaTabella(abilita) {
+    const tbody = document.getElementById('abilita-tbody');
+    if (!tbody) return;
 
-    container.innerHTML = "";
-
-    skills.forEach(s => {
-        const span = document.createElement("span");
-        span.className = "skill-tag";
-        span.innerText = s.nome;
-        span.onclick = () => removeSkill(s.nome);
-        container.appendChild(span);
-    });
-}
-
-function renderPatenti(patenti) {
-    const list = document.getElementById('patenti-list-items');
-    if (!list) return; // Exit if container doesn't exist
-
-    list.innerHTML = '';
-
-    if (!patenti || patenti.length === 0) {
-        list.innerHTML = '<p class="text-muted" style="text-align:center;">Nessuna patente inserita.</p>';
+    if (!abilita || abilita.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-secondary);">Nessuna abilità</td></tr>';
         return;
     }
 
-    patenti.forEach((p, index) => {
-        const div = document.createElement('div');
-        div.className = 'patente-item';
-
-        let formattedDate = 'N/D';
-        if (p.conseguita_il) {
-            formattedDate = formatDate(p.conseguita_il).split(',')[0];
-        }
-
-        div.innerHTML = `
-            <div class="patente-header">
-                <span class="patente-type">${p.tipo || 'N/D'}</span>
-                <button type="button" class="btn-remove-patente" onclick="removePatente(${index})">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="patente-body">
-                <div class="patente-field">
-                    <label>Rilasciata da:</label>
-                    <span>${p.rilasciata_da || 'N/D'}</span>
-                </div>
-                <div class="patente-field">
-                    <label>Data:</label>
-                    <span>${formattedDate}</span>
-                </div>
-            </div>
-        `;
-        list.appendChild(div);
-    });
+    tbody.innerHTML = abilita.map((a, i) => `
+        <tr>
+            <td>${a.nome}</td>
+            <td>${a.descrizione || ''}</td>
+            <td>${a.livello || '-'}</td>
+            <td><button type="button" class="btn-remove-small" onclick="rimuoviAbilitaDaTabella(${i})"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    `).join('');
 }
 
-function renderDisponibilita(isAvailable) {
-    const badge = document.getElementById("status-badge");
-    const toggle = document.getElementById("disponibile-toggle");
+function renderPatentiTabella(patenti) {
+    const tbody = document.getElementById('patenti-tbody');
+    if (!tbody) return;
 
-    // Only proceed if elements exist
-    if (!badge || !toggle) return;
+    if (!patenti || patenti.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary);">Nessuna patente</td></tr>';
+        return;
+    }
 
-    if (isAvailable) {
-        badge.className = "status-badge status-available";
-        badge.innerHTML = '<i class="fas fa-check-circle"></i> Disponibile';
-        toggle.checked = true;
-    } else {
-        badge.className = "status-badge status-unavailable";
-        badge.innerHTML = '<i class="fas fa-times-circle"></i> Non Disponibile';
-        toggle.checked = false;
+    tbody.innerHTML = patenti.map((p, i) => `
+        <tr>
+            <td>${p.tipo || '-'}</td>
+            <td>${p.descrizione || '-'}</td>
+            <td>${p.conseguita_il || '-'}</td>
+            <td>${p.rilasciata_da || '-'}</td>
+            <td><button type="button" class="btn-remove-small" onclick="rimuoviPatenteDaTabella(${i})"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    `).join('');
+}
+
+function sincronizzaHiddenFields() {
+    const abilitaHidden = document.getElementById('abilita');
+    if (abilitaHidden && currentUserData.abilita) {
+        abilitaHidden.value = currentUserData.abilita.map(a => a.nome).join(',');
+    }
+    const patentiHidden = document.getElementById('patenti');
+    if (patentiHidden && currentUserData.patenti) {
+        patentiHidden.value = JSON.stringify(currentUserData.patenti);
     }
 }
 
@@ -495,46 +473,16 @@ async function creaNuovaAbilita() {
 
 function salvaAbilitaSelezionate() {
     currentUserData.abilita = [...abilitaSelezionateTemp];
-
-    // Aggiorna la tabella nella pagina
-    const tbody = document.getElementById('abilita-tbody');
-    if (tbody) {
-        tbody.innerHTML = currentUserData.abilita.map((a, i) => `
-            <tr>
-                <td>${a.nome}</td>
-                <td>${a.descrizione || ''}</td>
-                <td>${a.livello || '-'}</td>
-                <td><button type="button" class="btn-remove-small" onclick="rimuoviAbilitaDaTabella(${i})"><i class="fas fa-trash"></i></button></td>
-            </tr>
-        `).join('');
-    }
-
-    // Aggiorna il campo hidden
-    const hiddenInput = document.getElementById('abilita');
-    if (hiddenInput) {
-        hiddenInput.value = currentUserData.abilita.map(a => a.nome).join(',');
-    }
-
+    renderAbilitaTabella(currentUserData.abilita);
+    sincronizzaHiddenFields();
     chiudiModaleAbilita();
 }
 
 function rimuoviAbilitaDaTabella(index) {
     if (currentUserData.abilita) {
         currentUserData.abilita.splice(index, 1);
-        salvaAbilitaSelezionate(); // re-render
-        apriModaleAbilita(); // Don't re-open
-    }
-    // Just re-render table
-    const tbody = document.getElementById('abilita-tbody');
-    if (tbody && currentUserData.abilita) {
-        tbody.innerHTML = currentUserData.abilita.map((a, i) => `
-            <tr>
-                <td>${a.nome}</td>
-                <td>${a.descrizione || ''}</td>
-                <td>${a.livello || '-'}</td>
-                <td><button type="button" class="btn-remove-small" onclick="rimuoviAbilitaDaTabella(${i})"><i class="fas fa-trash"></i></button></td>
-            </tr>
-        `).join('');
+        renderAbilitaTabella(currentUserData.abilita);
+        sincronizzaHiddenFields();
     }
 }
 
@@ -674,50 +622,16 @@ async function creaNuovaPatente() {
 
 function salvaPatentiSelezionate() {
     currentUserData.patenti = [...patentiSelezionateTemp];
-
-    // Aggiorna la tabella nella pagina
-    const tbody = document.getElementById('patenti-tbody');
-    if (tbody) {
-        tbody.innerHTML = currentUserData.patenti.map((p, i) => {
-            let formattedDate = p.conseguita_il || '-';
-            return `
-                <tr>
-                    <td>${p.tipo}</td>
-                    <td>${p.descrizione || '-'}</td>
-                    <td>${formattedDate}</td>
-                    <td>${p.rilasciata_da || '-'}</td>
-                    <td><button type="button" class="btn-remove-small" onclick="rimuoviPatenteDaTabella(${i})"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    // Aggiorna il campo hidden
-    const hiddenInput = document.getElementById('patenti');
-    if (hiddenInput) {
-        hiddenInput.value = JSON.stringify(currentUserData.patenti);
-    }
-
+    renderPatentiTabella(currentUserData.patenti);
+    sincronizzaHiddenFields();
     chiudiModalePatenti();
 }
 
 function rimuoviPatenteDaTabella(index) {
     if (currentUserData.patenti) {
         currentUserData.patenti.splice(index, 1);
-    }
-    const tbody = document.getElementById('patenti-tbody');
-    if (tbody && currentUserData.patenti) {
-        tbody.innerHTML = currentUserData.patenti.map((p, i) => {
-            return `
-                <tr>
-                    <td>${p.tipo}</td>
-                    <td>${p.descrizione || '-'}</td>
-                    <td>${p.conseguita_il || '-'}</td>
-                    <td>${p.rilasciata_da || '-'}</td>
-                    <td><button type="button" class="btn-remove-small" onclick="rimuoviPatenteDaTabella(${i})"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `;
-        }).join('');
+        renderPatentiTabella(currentUserData.patenti);
+        sincronizzaHiddenFields();
     }
 }
 

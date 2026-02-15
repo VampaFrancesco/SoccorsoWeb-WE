@@ -235,6 +235,7 @@ CREATE TABLE `missione_operatori` (
     `operatore_id` BIGINT NOT NULL,
     `notificato_at` TIMESTAMP NULL,
     `assegnato_at` TIMESTAMP NULL,
+    `ruolo` VARCHAR(20) DEFAULT 'OPERATORE',
     PRIMARY KEY (`missione_id`, `operatore_id`),
     FOREIGN KEY (`missione_id`) REFERENCES `missione`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`operatore_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,

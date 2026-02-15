@@ -49,7 +49,14 @@ public class MissioneService {
     public MissioneResponse inserisciMissione(@Valid MissioneRequest request) {
 
         // 1. Recupera le entità principali
-        Caposquadra caposquadra = trovaCaposquadra(request.getCaposquadraId());
+        Set<Long> capoIds = request.getCaposquadraIds();
+        if (capoIds == null || capoIds.isEmpty()) {
+            throw new IllegalArgumentException("Almeno un caposquadra è obbligatorio");
+        }
+        // Il primo caposquadra diventa il principale (FK nella tabella missione)
+        Long primaryCapoId = capoIds.iterator().next();
+        Caposquadra caposquadra = trovaCaposquadra(primaryCapoId);
+
         RichiestaSoccorso richiesta = richiestaSoccorsoRepository.findById(request.getRichiestaId())
                 .orElseThrow(() -> new EntityNotFoundException("Richiesta non trovata: " + request.getRichiestaId()));
 
@@ -69,18 +76,24 @@ public class MissioneService {
         Squadra squadra = creaSquadraPerMissione(caposquadra, richiesta);
         missione.setSquadra(squadra);
 
-        // 4. Assegna operatori (missione + squadra)
-        List<User> operatori = assegnaOperatori(missione, request.getOperatoriIds());
-        popolaSquadraConOperatori(squadra, operatori);
+        // 4. Assegna caposquadra come operatori con ruolo CAPOSQUADRA
+        assegnaCapisquadra(missione, capoIds);
 
-        // 5. Assegna mezzi (li rende indisponibili)
+        // 5. Assegna operatori normali (missione + squadra)
+        List<User> operatori = assegnaOperatori(missione, request.getOperatoriIds());
+        // Aggiungi anche i caposquadra alla squadra
+        List<User> capiUtenti = userRepository.findAllById(capoIds);
+        java.util.List<User> tuttiOperatori = new java.util.ArrayList<>(operatori);
+        tuttiOperatori.addAll(capiUtenti);
+        popolaSquadraConOperatori(squadra, tuttiOperatori);
+
+        // 6. Assegna mezzi (li rende indisponibili)
         assegnaMezzi(missione, request.getMezziIds());
 
-        // 6. Assegna materiali (riduce le quantità)
+        // 7. Assegna materiali (riduce le quantità)
         assegnaMateriali(missione, request.getMateriali());
 
-        // 7. Salva e aggiorna stato richiesta
-        // 7. Salva e aggiorna stato richiesta
+        // 8. Salva e aggiorna stato richiesta
         Missione salvata;
         try {
             salvata = missioneRepository.save(missione);
@@ -91,7 +104,7 @@ public class MissioneService {
         richiesta.setStato(RichiestaSoccorso.StatoRichiesta.IN_CORSO);
         richiestaSoccorsoRepository.save(richiesta);
 
-        // 8. Notifiche email (caposquadra + operatori)
+        // 9. Notifiche email (caposquadra + operatori)
         notificaCaposquadra(salvata);
         notificaOperatori(salvata);
 
@@ -243,6 +256,11 @@ public class MissioneService {
         return missioneMapper.toResponseList(missioneRepository.findAll());
     }
 
+    @Transactional(readOnly = true)
+    public List<MissioneResponse> missioniMezzo(Long mezzoId) {
+        return missioneMapper.toResponseList(missioneRepository.findAllByMezzoId(mezzoId));
+    }
+
     // =============================================
     // METODI PRIVATI - Ricerca entità
     // =============================================
@@ -286,16 +304,52 @@ public class MissioneService {
     }
 
     /**
+     * Assegna i caposquadra alla missione con ruolo CAPOSQUADRA.
+     */
+    private void assegnaCapisquadra(Missione missione, Set<Long> capoIds) {
+        if (capoIds == null || capoIds.isEmpty())
+            return;
+
+        List<User> capi = userRepository.findAllById(capoIds);
+        Set<MissioneOperatore> missioneOperatori = missione.getMissioneOperatori();
+        if (missioneOperatori == null) {
+            missioneOperatori = new HashSet<>();
+            missione.setMissioneOperatori(missioneOperatori);
+        }
+
+        for (User capo : capi) {
+            MissioneOperatore mo = new MissioneOperatore();
+            mo.setId(new MissioneOperatore.MissioneOperatoreId(null, capo.getId()));
+            mo.setMissione(missione);
+            mo.setOperatore(capo);
+            mo.setAssegnatoAt(LocalDateTime.now());
+            mo.setRuolo("CAPOSQUADRA");
+            missioneOperatori.add(mo);
+        }
+    }
+
+    /**
      * Assegna operatori alla missione e restituisce la lista.
+     * Esclude gli operatori già assegnati come caposquadra.
      */
     private List<User> assegnaOperatori(Missione missione, Set<Long> operatoriIds) {
         if (operatoriIds == null || operatoriIds.isEmpty()) {
-            missione.setMissioneOperatori(new HashSet<>());
+            if (missione.getMissioneOperatori() == null) {
+                missione.setMissioneOperatori(new HashSet<>());
+            }
             return List.of();
         }
 
-        List<User> operatori = userRepository.findAllById(operatoriIds);
-        Set<MissioneOperatore> missioneOperatori = new HashSet<>();
+        // Escludi ID già assegnati come caposquadra
+        Set<Long> capoIdsGiaAssegnati = missione.getMissioneOperatori().stream()
+                .map(mo -> mo.getOperatore().getId())
+                .collect(java.util.stream.Collectors.toSet());
+
+        Set<Long> idsEffettivi = operatoriIds.stream()
+                .filter(id -> !capoIdsGiaAssegnati.contains(id))
+                .collect(java.util.stream.Collectors.toSet());
+
+        List<User> operatori = userRepository.findAllById(idsEffettivi);
 
         for (User operatore : operatori) {
             MissioneOperatore mo = new MissioneOperatore();
@@ -303,10 +357,10 @@ public class MissioneService {
             mo.setMissione(missione);
             mo.setOperatore(operatore);
             mo.setAssegnatoAt(LocalDateTime.now());
-            missioneOperatori.add(mo);
+            mo.setRuolo("OPERATORE");
+            missione.getMissioneOperatori().add(mo);
         }
 
-        missione.setMissioneOperatori(missioneOperatori);
         return operatori;
     }
 

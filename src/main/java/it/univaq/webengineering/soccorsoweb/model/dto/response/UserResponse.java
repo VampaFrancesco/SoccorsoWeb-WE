@@ -32,4 +32,5 @@ public class UserResponse {
     private Set<PatenteResponse> patenti;
     private Set<AbilitaResponse> abilita;
     private String token; // JWT token per autenticazione
+    private String ruoloMissione; // Populated only in mission context: CAPOSQUADRA or OPERATORE
 }

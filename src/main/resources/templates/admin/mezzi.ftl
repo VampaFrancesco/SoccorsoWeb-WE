@@ -26,7 +26,7 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
         <!-- NON DISPONIBILI -->
         <div class="fleet-column">
             <div class="section-header">
-                <h3 class="text-danger"><i class="fas fa-ban"></i> In Servizio / Manutenzione</h3>
+                <h3 class="text-danger"><i class="fas fa-ban"></i> Non Disponibili</h3>
                 <span class="badge" id="count-unavailable">0</span>
             </div>
             <div id="list-unavailable">

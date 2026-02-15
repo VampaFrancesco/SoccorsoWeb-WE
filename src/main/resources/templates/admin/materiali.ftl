@@ -22,7 +22,7 @@
 
         <div class="inventory-column">
             <div class="section-header">
-                <h3 class="status-title unavailable"><i class="fas fa-exclamation-triangle"></i> Esauriti / In Manutenzione</h3>
+                <h3 class="status-title unavailable"><i class="fas fa-exclamation-triangle"></i> Esauriti</h3>
                 <span class="inventory-badge" id="count-unavailable">0</span>
             </div>
             <div id="list-unavailable" class="material-list">

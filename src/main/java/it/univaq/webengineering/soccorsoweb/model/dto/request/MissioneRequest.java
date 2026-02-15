@@ -27,9 +27,9 @@ public class MissioneRequest {
     @NotBlank(message = "L'obiettivo è obbligatorio")
     private String obiettivo;
 
-    @NotNull(message = "Il caposquadra è obbligatorio")
-    @JsonProperty("caposquadra_id")
-    private Long caposquadraId;
+    @NotNull(message = "Almeno un caposquadra è obbligatorio")
+    @JsonProperty("caposquadra_ids")
+    private Set<Long> caposquadraIds;
 
     // ID della squadra (opzionale)
     private Long squadraId;

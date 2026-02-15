@@ -30,12 +30,12 @@
                         <h2 style="color: var(--accent-primary); margin-bottom: 20px;"><i class="fas fa-users"></i> Gestione Team (Real-time)</h2>
 
                         <div class="form-group" style="margin-bottom: 24px;">
-                            <label style="display:block; margin-bottom:8px; color:var(--text-secondary); font-size:0.85rem;">Caposquadra Incaricato</label>
-                            <select id="caposquadraId" name="caposquadraId" required class="form-control"
-                                    style="width:100%; background:#111827; border:1px solid var(--border-color); color:white; padding:12px; border-radius:8px;">
-                                <option value="">Caricamento operatori disponibili...</option>
-                            </select>
-                            <small style="color: var(--text-muted); margin-top: 4px; display: block;">L'operatore scelto sarà il responsabile della missione.</small>
+                            <label style="display:block; margin-bottom:12px; color:var(--text-secondary); font-size:0.85rem;">Caposquadra Incaricato/i</label>
+                            <div id="caposquadra-list" class="check-list-container"
+                                 style="display:grid; grid-template-columns:1fr 1fr; gap:12px; max-height:200px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:16px; border-radius:12px; border: 1px solid var(--border-color);">
+                                <p style="grid-column: 1/-1; text-align:center; color:var(--text-secondary);">Caricamento operatori...</p>
+                            </div>
+                            <small style="color: var(--text-muted); margin-top: 4px; display: block;">Seleziona uno o più responsabili della missione.</small>
                         </div>
 
                         <div class="form-group">
