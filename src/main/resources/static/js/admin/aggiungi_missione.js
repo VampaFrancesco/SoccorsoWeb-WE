@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             try {
-                // Invia i dati al backend (adatta l'URL e il metodo se necessario)
+                // Invia i dati al backend
                 const response = await fetch('/api/missioni', {
                     method: 'POST',
                     headers: {

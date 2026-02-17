@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('authToken');
         const role = localStorage.getItem('userRole');
         if (token && role) {
-            // 2. Decide dove mandarti in base al ruolo
+            // 2. Decide dove mandare in base al ruolo
             if (role === 'ADMIN') {
                 window.location.href = '/admin';
             } else if (role === 'OPERATORE') {

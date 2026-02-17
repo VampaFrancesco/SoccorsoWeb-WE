@@ -1,4 +1,3 @@
-// ── INIT ──
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadOperatori('tutti');
@@ -12,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// ── CARICAMENTO OPERATORI ──
+// CARICAMENTO OPERATORI
 
 async function loadOperatori(filter) {
     try {
@@ -49,7 +48,7 @@ async function loadOperatori(filter) {
     }
 }
 
-// ── RENDER ──
+// RENDER
 
 function renderOperatori(operatori) {
     const tbody = document.querySelector('.modern-table tbody');
@@ -131,7 +130,7 @@ function buildOperatorRow(op) {
     return tr;
 }
 
-// ── DETTAGLI OPERATORE ──
+// DETTAGLI OPERATORE
 
 async function visualizzaDettagli(id) {
     try {

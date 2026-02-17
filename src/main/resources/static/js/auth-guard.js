@@ -1,7 +1,4 @@
-/**
- * Auth Guard - Protegge le pagine riservate
- * Verifica che l'utente sia autenticato e abbia i permessi corretti
- */
+// Auth Guard
 
 (function () {
     'use strict';
@@ -13,7 +10,7 @@
         if (!token) return false;
 
         try {
-            // Decodifica il payload del JWT (la seconda parte)
+            // Decodifica il payload del JWT
             const payloadBase64 = token.split('.')[1];
             if (!payloadBase64) return false;
 
@@ -22,7 +19,7 @@
 
             // Controlla la scadenza (exp è in secondi, Date.now() in millisecondi)
             if (payload.exp && (payload.exp * 1000 < Date.now())) {
-                console.warn('⚠️ Token scaduto.');
+                console.warn('Token scaduto.');
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('userRole'); // Pulisce anche il ruolo
                 return false;
@@ -83,7 +80,7 @@
             return false;
         }
 
-        console.log('✅ Autenticazione verificata. Ruolo:', getUserRole());
+        console.log('Autenticazione verificata. Ruolo:', getUserRole());
         return true;
     }
 

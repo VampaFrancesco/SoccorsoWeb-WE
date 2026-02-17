@@ -2,7 +2,6 @@ let currentMissionId = null;
 let currentFilter = 'IN_CORSO';
 let detailMap = null;
 
-// ── INIT ──
 
 document.addEventListener('DOMContentLoaded', function () {
     initFilterButtons();
@@ -10,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initForms();
 });
 
-// ── FILTRI ──
+// FILTRI
 
 function initFilterButtons() {
     document.querySelectorAll('.missioni-container .filter-btn').forEach(btn => {
@@ -22,7 +21,7 @@ function initFilterButtons() {
     });
 }
 
-// ── CARICAMENTO MISSIONI ──
+// CARICAMENTO MISSIONI
 
 async function loadMissioni(stato) {
     currentFilter = stato;
@@ -61,7 +60,7 @@ async function loadMissioni(stato) {
     }
 }
 
-// ── RIGA TABELLA ──
+//RIGA TABELLA
 
 function buildRow(m) {
     const dataInizio = formatDate(m.inizio_at);
@@ -108,7 +107,7 @@ function buildRow(m) {
     `;
 }
 
-// ── DETTAGLIO MISSIONE ──
+//DETTAGLIO MISSIONE
 
 async function viewDettaglio(id) {
     try {
@@ -234,7 +233,7 @@ function buildDettaglioHTML(missione, richiesta) {
         `;
     }
 
-    // Squadra - con supporto multipli caposquadra
+    // Squadra con supporto multipli caposquadra
     const capiHtml = capiSquadra.length > 0
         ? capiSquadra.map(c => `<span class="team-badge" style="background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3);"><i class="fas fa-crown" style="margin-right:4px;"></i>${c.nome} ${c.cognome}</span>`).join('')
         : (capoFallback ? `<span class="team-badge" style="background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3);"><i class="fas fa-crown" style="margin-right:4px;"></i>${capoFallback.nome} ${capoFallback.cognome}</span>` : '<span style="color: var(--text-secondary);">N/D</span>');
@@ -322,7 +321,7 @@ function buildDettaglioHTML(missione, richiesta) {
     return html;
 }
 
-// ── MAPPA DETTAGLI ──
+// MAPPA DETTAGLI
 
 function initDetailMap(missione, richiesta) {
     const mapEl = document.getElementById('detail-map');
@@ -350,7 +349,7 @@ function initDetailMap(missione, richiesta) {
         .openPopup();
 }
 
-// ── AGGIORNA MISSIONE ──
+// AGGIORNA MISSIONE
 
 function openAggiorna(id) {
     currentMissionId = id;
@@ -443,7 +442,7 @@ function openChiudi(id) {
     openModal('modal-chiudi');
 }
 
-// ── MODAL MANAGEMENT ──
+// MODAL MANAGEMENT
 
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -479,7 +478,6 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-// ── UTILS (locali) ──
 
 function parseDate(dateInput) {
     if (!dateInput) return null;

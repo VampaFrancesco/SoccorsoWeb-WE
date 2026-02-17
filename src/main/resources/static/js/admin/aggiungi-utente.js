@@ -24,14 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Loading state
+            // Caricamento
             const originalContent = btnSalva.innerHTML;
             btnSalva.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Elaborazione...';
             btnSalva.disabled = true;
 
             const formData = new FormData(form);
 
-            // Struttura dati per API 22
+            // Struttura dati
             const datiUtente = {
                 nome: formData.get('nome'),
                 cognome: formData.get('cognome'),

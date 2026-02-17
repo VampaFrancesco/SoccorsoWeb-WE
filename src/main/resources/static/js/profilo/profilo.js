@@ -164,8 +164,6 @@ async function saveProfile() {
     const telefono = document.getElementById("telefono")?.value || '';
     const indirizzo = document.getElementById("indirizzo")?.value || '';
     const dataNascita = document.getElementById("data_nascita")?.value || null;
-
-    // Disponibilità: potrebbe non essere nel template
     const disponibileToggle = document.getElementById("disponibile-toggle");
     const isAvailable = disponibileToggle ? disponibileToggle.checked : currentUserData.disponibile;
 
@@ -258,7 +256,6 @@ const skillSelect = document.getElementById('skill-select');
 if (skillSelect) {
     skillSelect.addEventListener('change', function () {
         if (this.value === 'new') {
-            // Gestione "Nuova" se prevista
         }
     });
 }

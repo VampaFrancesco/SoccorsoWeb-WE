@@ -1,13 +1,4 @@
-/**
- * validate-email.js — Progressive Enhancement
- *
- * Se JS è abilitato:
- *   - Nasconde il form POST (no-JS fallback)
- *   - Mostra lo spinner e invia la convalida via AJAX
- *
- * Se JS è disabilitato:
- *   - Il form POST è visibile e permette la convalida tradizionale
- */
+
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token_convalida');
@@ -58,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-/** Nasconde lo spinner e mostra un messaggio di errore */
+// Nasconde lo spinner e mostra un messaggio di errore
 function mostraErrore(titolo, messaggio) {
     nascondiLoading();
     document.getElementById('error-title').textContent = titolo;
@@ -68,7 +59,7 @@ function mostraErrore(titolo, messaggio) {
     errorEl.style.display = 'block';
 }
 
-/** Nasconde lo spinner di caricamento */
+// Nasconde lo spinner di caricamento
 function nascondiLoading() {
     const el = document.getElementById('loading');
     if (el) {

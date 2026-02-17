@@ -17,9 +17,6 @@ function determineRedirectUrl(data) {
 }
 
 
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const loginBtn = document.querySelector('.btn-login');
@@ -84,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Login andato a buon fine (status 200)
-                // Salva il token (dalla tua API si chiama "token")
+                // Salva il token
                 if (data.token) {
                     localStorage.setItem('authToken', data.token);
                     document.cookie = `jwt=${data.token}; path=/; max-age=86400; SameSite=Strict`;
@@ -107,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     telefono: data.telefono,
                     disponibile: data.disponibile,
                     roles: data.roles,
-                    first_attempt: data.first_attempt // 🆕 Salva lo stato del primo accesso
+                    first_attempt: data.first_attempt // Salva lo stato del primo accesso
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
 
@@ -139,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Login Error');
 
-                const msg = error.message || 'Credenziali non valide o errore server.';
+                const msg = error.message || 'Credenziali non valide o errore server';
 
                 Swal.fire({
                     icon: 'error',

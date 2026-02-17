@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function refreshInventory() {
     try {
-        // Endpoint basato sulla tua struttura API
+        // Endpoint basato sulla struttura API
         const data = await apiCall('/swa/api/materiali', 'GET');
 
         const listOk = document.getElementById('list-available');
@@ -86,7 +86,7 @@ async function patchStatus(id) {
 
             await apiCall(`/swa/api/materiali/${id}/toggle-disponibilita`, 'PATCH');
 
-            // Feedback toast
+            // Feedback
             const toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',

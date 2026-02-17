@@ -1,13 +1,12 @@
 let richiestaMap = null;
 
-// ── INIT ──
 
 document.addEventListener('DOMContentLoaded', () => {
     loadRichieste('ATTIVA');
     initFilterButtons();
 });
 
-// ── FILTRI ──
+// FILTRI
 
 function initFilterButtons() {
     const filterBtns = document.querySelectorAll('.filter-btn');
@@ -21,7 +20,7 @@ function initFilterButtons() {
     });
 }
 
-// ── CARICAMENTO RICHIESTE ──
+// CARICAMENTO RICHIESTE
 
 async function loadRichieste(stato) {
     const tbody = document.getElementById('requests-body');
@@ -83,7 +82,7 @@ async function loadRichieste(stato) {
     }
 }
 
-// ── DETTAGLIO RICHIESTA CON MAPPA ──
+// DETTAGLIO RICHIESTA CON MAPPA
 
 async function viewRichiestaDettaglio(id) {
     try {
@@ -238,7 +237,7 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-// ── AZIONI ──
+// AZIONI
 
 async function gestisciIgnora(id) {
     const confirm = await Swal.fire({

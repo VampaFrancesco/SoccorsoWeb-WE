@@ -95,7 +95,7 @@ function createCardHTML(mezzo) {
     return div;
 }
 
-// --- LOGICA MODIFICA ---
+// LOGICA DI MODIFICA
 function openEditModal(id) {
     const mezzo = mezziGlobali.find(m => m.id === id);
     if (!mezzo) return;
@@ -140,7 +140,7 @@ async function handleEditMezzo(e) {
     }
 }
 
-// --- LOGICA CAMBIO STATO ---
+// LOGICA CAMBIO STATO
 async function toggleStato(id, isDisponibile) {
     const nuovoStatoAtteso = !isDisponibile;
     const azione = nuovoStatoAtteso ? "rendere DISPONIBILE" : "spostare in MANUTENZIONE";
@@ -205,7 +205,7 @@ async function handleAddMezzo(e) {
     }
 }
 
-// --- LOGICA ELIMINAZIONE ---
+// LOGICA ELIMINAZIONE
 async function handleDelete(id) {
     const result = await Swal.fire({
         title: 'Sei sicuro?',
@@ -228,7 +228,7 @@ async function handleDelete(id) {
     }
 }
 
-// --- LOGICA STORICO ---
+//LOGICA STORICO
 async function showHistory(id, nome) {
     document.getElementById('history-title').innerText = `Storico Mezzo: ${nome}`;
     const tbody = document.getElementById('history-body');

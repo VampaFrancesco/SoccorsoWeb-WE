@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     try {
         let missioni = [];
-        // Try getting ID from template variable
         const operatoreId = (typeof INITIAL_OPERATORE_ID !== 'undefined' && INITIAL_OPERATORE_ID) ? INITIAL_OPERATORE_ID : null;
 
         if (operatoreId) {
@@ -36,7 +35,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        // Sort by date desc
         lista.sort((a, b) => {
             const dateA = new Date(a.inizio_at || 0); // use raw or parse if needed, but sort is best effort
             const dateB = new Date(b.inizio_at || 0);

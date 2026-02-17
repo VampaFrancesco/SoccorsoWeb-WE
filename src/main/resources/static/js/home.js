@@ -3,7 +3,7 @@
 let locationObtained = false;
 let isCaptchaVerified = false;
 
-// ===== GEOLOCALIZZAZIONE =====
+// GEOLOCALIZZAZIONE
 function getLocationViaGPS() {
     const locationStatus = document.getElementById('location-status');
     const manualContainer = document.getElementById('manual-input');
@@ -80,7 +80,7 @@ function showGPSError(msg) {
     if (manualContainer) manualContainer.style.display = 'block';
 }
 
-// ===== GEOCODING =====
+// GEOCODING
 async function getAddressFromCoords(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
 
@@ -119,7 +119,7 @@ async function getCoordsFromAddress(addressQuery) {
     throw new Error('Indirizzo non trovato');
 }
 
-// ===== SETUP BOTTONI POSIZIONE =====
+// SETUP BOTTONI POSIZIONE
 
 function setupGPSButton() {
     const btnGps = document.getElementById('btn-gps');
@@ -204,7 +204,7 @@ function setupFileInput() {
     });
 }
 
-// ===== CAPTCHA JS =====
+// CAPTCHA JS
 function setupCustomCaptcha() {
     const captchaContainer = document.getElementById('custom-captcha');
     const checkbox = document.getElementById('captcha-checkbox');
@@ -338,7 +338,7 @@ function setupFormSubmit() {
                 const fileNameElement = document.getElementById('file-name');
                 if (fileNameElement) fileNameElement.textContent = "Seleziona un'immagine";
 
-                // Re-tenta GPS
+                // Ritenta GPS
                 getLocationViaGPS();
 
             } else {

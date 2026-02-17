@@ -1,6 +1,6 @@
 const API_BASE_URL = 'http://localhost:8080';
 
-// ── CORE API CALL ──
+// Chiamate api
 
 async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false) {
     const headers = {};
@@ -55,7 +55,7 @@ async function apiCall(endpoint, method = 'GET', body = null, needsAuth = false)
     return JSON.parse(responseText);
 }
 
-// ── AUTENTICAZIONE ──
+// AUTENTICAZIONE
 
 async function login(credenziali) {
     try {
@@ -88,7 +88,7 @@ async function registraNuovoUtente(datiUtente) {
     return await apiCall('/swa/api/auth/registrazione', 'POST', datiUtente, true);
 }
 
-// ── RICHIESTE (OPEN / Pubbliche) ──
+// RICHIESTE (OPEN / Pubbliche)
 
 async function inserisciRichiestaSoccorso(datiRichiesta) {
     return await apiCall('/swa/open/richieste', 'POST', datiRichiesta, false);
@@ -98,7 +98,7 @@ async function convalidaRichiesta(token) {
     return await apiCall('/swa/open/richieste/conferma-convalida', 'POST', { token_convalida: token }, false);
 }
 
-// ── RICHIESTE (Autenticate) ──
+// RICHIESTE (Autenticate)
 
 async function dettagliRichiestaSoccorso(id) {
     return await apiCall(`/swa/api/richieste/${id}`, 'GET', null, true);
@@ -108,7 +108,7 @@ async function visualizzaRichiesteFiltrate(stato, page = 0, size = 10) {
     return await apiCall(`/swa/api/richieste?stato=${stato}&page=${page}&size=${size}`, 'GET', null, true);
 }
 
-// ── OPERATORI ──
+// OPERATORI
 
 async function operatoriDisponibili(valore) {
     return await apiCall(`/swa/api/operatori?disponibile=${valore}`, 'GET', null, true);
@@ -118,7 +118,7 @@ async function eliminaUtente(id) {
     return await apiCall(`/swa/api/operatori/${id}`, 'DELETE', null, true);
 }
 
-// ── MISSIONI ──
+// MISSIONI
 
 async function inserimentoMissione(payload) {
     return await apiCall('/swa/api/missioni', 'POST', payload, true);
@@ -140,7 +140,7 @@ async function operatoInMissioni(operatorId) {
     return await apiCall(`/swa/api/operatori/${operatorId}/missioni`, 'GET', null, true);
 }
 
-// ── MEZZI ──
+// MEZZI
 
 async function getTuttiMezzi() {
     return await apiCall('/swa/api/mezzi', 'GET', null, true);
@@ -170,7 +170,7 @@ async function getMissioniMezzo(id) {
     return await apiCall(`/swa/api/mezzi/${id}/missioni`, 'GET', null, true);
 }
 
-// ── MATERIALI ──
+// MATERIALI
 
 async function getTuttiMateriali() {
     return await apiCall('/swa/api/materiali', 'GET', null, true);
@@ -184,7 +184,7 @@ async function creaMateriale(payload) {
     return await apiCall('/swa/api/materiali', 'POST', payload, true);
 }
 
-// ── PROFILO ──
+// PROFILO
 
 async function getMyProfile() {
     return await apiCall('/swa/api/operatori/me', 'GET', null, true);
@@ -198,7 +198,7 @@ async function myMissioni() {
     return await apiCall('/swa/api/operatori/me/missioni', 'GET', null, true);
 }
 
-// ── ABILITÀ ──
+// ABILITÀ
 
 async function getTutteAbilita() {
     return await apiCall('/swa/api/abilita', 'GET', null, true);
@@ -212,7 +212,7 @@ async function creaAbilita(nome, descrizione = '') {
     return await apiCall('/swa/api/abilita', 'POST', { nome, descrizione }, true);
 }
 
-// ── PATENTI ──
+// PATENTI
 
 async function getTuttePatenti() {
     return await apiCall('/swa/api/patenti', 'GET', null, true);
@@ -222,7 +222,6 @@ async function creaPatente(tipo, descrizione = '') {
     return await apiCall('/swa/api/patenti', 'POST', { tipo, descrizione }, true);
 }
 
-// Alias per compatibilità con il nuovo codice profilo modale
 async function getPatenti() {
     return await getTuttePatenti();
 }

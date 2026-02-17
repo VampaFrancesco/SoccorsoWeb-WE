@@ -1,4 +1,3 @@
-// operatore.js - Dashboard operatore con modali
 
 console.log('Script operatore.js caricato');
 

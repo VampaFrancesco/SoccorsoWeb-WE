@@ -52,13 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
 
         try {
-            // Utilizziamo la funzione definita in api.js
+            // funzione definita in api.js
             await cambiaPassword(
                 document.getElementById('currentPassword').value,
                 newPass.value
             );
 
-            // Se arriviamo qui, la chiamata è andata a buon fine (api.js lancia eccezione se !ok)
+            // la chiamata è andata a buon fine
             Swal.fire({ icon: 'success', title: 'Successo', timer: 1500, showConfirmButton: false })
                 .then(() => {
                     const role = localStorage.getItem('userRole');
