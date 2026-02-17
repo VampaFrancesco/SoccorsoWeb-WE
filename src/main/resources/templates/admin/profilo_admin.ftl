@@ -83,25 +83,6 @@ extraScripts='<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script
                 </div>
 
                 <hr class="divider">
-
-                <!-- Campi Modificabili -->
-                <h2 class="section-title">
-                    <i class="fas fa-edit text-accent"></i>
-                    Informazioni Extra
-                </h2>
-
-                <div class="form-group">
-                    <label>Abilità e Competenze</label>
-                    <p class="help-text">Clicca per gestire le tue abilità</p>
-                    <div id="abilita-tags" class="abilita-tags-container">
-                        <#-- Le abilità vengono caricate via JS -->
-                    </div>
-                    <button type="button" class="btn-secondary" id="btn-gestisci-abilita" onclick="apriModaleAbilita()">
-                        <i class="fas fa-plus"></i> Gestisci Abilità
-                    </button>
-                    <input type="hidden" id="abilita" name="abilita" value="">
-                </div>
-
                 <!-- Pulsante Salva -->
                 <div class="form-actions">
                     <button type="submit" class="btn-save">

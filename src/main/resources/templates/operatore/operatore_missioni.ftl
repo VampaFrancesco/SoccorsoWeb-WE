@@ -2,9 +2,11 @@
 
 <@layout.pagina_operatore titolo="Le Mie Missioni">
     <div class="content-section">
-        <div id="missioniContainer">
+        <div id="missioniContainer" class="missioni-list-container">
             <#-- Spinner di caricamento -->
-            <div class="loading-state">...</div>
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i> Caricamento missioni...
+            </div>
         </div>
     </div>
 
